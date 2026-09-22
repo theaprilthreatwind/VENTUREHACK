@@ -13,7 +13,7 @@ export function ActiveSessionPage() {
   if (!session || !Array.isArray(session.topics)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-        <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
           <CheckCircle2 className="mx-auto h-10 w-10 text-slate-300" />
           <h1 className="mt-4 text-lg font-semibold text-slate-900">Сессия не найдена</h1>
           <p className="mt-2 text-sm text-slate-500">
@@ -21,7 +21,7 @@ export function ActiveSessionPage() {
           </p>
           <Link
             href="/practice"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#131926] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
           >
             <ArrowLeft className="h-4 w-4" />
             К банку вопросов
@@ -34,8 +34,8 @@ export function ActiveSessionPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
       <div className="w-full max-w-lg">
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-8">
-          <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100">
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-8">
+          <span className="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-blue-100">
             <Play className="h-7 w-7 text-blue-600" />
           </span>
           <h1 className="mt-4 text-xl font-extrabold tracking-tight text-slate-900">
@@ -60,7 +60,7 @@ export function ActiveSessionPage() {
 
           <button
             type="button"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#131926] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
           >
             <Play className="h-4 w-4" />
             Начать тест

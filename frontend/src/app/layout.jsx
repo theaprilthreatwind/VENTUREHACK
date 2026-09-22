@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "ENTUZ /KZ — Подготовка к ЕНТ",
+  title: "ЕНТdigit — Подготовка к ЕНТ",
   description:
     "Платформа для подготовки к ЕНТ в Казахстане: практика, банк вопросов и персональный план подготовки.",
 };

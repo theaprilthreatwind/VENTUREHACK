@@ -11,7 +11,7 @@ export function BrandBanner() {
           <Zap className="h-6 w-6 text-sky-300" />
         </span>
         <div>
-          <p className="text-lg font-extrabold tracking-tight">ENTUZ /KZ</p>
+          <p className="text-lg font-extrabold tracking-tight">ЕНТdigit</p>
           <p className="text-xs font-medium text-blue-100/70">Первая цифровая школа ЕНТ</p>
         </div>
       </div>

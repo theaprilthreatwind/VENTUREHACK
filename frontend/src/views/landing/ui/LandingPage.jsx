@@ -10,7 +10,7 @@ export function LandingPage() {
         <div className="p-5 pb-2">
           {/* Brand & Collapse Trigger */}
           <div className="flex items-center justify-between mb-8 px-1">
-            <span className="text-xl font-black italic tracking-tight text-slate-900">DSATUZ</span>
+            <span className="text-xl font-black italic tracking-tight text-slate-900">ЕНТdigit</span>
             <button
               aria-label="Свернуть меню"
               className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"

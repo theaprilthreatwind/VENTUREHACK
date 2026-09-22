@@ -83,6 +83,50 @@ app → views → widgets → features → entities → shared
 `src/app/(app)/layout.jsx` renders the shared shell from `@/widgets/sidebar` and `@/widgets/header`;
 the root `src/app/layout.jsx` owns `<html>`, `<body>` and `globals.css`.
 
+## Data source — mock в development, backend в production
+
+Все запросы идут через `@/shared/api`. Методы с одинаковой сигнатурой реализованы дважды:
+
+- `shared/api/apiService.js` — реальный backend (`fetch` по `API_BASE_URL`);
+- `shared/api/mockApiService.js` — mock-ответы той же формы (`shared/api/mock/fixtures.js`).
+
+`shared/api/index.js` выбирает реализацию один раз по флагу:
+
+```js
+const impl = IS_MOCK_ENABLED ? mockApiService : realApiService;
+```
+
+Флаг вычисляется в `shared/config/env.js`:
+
+| Условие                     | Источник данных   |
+| --------------------------- | ----------------- |
+| `NEXT_PUBLIC_USE_MOCKS=true`  | mock              |
+| `NEXT_PUBLIC_USE_MOCKS=false` | backend           |
+| не задано, `NODE_ENV=development` | mock        |
+| не задано, `NODE_ENV=production`  | backend     |
+
+То есть `npm run dev` работает на mock, а `npm run build && npm run start` — с backend,
+без изменения кода. Принудительно переопределить можно через `.env.local`:
+
+```bash
+# .env.local — всегда backend даже в dev
+NEXT_PUBLIC_USE_MOCKS=false
+NEXT_PUBLIC_API_URL=http://localhost:8080
+```
+
+Потребители не знают, откуда пришли данные:
+
+```js
+import { getSubjectsOverview, startPractice } from "@/shared/api";
+
+const subjects = await getSubjectsOverview();
+const attemptId = await startPractice({ userId, topicIds: [1, 2], questionsCount: 20 });
+```
+
+> `mockApiService` намеренно **не удаляется** из production-сборки (модуль маленький), но при
+> `IS_MOCK_ENABLED === false` он не вызывается. Соответствие DTO и UI-моделей обеспечивают
+> адаптеры в `entities`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -1,4 +1,4 @@
-import { ChevronDown, Play } from "lucide-react";
+import { ChevronDown, LayoutGrid, Play } from "lucide-react";
 import { CheckboxBox } from "./CheckboxBox";
 import { SkillRow } from "./SkillRow";
 
@@ -21,40 +21,50 @@ export function DomainBlock({
         : "none";
 
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-3">
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onToggleDomain}
-          aria-label="Выбрать раздел целиком"
-          className="rounded-lg p-1 transition-colors hover:bg-white"
-        >
-          <CheckboxBox state={state} />
-        </button>
-        <button
-          type="button"
-          onClick={onToggleOpen}
-          aria-expanded={open}
-          className="flex flex-1 items-center gap-2 text-left"
-        >
-          <span className="text-sm font-semibold text-slate-800">{domain.name}</span>
-          <span className="text-xs tabular-nums text-slate-400">{domain.questions} questions</span>
-          <ChevronDown
-            className={`ml-auto h-4 w-4 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
-          />
-        </button>
-        <button
-          type="button"
-          aria-label={`Быстрый старт: ${domain.name}`}
-          onClick={onQuickStart}
-          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-900 hover:text-white"
-        >
-          <Play className="h-4 w-4" />
-        </button>
+    <div className="overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-sm">
+      <div className="flex items-center justify-between p-3 transition-colors hover:bg-slate-50">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+            <LayoutGrid className="h-4 w-4" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-slate-900">{domain.name}</h4>
+            <p className="text-[11px] text-slate-400">{domain.questions} вопросов</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onToggleOpen}
+            aria-expanded={open}
+            aria-label="Свернуть или развернуть раздел"
+            className="p-1 text-slate-400 transition-colors hover:text-slate-600"
+          >
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+            />
+          </button>
+          <button
+            type="button"
+            onClick={onToggleDomain}
+            aria-label="Выбрать раздел целиком"
+            className="flex items-center rounded-lg p-0.5 transition-colors hover:bg-slate-100"
+          >
+            <CheckboxBox state={state} />
+          </button>
+          <button
+            type="button"
+            onClick={() => onQuickStart(domain.skills.map((skill) => skill.id))}
+            aria-label={`Быстрый запуск: ${domain.name}`}
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 text-slate-700 transition-colors hover:bg-slate-100"
+          >
+            <Play className="h-3 w-3 fill-current" />
+          </button>
+        </div>
       </div>
 
       {open && (
-        <div className="mt-1 space-y-0.5 border-t border-slate-100 pt-2">
+        <div className="divide-y divide-slate-100 border-t border-slate-100 bg-slate-50/40 text-xs">
           {visibleSkills.map((skill) => (
             <SkillRow
               key={skill.id}
@@ -65,8 +75,8 @@ export function DomainBlock({
             />
           ))}
           {visibleSkills.length === 0 && (
-            <p className="px-2 py-3 text-center text-xs text-slate-400">
-              No topics match the current filters
+            <p className="px-6 py-3 text-center text-[11px] text-slate-400">
+              Нет тем по заданным фильтрам
             </p>
           )}
         </div>

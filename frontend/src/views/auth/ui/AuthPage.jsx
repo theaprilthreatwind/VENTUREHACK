@@ -62,7 +62,7 @@ export function AuthPage() {
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900">
               <Zap className="h-5 w-5 text-sky-300" />
             </span>
-            <p className="text-xl font-extrabold tracking-tight text-slate-900">ENTUZ /KZ</p>
+            <p className="text-xl font-extrabold tracking-tight text-slate-900">ЕНТdigit</p>
           </div>
 
           <AuthTabs mode={mode} onChange={setMode} />

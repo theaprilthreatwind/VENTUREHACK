@@ -1,33 +1,40 @@
-import { Timer } from "lucide-react";
 import { userProfile } from "@/entities/user";
-import { formatNumberEn } from "@/shared/lib";
-import { ProgressRing } from "./ProgressRing";
+import { formatNumber } from "@/shared/lib";
 
 export function OverviewStats() {
   return (
-    <div className="grid gap-5 sm:grid-cols-2">
-      <section className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Progress</p>
-        <div className="mt-4">
-          <ProgressRing value={userProfile.progress} />
-        </div>
-        <p className="mt-4 text-sm font-medium text-slate-500">
-          Answered: {userProfile.answered} out of {formatNumberEn(userProfile.totalQuestions)}
-        </p>
-      </section>
-
-      <section className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Time</p>
-        <div className="mt-4 flex items-center gap-2">
-          <Timer className="h-6 w-6 text-slate-300" />
-          <span className="text-5xl font-extrabold tabular-nums tracking-tight text-slate-900">
-            {userProfile.totalTime}
+    <section className="mb-10 grid grid-cols-1 gap-5 md:grid-cols-2">
+      <div className="flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
+        <div>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            ПРОГРЕСС
           </span>
+          <div className="mt-2 flex items-baseline gap-1">
+            <span className="text-3xl font-black text-slate-950">
+              {userProfile.progress}
+            </span>
+            <span className="text-sm font-semibold text-slate-400">%</span>
+          </div>
         </div>
-        <p className="mt-4 text-sm font-medium text-slate-500">
-          For questions matching selected filters
+        <p className="mt-4 text-xs text-slate-500">
+          Отвечено: {formatNumber(userProfile.answered)} из{" "}
+          {formatNumber(userProfile.totalQuestions)}
         </p>
-      </section>
-    </div>
+      </div>
+
+      <div className="flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
+        <div>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            ВСЕГО ВРЕМЕНИ
+          </span>
+          <div className="mt-2 text-3xl font-black tracking-tight text-slate-950">
+            {userProfile.totalTime}
+          </div>
+        </div>
+        <p className="mt-4 text-xs text-slate-500">
+          По вопросам, соответствующим фильтрам
+        </p>
+      </div>
+    </section>
   );
 }

@@ -3,7 +3,8 @@ export const subjects = [
     id: "math",
     name: "Математическая грамотность",
     shortName: "Math",
-    icon: "sigma",
+    icon: "calculator",
+    category: "compulsory",
     totalQuestions: 1925,
     domains: [
       {
@@ -42,7 +43,8 @@ export const subjects = [
     id: "reading",
     name: "Грамотность чтения",
     shortName: "Reading and Writing",
-    icon: "file-text",
+    icon: "book-open",
+    category: "compulsory",
     totalQuestions: 2250,
     domains: [
       {
@@ -90,6 +92,7 @@ export const subjects = [
     name: "История Казахстана",
     shortName: "History of Kazakhstan",
     icon: "book",
+    category: "compulsory",
     totalQuestions: 1530,
     domains: [
       {
@@ -124,8 +127,111 @@ export const subjects = [
       },
     ],
   },
+  {
+    id: "informatics",
+    name: "Информатика",
+    shortName: "Informatics",
+    icon: "terminal",
+    category: "profile",
+    totalQuestions: 980,
+    domains: [
+      {
+        id: "inf-prog",
+        name: "Программирование",
+        questions: 520,
+        skills: [
+          { id: "ip-1", name: "Основы синтаксиса и типы данных", questions: 180, difficulty: "Easy", status: "Correct", repeat: "No" },
+          { id: "ip-2", name: "Функции и массивы", questions: 170, difficulty: "Medium", status: "Incorrect", repeat: "Yes" },
+          { id: "ip-3", name: "Обработка строк и файлов", questions: 170, difficulty: "Hard", status: "Unanswered", repeat: "No" },
+        ],
+      },
+      {
+        id: "inf-algo",
+        name: "Алгоритмы и структуры данных",
+        questions: 460,
+        skills: [
+          { id: "ia-1", name: "Сортировка и поиск", questions: 160, difficulty: "Medium", status: "Correct", repeat: "Yes" },
+          { id: "ia-2", name: "Деревья и графы", questions: 150, difficulty: "Hard", status: "Unanswered", repeat: "No" },
+          { id: "ia-3", name: "Оценка сложности алгоритмов", questions: 150, difficulty: "Hard", status: "Incorrect", repeat: "Yes" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "mathematics",
+    name: "Математика",
+    shortName: "Mathematics",
+    icon: "calculator",
+    category: "profile",
+    totalQuestions: 1840,
+    domains: [
+      {
+        id: "mat-alg",
+        name: "Алгебра и начала анализа",
+        questions: 980,
+        skills: [
+          { id: "ma-1", name: "Тригонометрические уравнения", questions: 340, difficulty: "Medium", status: "Incorrect", repeat: "Yes" },
+          { id: "ma-2", name: "Логарифмы и показательные уравнения", questions: 320, difficulty: "Hard", status: "Unanswered", repeat: "No" },
+          { id: "ma-3", name: "Производная и интеграл", questions: 320, difficulty: "Hard", status: "Correct", repeat: "Yes" },
+        ],
+      },
+      {
+        id: "mat-geo",
+        name: "Геометрия",
+        questions: 860,
+        skills: [
+          { id: "mg-1", name: "Планиметрия: треугольники и окружности", questions: 300, difficulty: "Medium", status: "Correct", repeat: "No" },
+          { id: "mg-2", name: "Стереометрия: тела вращения", questions: 280, difficulty: "Hard", status: "Incorrect", repeat: "Yes" },
+          { id: "mg-3", name: "Векторы и координаты", questions: 280, difficulty: "Easy", status: "Unanswered", repeat: "No" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "physics",
+    name: "Физика",
+    shortName: "Physics",
+    icon: "atom",
+    category: "profile",
+    totalQuestions: 1150,
+    domains: [
+      {
+        id: "phy-mech",
+        name: "Механика",
+        questions: 620,
+        skills: [
+          { id: "pm-1", name: "Кинематика прямолинейного движения", questions: 210, difficulty: "Easy", status: "Correct", repeat: "Yes" },
+          { id: "pm-2", name: "Законы Ньютона", questions: 200, difficulty: "Medium", status: "Incorrect", repeat: "No" },
+          { id: "pm-3", name: "Законы сохранения", questions: 210, difficulty: "Hard", status: "Unanswered", repeat: "Yes" },
+        ],
+      },
+      {
+        id: "phy-el",
+        name: "Электричество и магнетизм",
+        questions: 530,
+        skills: [
+          { id: "pe-1", name: "Постоянный ток", questions: 180, difficulty: "Medium", status: "Correct", repeat: "No" },
+          { id: "pe-2", name: "Магнитное поле", questions: 170, difficulty: "Hard", status: "Unanswered", repeat: "Yes" },
+          { id: "pe-3", name: "Электромагнитная индукция", questions: 180, difficulty: "Hard", status: "Incorrect", repeat: "No" },
+        ],
+      },
+    ],
+  },
 ];
 
-export const difficulties = ["Easy", "Medium", "Hard"];
-export const answerStatuses = ["Correct", "Incorrect", "Unanswered"];
-export const repeatOptions = ["Yes", "No"];
+export const difficultyOptions = [
+  { value: "Easy", label: "Легко" },
+  { value: "Medium", label: "Средне" },
+  { value: "Hard", label: "Сложно" },
+];
+
+export const answerStatusOptions = [
+  { value: "Correct", label: "Верно" },
+  { value: "Incorrect", label: "Неверно" },
+  { value: "Unanswered", label: "Без ответа" },
+];
+
+export const repeatOptions = [
+  { value: "Yes", label: "Да" },
+  { value: "No", label: "Нет" },
+];
