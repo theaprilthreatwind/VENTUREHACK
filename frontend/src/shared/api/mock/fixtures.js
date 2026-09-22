@@ -39,6 +39,26 @@ export const subjectsOverview = [
       { id: 303, title: "Казахстан в Новое время", questionCount: 560 },
     ],
   },
+  {
+    id: 4,
+    title: "Информатика",
+    subject: "PROFILE",
+    totalQuestions: 980,
+    topics: [
+      { id: 401, title: "Программирование", questionCount: 520 },
+      { id: 402, title: "Алгоритмы и структуры данных", questionCount: 460 },
+    ],
+  },
+  {
+    id: 5,
+    title: "Физика",
+    subject: "PROFILE",
+    totalQuestions: 1150,
+    topics: [
+      { id: 501, title: "Механика", questionCount: 620 },
+      { id: 502, title: "Электричество и магнетизм", questionCount: 530 },
+    ],
+  },
 ];
 
 /** @type {import("../apiService").User[]} */

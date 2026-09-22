@@ -1,5 +1,1 @@
-export {
-  createPracticeSession,
-  savePracticeSession,
-  parsePracticeSession,
-} from "./model/session";
+export { saveAttempt, parseAttempt } from "./model/session";

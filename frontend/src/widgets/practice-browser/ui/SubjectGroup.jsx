@@ -5,17 +5,11 @@ export function SubjectGroup({
   badge,
   hint,
   subjects,
-  selectedSkills,
-  difficulty,
-  status,
-  repeat,
-  openSubjects,
-  openDomains,
+  selectedTopics,
+  isSubjectOpen,
   onToggleSubject,
-  onToggleSubjectOpen,
-  onToggleDomain,
-  onToggleDomainOpen,
-  onToggleSkill,
+  onToggleOpen,
+  onToggleTopic,
   onQuickStart,
 }) {
   return (
@@ -39,17 +33,11 @@ export function SubjectGroup({
           <SubjectCard
             key={subject.id}
             subject={subject}
-            selectedSkills={selectedSkills}
-            difficulty={difficulty}
-            status={status}
-            repeat={repeat}
-            openSubjects={openSubjects}
-            openDomains={openDomains}
+            selectedTopics={selectedTopics}
+            open={isSubjectOpen(subject.id)}
             onToggleSubject={() => onToggleSubject(subject)}
-            onToggleSubjectOpen={() => onToggleSubjectOpen(subject.id)}
-            onToggleDomain={onToggleDomain}
-            onToggleDomainOpen={onToggleDomainOpen}
-            onToggleSkill={onToggleSkill}
+            onToggleOpen={() => onToggleOpen(subject.id)}
+            onToggleTopic={onToggleTopic}
             onQuickStart={onQuickStart}
           />
         ))}

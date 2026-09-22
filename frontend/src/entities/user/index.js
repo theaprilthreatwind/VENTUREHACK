@@ -1,1 +1,1 @@
-export { userProfile } from "./model/profile";
+export { useCurrentUser } from "./model/useCurrentUser";

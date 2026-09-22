@@ -1,121 +1,92 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { firstDomains, matches, subjects } from "@/entities/subject";
+import { useSubjectsOverview } from "@/entities/subject";
+
+function toggleInSet(prev, id) {
+  const next = new Set(prev);
+  if (next.has(id)) next.delete(id);
+  else next.add(id);
+  return next;
+}
 
 export function usePracticeBrowser() {
-  const skillById = useMemo(() => {
-    const map = new Map();
-    subjects.forEach((subject) =>
-      subject.domains.forEach((domain) =>
-        domain.skills.forEach((skill) => map.set(skill.id, skill))
-      )
-    );
-    return map;
-  }, []);
+  const { subjects, isLoading, error } = useSubjectsOverview();
 
-  const [selectedSkills, setSelectedSkills] = useState(() => new Set());
+  const [selectedTopics, setSelectedTopics] = useState(() => new Set());
+  const [closedSubjects, setClosedSubjects] = useState(() => new Set());
   const [difficulty, setDifficulty] = useState(null);
   const [status, setStatus] = useState(null);
   const [repeat, setRepeat] = useState(null);
-  const [openSubjects, setOpenSubjects] = useState(() => new Set(subjects.map((s) => s.id)));
-  const [openDomains, setOpenDomains] = useState(() => firstDomains(subjects));
+
+  const topicById = useMemo(() => {
+    const map = new Map();
+    subjects.forEach((subject) =>
+      subject.topics.forEach((topic) => map.set(topic.id, topic))
+    );
+    return map;
+  }, [subjects]);
 
   const stats = useMemo(() => {
-    let domains = 0;
+    let topics = 0;
     let questions = 0;
     subjects.forEach((subject) =>
-      subject.domains.forEach((domain) => {
-        const selected = domain.skills.filter(
-          (skill) => selectedSkills.has(skill.id) && matches(skill, difficulty, status, repeat)
-        );
-        if (selected.length > 0) domains += 1;
-        questions += selected.reduce((sum, skill) => sum + skill.questions, 0);
+      subject.topics.forEach((topic) => {
+        if (selectedTopics.has(topic.id)) {
+          topics += 1;
+          questions += topic.questionCount;
+        }
       })
     );
-    return { domains, questions };
-  }, [selectedSkills, difficulty, status, repeat]);
+    return { topics, questions };
+  }, [subjects, selectedTopics]);
 
-  const toggleSkill = (id) => {
-    setSelectedSkills((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
+  // Предметы по умолчанию развёрнуты; closedSubjects хранит свёрнутые.
+  const isSubjectOpen = (id) => !closedSubjects.has(id);
 
-  const toggleDomain = (domain) => {
-    const visible = domain.skills.filter((skill) => matches(skill, difficulty, status, repeat));
-    setSelectedSkills((prev) => {
-      const next = new Set(prev);
-      const allSelected = visible.every((skill) => next.has(skill.id));
-      visible.forEach((skill) => (allSelected ? next.delete(skill.id) : next.add(skill.id)));
-      return next;
-    });
-  };
+  const toggleTopic = (id) => setSelectedTopics((prev) => toggleInSet(prev, id));
 
   const toggleSubject = (subject) => {
-    const visible = subject.domains.flatMap((domain) =>
-      domain.skills.filter((skill) => matches(skill, difficulty, status, repeat)).map((s) => s.id)
-    );
-    setSelectedSkills((prev) => {
+    setSelectedTopics((prev) => {
       const next = new Set(prev);
-      const allSelected = visible.every((id) => next.has(id));
-      visible.forEach((id) => (allSelected ? next.delete(id) : next.add(id)));
+      const allSelected = subject.topics.every((topic) => next.has(topic.id));
+      subject.topics.forEach((topic) =>
+        allSelected ? next.delete(topic.id) : next.add(topic.id)
+      );
       return next;
     });
   };
 
-  const toggleOpenSubject = (id) => {
-    setOpenSubjects((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  const toggleOpenDomain = (id) => {
-    setOpenDomains((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
+  const toggleSubjectOpen = (id) =>
+    setClosedSubjects((prev) => toggleInSet(prev, id));
 
   const resetFilters = () => {
-    setSelectedSkills(new Set());
+    setSelectedTopics(new Set());
     setDifficulty(null);
     setStatus(null);
     setRepeat(null);
-    setOpenSubjects(new Set(subjects.map((s) => s.id)));
-    setOpenDomains(firstDomains(subjects));
+    setClosedSubjects(new Set());
   };
 
   const countQuestions = (ids) =>
-    [...ids].reduce((sum, id) => {
-      const skill = skillById.get(id);
-      return sum + (skill && matches(skill, difficulty, status, repeat) ? skill.questions : 0);
-    }, 0);
+    [...ids].reduce((sum, id) => sum + (topicById.get(id)?.questionCount ?? 0), 0);
 
   return {
-    selectedSkills,
+    subjects,
+    isLoading,
+    error,
+    selectedTopics,
+    isSubjectOpen,
     difficulty,
     status,
     repeat,
-    openSubjects,
-    openDomains,
     stats,
     setDifficulty,
     setStatus,
     setRepeat,
-    toggleSkill,
-    toggleDomain,
+    toggleTopic,
     toggleSubject,
-    toggleOpenSubject,
-    toggleOpenDomain,
+    toggleSubjectOpen,
     resetFilters,
     countQuestions,
   };

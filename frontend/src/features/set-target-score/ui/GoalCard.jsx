@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { TrendingUp } from "lucide-react";
 import { Modal } from "@/shared/ui";
-import { userProfile } from "@/entities/user";
 import { useLocalStorage, setLocalStorageItem } from "@/shared/lib";
 import { STORAGE_KEYS } from "@/shared/config";
 
@@ -12,17 +11,17 @@ const MIN_SCORE = 1;
 const MAX_SCORE = 140;
 
 export default function GoalCard() {
-  const rawTarget = useLocalStorage(TARGET_KEY, String(userProfile.targetScore));
+  const rawTarget = useLocalStorage(TARGET_KEY, "");
   const parsed = Number.parseInt(rawTarget, 10);
   const target = Number.isNaN(parsed)
-    ? userProfile.targetScore
+    ? null
     : Math.min(MAX_SCORE, Math.max(MIN_SCORE, parsed));
 
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
 
   const openModal = () => {
-    setDraft(String(target));
+    setDraft(target === null ? "" : String(target));
     setOpen(true);
   };
 
@@ -45,9 +44,11 @@ export default function GoalCard() {
 
         <div className="my-auto py-3 text-center">
           <p className="mb-1 text-xs font-medium text-slate-500">Текущая цель</p>
-          <h4 className="text-6xl font-black tracking-tight text-slate-900">{target}</h4>
+          <h4 className="text-6xl font-black tracking-tight text-slate-900">
+            {target ?? "—"}
+          </h4>
           <p className="mt-2 text-xs text-slate-500">
-            Отображается на странице результатов.
+            Хранится локально в вашем браузере.
           </p>
         </div>
 

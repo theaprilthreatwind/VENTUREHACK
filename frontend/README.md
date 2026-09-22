@@ -124,8 +124,9 @@ const attemptId = await startPractice({ userId, topicIds: [1, 2], questionsCount
 ```
 
 > `mockApiService` намеренно **не удаляется** из production-сборки (модуль маленький), но при
-> `IS_MOCK_ENABLED === false` он не вызывается. Соответствие DTO и UI-моделей обеспечивают
-> адаптеры в `entities`.
+> `IS_MOCK_ENABLED === false` он не вызывается. UI-код не содержит собственного каталога
+> данных: и в development, и в production он читает данные только через `@/shared/api`
+> (`useSubjectsOverview`, `useCurrentUser` и т.д.).
 
 ## Learn More
 

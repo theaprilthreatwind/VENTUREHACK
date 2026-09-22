@@ -6,50 +6,50 @@ import { Zap } from "lucide-react";
 import {
   AuthTabs,
   BrandBanner,
-  GoogleButton,
   LoginForm,
   SignupForm,
-  formatKzPhone,
-  persistSession,
-  simulateRequest,
+  login,
+  register,
 } from "@/features/auth";
+
+function ServerError({ message }) {
+  if (!message) return null;
+  return (
+    <p role="alert" className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+      {message}
+    </p>
+  );
+}
 
 export function AuthPage() {
   const router = useRouter();
 
   const [mode, setMode] = useState("login");
   const [isLoading, setLoading] = useState(false);
-  const [isGoogleLoading, setGoogleLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
 
-  const handleLoginSubmit = async (values) => {
+  const handleLogin = async (values) => {
+    setServerError("");
     setLoading(true);
-    await simulateRequest();
-    persistSession({
-      method: "credentials",
-      identifier: values.identifier.trim(),
-      remember: values.remember,
-    });
-    router.push("/dashboard");
+    try {
+      await login(values);
+      router.push("/dashboard");
+    } catch (error) {
+      setServerError(error.message ?? "Не удалось войти");
+      setLoading(false);
+    }
   };
 
-  const handleSignupSubmit = async (values) => {
+  const handleSignup = async (values) => {
+    setServerError("");
     setLoading(true);
-    await simulateRequest();
-    persistSession({
-      method: "signup",
-      name: values.fullName.trim(),
-      email: values.email.trim(),
-      phone: `+7 ${formatKzPhone(values.phone)}`,
-      grade: values.grade,
-    });
-    router.push("/dashboard");
-  };
-
-  const handleGoogle = async () => {
-    setGoogleLoading(true);
-    await simulateRequest();
-    persistSession({ method: "google", name: "Абитуриент" });
-    router.push("/dashboard");
+    try {
+      await register(values);
+      router.push("/dashboard");
+    } catch (error) {
+      setServerError(error.message ?? "Не удалось зарегистрироваться");
+      setLoading(false);
+    }
   };
 
   return (
@@ -69,22 +69,13 @@ export function AuthPage() {
 
           <div className="mt-8">
             <div className={mode === "login" ? undefined : "hidden"}>
-              <LoginForm isLoading={isLoading} onSubmit={handleLoginSubmit} />
+              <LoginForm isLoading={isLoading} onSubmit={handleLogin} />
             </div>
             <div className={mode === "register" ? undefined : "hidden"}>
-              <SignupForm isLoading={isLoading} onSubmit={handleSignupSubmit} />
+              <SignupForm isLoading={isLoading} onSubmit={handleSignup} />
             </div>
 
-            <div className="mt-6">
-              <div className="flex items-center gap-3">
-                <span className="h-px flex-1 bg-slate-200" />
-                <span className="text-xs font-medium text-slate-400">или продолжить через</span>
-                <span className="h-px flex-1 bg-slate-200" />
-              </div>
-              <div className="mt-5">
-                <GoogleButton isLoading={isGoogleLoading} onClick={handleGoogle} />
-              </div>
-            </div>
+            <ServerError message={serverError} />
 
             <p className="mt-8 text-center text-xs leading-relaxed text-slate-400">
               Продолжая, вы соглашаетесь с{" "}

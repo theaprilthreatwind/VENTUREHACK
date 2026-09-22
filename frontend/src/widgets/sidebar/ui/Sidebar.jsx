@@ -6,7 +6,6 @@ import { useState } from "react";
 import {
   BarChart3,
   BookOpen,
-  Flame,
   Home,
   Layers,
   LifeBuoy,
@@ -56,55 +55,11 @@ function SidebarLink({ item, active, onClick }) {
       />
       <span className="flex-1">{item.label}</span>
       {item.badge && (
-        <span
-          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-            item.badge === "AI"
-              ? "bg-emerald-100 text-emerald-700"
-              : "bg-emerald-100 text-emerald-700"
-          }`}
-        >
+        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
           {item.badge}
         </span>
       )}
     </Link>
-  );
-}
-
-function StreakCard() {
-  return (
-    <div className="space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Flame className="h-5 w-5 text-slate-700" />
-          <span className="text-xs font-bold text-slate-800">Ежедневная серия</span>
-        </div>
-        <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold tracking-wide text-slate-600">
-          АКТИВНО
-        </span>
-      </div>
-
-      <div>
-        <div className="mb-1.5 flex items-baseline justify-between">
-          <span className="text-xs font-medium text-slate-600">1 день</span>
-          <span className="text-xs text-slate-400">→ 3</span>
-        </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
-          <div className="h-2 w-1/3 rounded-full bg-slate-800" />
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between pt-0.5 text-[11px] text-slate-500">
-        <span className="font-medium text-slate-700">Активен сегодня ✓</span>
-        <span>Еще 2 дня</span>
-      </div>
-
-      <button
-        type="button"
-        className="mt-2 w-full rounded-xl bg-[#131926] py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-slate-800"
-      >
-        Перейти на Pro
-      </button>
-    </div>
   );
 }
 
@@ -141,8 +96,6 @@ function SidebarContent({ pathname, onNavigate }) {
             ))}
           </nav>
         </div>
-
-        <StreakCard />
       </div>
 
       <div className="space-y-1 border-t border-slate-100 pt-4">

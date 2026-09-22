@@ -1,21 +1,21 @@
 import { Play } from "lucide-react";
 
-function pluralizeDomains(count) {
+function pluralizeTopics(count) {
   const mod10 = count % 10;
   const mod100 = count % 100;
-  if (mod10 === 1 && mod100 !== 11) return "раздел";
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "раздела";
-  return "разделов";
+  if (mod10 === 1 && mod100 !== 11) return "тема";
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "темы";
+  return "тем";
 }
 
-export function SessionActionBar({ domains, questions, canStart, onStart }) {
+export function SessionActionBar({ topics, questions, canStart, onStart }) {
   return (
     <div className="pointer-events-none fixed bottom-6 left-1/2 z-20 flex -translate-x-1/2 justify-center">
       <div className="pointer-events-auto flex items-center gap-5 rounded-full border border-slate-300/80 bg-white/95 px-6 py-2.5 shadow-xl backdrop-blur-md">
         <div className="flex items-center gap-2 text-xs font-semibold tracking-tight text-slate-800">
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
           <span>
-            ВЫБРАНО: {domains} {pluralizeDomains(domains)} • {questions} вопр.
+            ВЫБРАНО: {topics} {pluralizeTopics(topics)} • {questions} вопр.
           </span>
         </div>
         <div className="h-4 w-px bg-slate-200" />

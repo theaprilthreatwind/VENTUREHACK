@@ -1,13 +1,24 @@
+import { loginUser, registerUser } from "@/shared/api";
 import { STORAGE_KEYS } from "@/shared/config";
 
-export function simulateRequest() {
-  return new Promise((resolve) => setTimeout(resolve, 1400));
+function persistAuth(user) {
+  localStorage.setItem(STORAGE_KEYS.token, user.token);
+  localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
+  document.cookie = `${STORAGE_KEYS.token}=${user.token}; path=/; max-age=2592000; SameSite=Lax`;
 }
 
-export function persistSession(userData) {
-  const token = `entuz_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
-  localStorage.setItem(STORAGE_KEYS.token, token);
-  localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(userData));
-  document.cookie = `${STORAGE_KEYS.token}=${token}; path=/; max-age=2592000; SameSite=Lax`;
-  return token;
+export async function login({ email, password }) {
+  const user = await loginUser({ email: email.trim(), password });
+  persistAuth(user);
+  return user;
+}
+
+export async function register({ username, email, password }) {
+  const user = await registerUser({
+    username: username.trim(),
+    email: email.trim(),
+    password,
+  });
+  persistAuth(user);
+  return user;
 }

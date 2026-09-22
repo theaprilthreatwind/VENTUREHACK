@@ -1,41 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-  Phone,
-  User,
-} from "lucide-react";
-import { Field, Select, TextInput } from "@/shared/ui";
-import { CLASS_OPTIONS } from "../model/constants";
-import { digitsOnly, formatKzPhone, validateSignup } from "../model/validation";
+import { ArrowRight, CheckCircle2, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { Field, TextInput } from "@/shared/ui";
+import { validateSignup } from "../model/validation";
 import { PrimaryButton } from "./PrimaryButton";
 
 export function SignupForm({ isLoading, onSubmit }) {
-  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [grade, setGrade] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const handlePhoneChange = (value) => {
-    let digits = digitsOnly(value);
-    if (digits.startsWith("7")) digits = digits.slice(1);
-    setPhone(digits.slice(0, 10));
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const values = { fullName, email, phone, grade, password, confirmPassword };
+    const values = { username, email, password, confirmPassword };
     const nextErrors = validateSignup(values);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
@@ -52,16 +34,16 @@ export function SignupForm({ isLoading, onSubmit }) {
       </p>
 
       <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-5">
-        <Field id="fullname" label="Полное имя" error={errors.fullName}>
+        <Field id="username" label="Имя пользователя" error={errors.username}>
           <TextInput
-            id="fullname"
+            id="username"
             type="text"
-            value={fullName}
-            onChange={setFullName}
-            placeholder="Например, Бейбарыс"
+            value={username}
+            onChange={setUsername}
+            placeholder="Например, alex_dev"
             leftIcon={<User className="h-4 w-4" />}
-            error={errors.fullName}
-            autoComplete="name"
+            error={errors.username}
+            autoComplete="username"
           />
         </Field>
 
@@ -75,30 +57,6 @@ export function SignupForm({ isLoading, onSubmit }) {
             leftIcon={<Mail className="h-4 w-4" />}
             error={errors.email}
             autoComplete="email"
-          />
-        </Field>
-
-        <Field id="phone" label="Телефон" error={errors.phone}>
-          <TextInput
-            id="phone"
-            type="tel"
-            value={phone ? `+7 ${formatKzPhone(phone)}` : "+7 "}
-            onChange={handlePhoneChange}
-            placeholder="+7 (7XX) XXX-XX-XX"
-            leftIcon={<Phone className="h-4 w-4" />}
-            error={errors.phone}
-            autoComplete="tel"
-            inputMode="tel"
-          />
-        </Field>
-
-        <Field id="grade" label="Класс / Статус" error={errors.grade}>
-          <Select
-            id="grade"
-            value={grade}
-            onChange={setGrade}
-            error={errors.grade}
-            options={CLASS_OPTIONS}
           />
         </Field>
 

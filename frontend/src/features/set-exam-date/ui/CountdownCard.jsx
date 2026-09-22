@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 import { CalendarClock } from "lucide-react";
 import { Modal } from "@/shared/ui";
-import { userProfile } from "@/entities/user";
 import { useLocalStorage, setLocalStorageItem } from "@/shared/lib";
 import { STORAGE_KEYS } from "@/shared/config";
 
 const EXAM_DATE_KEY = STORAGE_KEYS.examDate;
 
 function getTimeLeft(target) {
-  const diff = Math.max(0, new Date(target) - new Date());
+  if (!target) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  const diff = new Date(target) - new Date();
+  if (Number.isNaN(diff) || diff <= 0) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  }
   return {
     days: Math.floor(diff / (1000 * 60 * 60 * 24)),
     hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -24,18 +27,19 @@ function pad(value) {
 }
 
 export default function CountdownCard() {
-  const examDate = useLocalStorage(EXAM_DATE_KEY, userProfile.examDate);
+  const examDate = useLocalStorage(EXAM_DATE_KEY, "");
   const [timeLeft, setTimeLeft] = useState(() => getTimeLeft(examDate));
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
 
   useEffect(() => {
+    if (!examDate) return undefined;
     const timer = setInterval(() => setTimeLeft(getTimeLeft(examDate)), 1000);
     return () => clearInterval(timer);
   }, [examDate]);
 
   const openModal = () => {
-    setDraft(examDate.slice(0, 10));
+    setDraft(examDate ? examDate.slice(0, 10) : "");
     setOpen(true);
   };
 
@@ -45,12 +49,14 @@ export default function CountdownCard() {
     setOpen(false);
   };
 
-  const blocks = [
-    { label: "ДНЕЙ", value: String(timeLeft.days) },
-    { label: "ЧАСОВ", value: pad(timeLeft.hours) },
-    { label: "МИНУТ", value: pad(timeLeft.minutes) },
-    { label: "СЕКУНД", value: pad(timeLeft.seconds) },
-  ];
+  const blocks = examDate
+    ? [
+        { label: "ДНЕЙ", value: String(timeLeft.days) },
+        { label: "ЧАСОВ", value: pad(timeLeft.hours) },
+        { label: "МИНУТ", value: pad(timeLeft.minutes) },
+        { label: "СЕКУНД", value: pad(timeLeft.seconds) },
+      ]
+    : ["ДНЕЙ", "ЧАСОВ", "МИНУТ", "СЕКУНД"].map((label) => ({ label, value: "—" }));
 
   return (
     <>
@@ -79,7 +85,12 @@ export default function CountdownCard() {
           ))}
         </div>
 
-        <div className="pt-2 text-center">
+        <div className="flex flex-col items-center gap-2 pt-2 text-center">
+          <p className="text-xs text-slate-400">
+            {examDate
+              ? `Целевая дата: ${new Date(examDate).toLocaleDateString("ru-RU")}`
+              : "Дата экзамена не указана"}
+          </p>
           <button
             type="button"
             onClick={openModal}
@@ -102,7 +113,7 @@ export default function CountdownCard() {
           className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10"
         />
         <p className="mt-2 text-xs text-slate-400">
-          Обратный отсчет обновится сразу после сохранения
+          Дата хранится локально в вашем браузере
         </p>
         <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button

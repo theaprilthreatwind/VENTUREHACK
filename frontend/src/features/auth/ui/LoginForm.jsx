@@ -7,15 +7,14 @@ import { validateLogin } from "../model/validation";
 import { PrimaryButton } from "./PrimaryButton";
 
 export function LoginForm({ isLoading, onSubmit }) {
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const values = { identifier, password, remember };
+    const values = { email, password };
     const nextErrors = validateLogin(values);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
@@ -32,15 +31,15 @@ export function LoginForm({ isLoading, onSubmit }) {
       </p>
 
       <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-5">
-        <Field id="login-identifier" label="Email или телефон" error={errors.identifier}>
+        <Field id="login-email" label="Email" error={errors.email}>
           <TextInput
-            id="login-identifier"
-            type="text"
-            value={identifier}
-            onChange={setIdentifier}
-            placeholder="name@example.kz или +7 705 000 00 00"
+            id="login-email"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            placeholder="name@example.kz"
             leftIcon={<Mail className="h-4 w-4" />}
-            error={errors.identifier}
+            error={errors.email}
             autoComplete="username"
           />
         </Field>
@@ -67,24 +66,6 @@ export function LoginForm({ isLoading, onSubmit }) {
             }
           />
         </Field>
-
-        <div className="flex items-center justify-between text-sm">
-          <label className="flex cursor-pointer select-none items-center gap-2 text-slate-600">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(event) => setRemember(event.target.checked)}
-              className="h-4 w-4 rounded accent-blue-600"
-            />
-            Запомнить меня
-          </label>
-          <button
-            type="button"
-            className="font-semibold text-blue-700 transition-colors hover:text-blue-800"
-          >
-            Забыли пароль?
-          </button>
-        </div>
 
         <PrimaryButton isLoading={isLoading}>
           {isLoading ? "Входим..." : "Войти"}

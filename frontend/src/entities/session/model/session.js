@@ -1,23 +1,18 @@
 import { STORAGE_KEYS } from "@/shared/config";
 
-export function createPracticeSession({ topics, difficulty, status, repeat, totalQuestions }) {
-  return {
-    topics,
-    difficulty,
-    status,
-    repeat,
-    totalQuestions,
-    createdAt: new Date().toISOString(),
-  };
+/**
+ * Локальная запись о созданной попытке. Сам `attemptId` приходит с backend
+ * (`POST /api/practice_page/start`), здесь только сохраняем его для страницы
+ * прохождения.
+ */
+export function saveAttempt(attemptId) {
+  window.localStorage.setItem(
+    STORAGE_KEYS.session,
+    JSON.stringify({ attemptId, createdAt: new Date().toISOString() })
+  );
 }
 
-export function savePracticeSession(payload) {
-  const session = createPracticeSession(payload);
-  window.localStorage.setItem(STORAGE_KEYS.session, JSON.stringify(session));
-  return session;
-}
-
-export function parsePracticeSession(raw) {
+export function parseAttempt(raw) {
   try {
     return JSON.parse(raw);
   } catch {

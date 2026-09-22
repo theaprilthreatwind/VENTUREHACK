@@ -3,15 +3,12 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Bell } from "lucide-react";
-import { userProfile } from "@/entities/user";
+import { useCurrentUser } from "@/entities/user";
 import { useLocalStorage } from "@/shared/lib";
 import { STORAGE_KEYS } from "@/shared/config";
 
 const pageConfig = {
-  "/dashboard": {
-    title: "Дашборд",
-    subtitle: `С возвращением, ${userProfile.name}`,
-  },
+  "/dashboard": { title: "Дашборд" },
   "/practice": {
     title: "Создать сессию",
     subtitle: "Настройте фильтры, чтобы создать персонализированный тест.",
@@ -21,20 +18,29 @@ const pageConfig = {
 export default function Header() {
   const pathname = usePathname();
   const token = useLocalStorage(STORAGE_KEYS.token, "");
-  const config =
+  const { user } = useCurrentUser();
+
+  const base =
     Object.entries(pageConfig).find(([route]) => pathname.startsWith(route))?.[1] ?? {
       title: "ЕНТdigit",
       subtitle: "Платформа подготовки к ЕНТ",
     };
+
+  const subtitle =
+    pathname.startsWith("/dashboard") && user
+      ? `С возвращением, ${user.username}`
+      : base.subtitle;
 
   return (
     <header className="px-4 pt-6 sm:px-6 lg:px-12 lg:pt-8">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-            {config.title}
+            {base.title}
           </h1>
-          <p className="mt-1 text-sm font-medium text-slate-500">{config.subtitle}</p>
+          {subtitle && (
+            <p className="mt-1 text-sm font-medium text-slate-500">{subtitle}</p>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
@@ -55,9 +61,11 @@ export default function Header() {
             <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white" />
           </button>
 
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#131926] text-sm font-bold text-white">
-            {userProfile.name.slice(0, 1)}
-          </div>
+          {user && (
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#131926] text-sm font-bold text-white">
+              {user.username.slice(0, 1).toUpperCase()}
+            </div>
+          )}
         </div>
       </div>
     </header>

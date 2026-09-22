@@ -1,40 +1,23 @@
-import { ChevronDown, Play } from "lucide-react";
-import { matches } from "@/entities/subject";
+import { BookOpen, ChevronDown, Play } from "lucide-react";
 import { formatNumber } from "@/shared/lib";
 import { CheckboxBox } from "./CheckboxBox";
-import { DomainBlock } from "./DomainBlock";
-import { SubjectIcon } from "./SubjectIcon";
+import { TopicRow } from "./TopicRow";
 
 export function SubjectCard({
   subject,
-  selectedSkills,
-  difficulty,
-  status,
-  repeat,
-  openSubjects,
-  openDomains,
+  selectedTopics,
+  open,
   onToggleSubject,
-  onToggleSubjectOpen,
-  onToggleDomain,
-  onToggleDomainOpen,
-  onToggleSkill,
+  onToggleOpen,
+  onToggleTopic,
   onQuickStart,
 }) {
-  const allSkillIds = subject.domains.flatMap((domain) =>
-    domain.skills.map((skill) => skill.id)
-  );
-  const visibleSkillIds = subject.domains.flatMap((domain) =>
-    domain.skills
-      .filter((skill) => matches(skill, difficulty, status, repeat))
-      .map((skill) => skill.id)
-  );
-  const selectedVisible = visibleSkillIds.filter((id) => selectedSkills.has(id));
-  const open = openSubjects.has(subject.id);
-
+  const total = subject.topics.length;
+  const selected = subject.topics.filter((topic) => selectedTopics.has(topic.id));
   const state =
-    visibleSkillIds.length > 0 && visibleSkillIds.every((id) => selectedSkills.has(id))
+    total > 0 && selected.length === total
       ? "checked"
-      : selectedVisible.length > 0
+      : selected.length > 0
         ? "partial"
         : "none";
 
@@ -47,10 +30,10 @@ export function SubjectCard({
       >
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-            <SubjectIcon name={subject.icon} className="h-4 w-4" />
+            <BookOpen className="h-4 w-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-slate-900">{subject.name}</h3>
+            <h3 className="text-sm font-bold text-slate-900">{subject.title}</h3>
             <p className="text-xs text-slate-400">
               {formatNumber(subject.totalQuestions)} вопросов
             </p>
@@ -60,7 +43,7 @@ export function SubjectCard({
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={onToggleSubjectOpen}
+            onClick={onToggleOpen}
             aria-expanded={open}
             aria-label="Свернуть или развернуть предмет"
             className="p-1.5 text-slate-400 transition-colors hover:text-slate-600"
@@ -79,8 +62,8 @@ export function SubjectCard({
           </button>
           <button
             type="button"
-            onClick={() => onQuickStart(allSkillIds)}
-            aria-label={`Быстрый запуск: ${subject.name}`}
+            onClick={() => onQuickStart(subject.topics.map((topic) => topic.id))}
+            aria-label={`Быстрый запуск: ${subject.title}`}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-700 transition-colors hover:bg-slate-100"
           >
             <Play className="h-3.5 w-3.5 fill-current" />
@@ -89,22 +72,21 @@ export function SubjectCard({
       </div>
 
       {open && (
-        <div className="space-y-2 bg-slate-50/60 p-3">
-          {subject.domains.map((domain) => (
-            <DomainBlock
-              key={domain.id}
-              domain={domain}
-              selectedSkills={selectedSkills}
-              visibleSkills={domain.skills.filter((skill) =>
-                matches(skill, difficulty, status, repeat)
-              )}
-              open={openDomains.has(domain.id)}
-              onToggleOpen={() => onToggleDomainOpen(domain.id)}
-              onToggleDomain={() => onToggleDomain(domain)}
-              onToggleSkill={onToggleSkill}
-              onQuickStart={onQuickStart}
+        <div className="divide-y divide-slate-100 bg-slate-50/60 text-xs">
+          {subject.topics.map((topic) => (
+            <TopicRow
+              key={topic.id}
+              topic={topic}
+              selected={selectedTopics.has(topic.id)}
+              onToggle={() => onToggleTopic(topic.id)}
+              onQuickStart={() => onQuickStart([topic.id])}
             />
           ))}
+          {subject.topics.length === 0 && (
+            <p className="px-6 py-3 text-center text-[11px] text-slate-400">
+              В предмете пока нет тем
+            </p>
+          )}
         </div>
       )}
     </section>
