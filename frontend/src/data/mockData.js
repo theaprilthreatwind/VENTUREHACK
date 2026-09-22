@@ -10,85 +10,135 @@ export const userProfile = {
 
 export const subjects = [
   {
-    id: "history",
-    name: "История Казахстана",
-    type: "mandatory",
-    icon: "book",
-    topics: [
-      { id: "h1", name: "Древний Казахстан", questions: 160, difficulty: "Легко", status: "Верно", repeat: "Да", checked: true },
-      { id: "h2", name: "Средневековый Казахстан", questions: 160, difficulty: "Средне", status: "Верно", repeat: "Да", checked: true },
-      { id: "h3", name: "Казахское ханство", questions: 160, difficulty: "Сложно", status: "Неверно", repeat: "Нет", checked: true },
-      { id: "h4", name: "Казахстан в новое время", questions: 140, difficulty: "Средне", status: "Без ответа", repeat: "Да", checked: false },
-      { id: "h5", name: "Казахстан в XX веке", questions: 180, difficulty: "Сложно", status: "Неверно", repeat: "Нет", checked: false },
-    ],
-  },
-  {
-    id: "math-literacy",
+    id: "math",
     name: "Математическая грамотность",
-    type: "mandatory",
-    icon: "calculator",
-    topics: [
-      { id: "ml1", name: "Числа и вычисления", questions: 80, difficulty: "Легко", status: "Верно", repeat: "Да", checked: false },
-      { id: "ml2", name: "Алгебра", questions: 90, difficulty: "Средне", status: "Без ответа", repeat: "Да", checked: false },
-      { id: "ml3", name: "Геометрия", questions: 85, difficulty: "Сложно", status: "Неверно", repeat: "Нет", checked: false },
-      { id: "ml4", name: "Статистика и вероятность", questions: 70, difficulty: "Легко", status: "Без ответа", repeat: "Нет", checked: false },
+    shortName: "Math",
+    icon: "sigma",
+    totalQuestions: 1925,
+    domains: [
+      {
+        id: "math-algebra",
+        name: "Algebra",
+        questions: 616,
+        skills: [
+          { id: "alg-1", name: "Linear equations in one variable", questions: 180, difficulty: "Easy", status: "Correct", repeat: "Yes" },
+          { id: "alg-2", name: "Linear functions", questions: 210, difficulty: "Medium", status: "Incorrect", repeat: "No" },
+          { id: "alg-3", name: "Systems of two linear equations", questions: 226, difficulty: "Hard", status: "Unanswered", repeat: "No" },
+        ],
+      },
+      {
+        id: "math-advanced",
+        name: "Advanced Math",
+        questions: 770,
+        skills: [
+          { id: "adv-1", name: "Quadratic functions and equations", questions: 200, difficulty: "Medium", status: "Correct", repeat: "Yes" },
+          { id: "adv-2", name: "Exponents and radicals", questions: 270, difficulty: "Hard", status: "Incorrect", repeat: "No" },
+          { id: "adv-3", name: "Polynomial and rational expressions", questions: 300, difficulty: "Hard", status: "Unanswered", repeat: "No" },
+        ],
+      },
+      {
+        id: "math-data",
+        name: "Problem-Solving and Data Analysis",
+        questions: 539,
+        skills: [
+          { id: "data-1", name: "Ratios, rates and proportional relationships", questions: 180, difficulty: "Easy", status: "Correct", repeat: "Yes" },
+          { id: "data-2", name: "Percentages and unit conversion", questions: 160, difficulty: "Medium", status: "Unanswered", repeat: "Yes" },
+          { id: "data-3", name: "One-variable data: distributions and measures of center", questions: 199, difficulty: "Easy", status: "Incorrect", repeat: "No" },
+        ],
+      },
     ],
   },
   {
     id: "reading",
     name: "Грамотность чтения",
-    type: "mandatory",
+    shortName: "Reading and Writing",
     icon: "file-text",
-    topics: [
-      { id: "r1", name: "Художественный текст", questions: 100, difficulty: "Легко", status: "Верно", repeat: "Да", checked: false },
-      { id: "r2", name: "Научно-популярный текст", questions: 90, difficulty: "Средне", status: "Без ответа", repeat: "Нет", checked: false },
-      { id: "r3", name: "Графики и таблицы", questions: 80, difficulty: "Сложно", status: "Неверно", repeat: "Да", checked: false },
+    totalQuestions: 2250,
+    domains: [
+      {
+        id: "read-info",
+        name: "Information and Ideas",
+        questions: 620,
+        skills: [
+          { id: "ri-1", name: "Central ideas and details", questions: 210, difficulty: "Easy", status: "Correct", repeat: "Yes" },
+          { id: "ri-2", name: "Inferences", questions: 200, difficulty: "Medium", status: "Unanswered", repeat: "No" },
+          { id: "ri-3", name: "Command of evidence: textual", questions: 210, difficulty: "Hard", status: "Incorrect", repeat: "Yes" },
+        ],
+      },
+      {
+        id: "read-craft",
+        name: "Craft and Structure",
+        questions: 610,
+        skills: [
+          { id: "rc-1", name: "Words in context", questions: 200, difficulty: "Easy", status: "Correct", repeat: "No" },
+          { id: "rc-2", name: "Cross-text connections", questions: 200, difficulty: "Medium", status: "Incorrect", repeat: "Yes" },
+          { id: "rc-3", name: "Text structure and purpose", questions: 210, difficulty: "Hard", status: "Unanswered", repeat: "No" },
+        ],
+      },
+      {
+        id: "read-expression",
+        name: "Expression of Ideas",
+        questions: 590,
+        skills: [
+          { id: "re-1", name: "Rhetorical synthesis", questions: 290, difficulty: "Medium", status: "Correct", repeat: "No" },
+          { id: "re-2", name: "Transitions", questions: 300, difficulty: "Hard", status: "Incorrect", repeat: "Yes" },
+        ],
+      },
+      {
+        id: "read-conventions",
+        name: "Standard English Conventions",
+        questions: 430,
+        skills: [
+          { id: "rn-1", name: "Boundaries", questions: 230, difficulty: "Medium", status: "Unanswered", repeat: "Yes" },
+          { id: "rn-2", name: "Form, structure and sense", questions: 200, difficulty: "Easy", status: "Incorrect", repeat: "No" },
+        ],
+      },
     ],
   },
   {
-    id: "cs",
-    name: "Информатика",
-    type: "profile",
-    icon: "computer",
-    topics: [
-      { id: "cs1", name: "Алгоритмизация и программирование", questions: 140, difficulty: "Средне", status: "Верно", repeat: "Да", checked: false },
-      { id: "cs2", name: "Информационные системы", questions: 90, difficulty: "Легко", status: "Без ответа", repeat: "Нет", checked: false },
-      { id: "cs3", name: "Сетевые технологии", questions: 80, difficulty: "Сложно", status: "Неверно", repeat: "Да", checked: false },
-      { id: "cs4", name: "Базы данных", questions: 70, difficulty: "Легко", status: "Верно", repeat: "Нет", checked: false },
-    ],
-  },
-  {
-    id: "math",
-    name: "Математика",
-    type: "profile",
-    icon: "sigma",
-    topics: [
-      { id: "m1", name: "Алгебра и начала анализа", questions: 160, difficulty: "Сложно", status: "Верно", repeat: "Да", checked: false },
-      { id: "m2", name: "Геометрия", questions: 150, difficulty: "Средне", status: "Неверно", repeat: "Нет", checked: false },
-      { id: "m3", name: "Математический анализ", questions: 120, difficulty: "Сложно", status: "Без ответа", repeat: "Да", checked: false },
-      { id: "m4", name: "Комбинаторика и вероятность", questions: 100, difficulty: "Легко", status: "Верно", repeat: "Нет", checked: false },
-    ],
-  },
-  {
-    id: "physics",
-    name: "Физика",
-    type: "profile",
-    icon: "atom",
-    topics: [
-      { id: "p1", name: "Механика", questions: 150, difficulty: "Легко", status: "Верно", repeat: "Да", checked: false },
-      { id: "p2", name: "Электродинамика", questions: 140, difficulty: "Средне", status: "Неверно", repeat: "Да", checked: false },
-      { id: "p3", name: "Термодинамика", questions: 90, difficulty: "Сложно", status: "Без ответа", repeat: "Нет", checked: false },
-      { id: "p4", name: "Молекулярная физика", questions: 110, difficulty: "Средне", status: "Верно", repeat: "Нет", checked: false },
-      { id: "p5", name: "Оптика и квантовая физика", questions: 120, difficulty: "Сложно", status: "Неверно", repeat: "Да", checked: false },
+    id: "history",
+    name: "История Казахстана",
+    shortName: "History of Kazakhstan",
+    icon: "book",
+    totalQuestions: 1530,
+    domains: [
+      {
+        id: "his-ancient",
+        name: "Древний Казахстан",
+        questions: 450,
+        skills: [
+          { id: "ha-1", name: "Сакское государство", questions: 130, difficulty: "Easy", status: "Correct", repeat: "Yes" },
+          { id: "ha-2", name: "Усуни и Кангюи", questions: 160, difficulty: "Medium", status: "Incorrect", repeat: "No" },
+          { id: "ha-3", name: "Гуннская эпоха", questions: 160, difficulty: "Hard", status: "Unanswered", repeat: "Yes" },
+        ],
+      },
+      {
+        id: "his-medieval",
+        name: "Средневековый Казахстан",
+        questions: 520,
+        skills: [
+          { id: "hm-1", name: "Тюркский каганат", questions: 180, difficulty: "Medium", status: "Correct", repeat: "No" },
+          { id: "hm-2", name: "Караханиды и Сельджуки", questions: 170, difficulty: "Easy", status: "Unanswered", repeat: "Yes" },
+          { id: "hm-3", name: "Золотая Орда", questions: 170, difficulty: "Hard", status: "Incorrect", repeat: "No" },
+        ],
+      },
+      {
+        id: "his-modern",
+        name: "Казахстан в Новое время",
+        questions: 560,
+        skills: [
+          { id: "hn-1", name: "Казахское ханство в XVI–XVII вв.", questions: 190, difficulty: "Easy", status: "Correct", repeat: "Yes" },
+          { id: "hn-2", name: "Вхождение в состав Российской империи", questions: 190, difficulty: "Medium", status: "Incorrect", repeat: "No" },
+          { id: "hn-3", name: "Реформы XIX века", questions: 180, difficulty: "Hard", status: "Unanswered", repeat: "Yes" },
+        ],
+      },
     ],
   },
 ];
 
-export const mandatorySubjects = subjects.filter((s) => s.type === "mandatory");
-export const profileSubjects = subjects.filter((s) => s.type === "profile");
-
-export const difficulties = ["Легко", "Средне", "Сложно"];
-export const answerStatuses = ["Верно", "Неверно", "Без ответа"];
-export const repeatOptions = ["Да", "Нет"];
+export const difficulties = ["Easy", "Medium", "Hard"];
+export const answerStatuses = ["Correct", "Incorrect", "Unanswered"];
+export const repeatOptions = ["Yes", "No"];
 
 export const formatNumber = (n) => n.toLocaleString("ru-RU");
+export const formatNumberEn = (n) => n.toLocaleString("en-US");
