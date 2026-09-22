@@ -4,7 +4,6 @@ import com.example.ent.entity.User;
 import com.example.ent.exceptions.UserNotFoundException;
 import com.example.ent.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,20 +15,19 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public User registerUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(user.getPassword());
         return userRepository.save(user);
     }
 
     @Transactional
-    public String login(String email, String rawPassword) {
+    public String login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с таким email не найден"));
 
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+        if (!password.equals(user.getPassword())) {
             throw new IllegalArgumentException("Неверный пароль");
         }
 

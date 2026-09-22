@@ -4,4 +4,6 @@ import com.example.ent.entity.Question;
 
 import java.util.List;
 
-public record TestSessionDto(Long attemptId, List<Question> questions) {}
+public record TestSessionDto(Long attemptId, List<Question> questions) {
+
+}

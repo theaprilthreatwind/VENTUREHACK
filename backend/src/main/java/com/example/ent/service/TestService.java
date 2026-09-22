@@ -1,5 +1,6 @@
 package com.example.ent.service;
 
+import com.example.ent.dto.CreateSessionRequest;
 import com.example.ent.dto.TestResultDto;
 import com.example.ent.dto.TestSessionDto;
 import com.example.ent.entity.*;
@@ -27,9 +28,9 @@ public class TestService {
     private final UserRepository userRepository;
 
     @Transactional
-    public TestSessionDto startTest(Long userId, Long topicId, int questionsCount) {
+    public TestSessionDto startTest(Long userId, CreateSessionRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден в базе данных"));
+                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
 
         TestAttempt attempt = new TestAttempt();
         attempt.setUser(user);
@@ -37,7 +38,7 @@ public class TestService {
         attempt.setStartedAt(LocalDateTime.now());
         attempt = testAttemptRepository.save(attempt);
 
-        List<Question> questions = questionRepository.findRandomQuestionsByTopic(topicId, questionsCount);
+        List<Question> questions = generateQuestionsForSession(userId, request);
 
         return new TestSessionDto(attempt.getId(), questions);
     }
@@ -113,5 +114,18 @@ public class TestService {
         stats.setSuccessRate(Math.round(successRate * 100.0) / 100.0);
 
         statsRepository.save(stats);
+    }
+    private List<Question> generateQuestionsForSession(Long userId, CreateSessionRequest request) {
+        List<Long> topicIds = request.topicIds();
+        int count = request.questionsCount();
+
+        List<String> difficultyStrings = null;
+        if (request.difficulties() != null && !request.difficulties().isEmpty()) {
+            difficultyStrings = request.difficulties().stream()
+                    .map(Enum::name)
+                    .collect(Collectors.toList());
+        }
+
+        return questionRepository.findQuestionsForSession(topicIds, difficultyStrings, count);
     }
 }

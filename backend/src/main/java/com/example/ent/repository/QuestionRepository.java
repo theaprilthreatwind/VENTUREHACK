@@ -12,7 +12,17 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findByTopicId(Long topicId);
+    long countByTopicId(Long topicId);
+    long countByTopicSubjectId(Long subjectId);
 
     @Query(value = "select * from questions where topic_id = :topicId order by random() limit :limit", nativeQuery = true)
     List<Question> findRandomQuestionsByTopic(@Param("topicId") Long topicId, @Param("limit") int limit);
+
+    @Query(value = "select * from questions q " +
+            "where q.topic_id in (:topicIds) " +
+            "and (:difficulties is null or q.difficulty in (:difficulties)) " +
+            "order by RANDOM() limit :limit", nativeQuery = true)
+    List<Question> findQuestionsForSession(@Param("topicIds") List topicIds,
+                                 @Param("difficulties") List difficulties,
+                                 @Param("limit") int limit);
 }
