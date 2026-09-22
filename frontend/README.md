@@ -105,14 +105,43 @@ const impl = IS_MOCK_ENABLED ? mockApiService : realApiService;
 | не задано, `NODE_ENV=development` | mock        |
 | не задано, `NODE_ENV=production`  | backend     |
 
-То есть `npm run dev` работает на mock, а `npm run build && npm run start` — с backend,
-без изменения кода. Принудительно переопределить можно через `.env.local`:
+### Переключение через npm-скрипты
+
+Флаг `NEXT_PUBLIC_USE_MOCKS` проставляют сами скрипты (через `cross-env`, кросс-платформенно):
+
+| Команда              | Режим Next.js | Источник данных |
+| -------------------- | ------------- | --------------- |
+| `npm run dev`        | dev           | backend         |
+| `npm run mock dev`   | dev           | mock            |
+| `npm run build`      | prod build    | backend         |
+| `npm run mock build` | prod build    | mock            |
+| `npm run start`      | prod server   | backend         |
+| `npm run mock start` | prod server   | mock            |
+
+`mock` — обёртка над `next`: `npm run mock <dev|build|start>` подставляет mock-флаг и передаёт
+команду дальше. Есть и явные алиасы: `npm run dev:mock`, `npm run build:mock`, `npm run start:mock`.
+
+### Дополнительно: `.env.local`
+
+Если запускаешь `next` напрямую (без npm-скриптов) или хочешь зафиксировать настройку локально,
+скопируй `.env.example` в `.env.local`:
 
 ```bash
-# .env.local — всегда backend даже в dev
+cp .env.example .env.local
+```
+
+```dotenv
 NEXT_PUBLIC_USE_MOCKS=false
 NEXT_PUBLIC_API_URL=http://localhost:8080
 ```
+
+Если флаг не задан нигде, действует дефолт: mock при `NODE_ENV=development`, backend при
+`NODE_ENV=production`.
+
+> **Важно:** `NEXT_PUBLIC_*` инлайнятся на этапе сборки/старта. После смены флага нужно
+> перезапустить `next dev` или пересобрать (`next build`) — «на лету» значение не меняется.
+> Флаг из npm-скрипта имеет приоритет над `.env.local` (Next не перезаписывает уже заданный
+> `process.env`).
 
 Потребители не знают, откуда пришли данные:
 
