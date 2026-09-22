@@ -7,6 +7,7 @@ import { API_BASE_URL } from "@/shared/config";
 /**
  * @typedef {"EASY" | "MEDIUM" | "HARD"} Difficulty
  * @typedef {"CORRECT" | "INCORRECT" | "NOT_ANSWERED"} AnswerStatus
+ * @typedef {"ALL" | "CORRECT" | "INCORRECT" | "NOT_ANSWERED"} AnswerStatusFilter
  * @typedef {number | string} LongId
  */
 
@@ -32,7 +33,7 @@ import { API_BASE_URL } from "@/shared/config";
  * @property {number[]} [topicIds]
  * @property {number} [questionsCount]
  * @property {Difficulty[]} [difficulties]
- * @property {AnswerStatus | string} [answerStatus]
+ * @property {AnswerStatusFilter | string} [answerStatus]
  * @property {boolean} [isRepetition]
  */
 
@@ -58,6 +59,27 @@ import { API_BASE_URL } from "@/shared/config";
  * @property {string} password
  * @property {string} username
  * @property {string} token
+ */
+
+/**
+ * @typedef {Object} AuthUser
+ * @property {number} id
+ * @property {string} username
+ * @property {string} email
+ * @property {string} token
+ */
+
+/**
+ * @typedef {Object} RegisterPayload
+ * @property {string} username
+ * @property {string} email
+ * @property {string} password
+ */
+
+/**
+ * @typedef {Object} LoginPayload
+ * @property {string} email
+ * @property {string} password
  */
 
 /**
@@ -191,7 +213,7 @@ export function getSubjectsOverview({ signal } = {}) {
 
 /**
  * 2. Старт практики.
- * `POST /api/practice_page?userId={userId}`
+ * `POST /api/practice_page/start?userId={userId}`
  *
  * @param {StartPracticePayload} payload
  * @param {{ signal?: AbortSignal }} [options]
@@ -201,7 +223,7 @@ export function startPractice(
   { userId, topicIds, questionsCount, difficulties, answerStatus, isRepetition },
   { signal } = {}
 ) {
-  return request("/api/practice_page", {
+  return request("/api/practice_page/start", {
     method: "POST",
     query: { userId },
     body: { topicIds, questionsCount, difficulties, answerStatus, isRepetition },
@@ -241,7 +263,39 @@ export function finishPractice(attemptId, { signal } = {}) {
 }
 
 /**
- * 5. Получение пользователя по токену авторизации.
+ * 5. Регистрация нового пользователя.
+ * `POST /api/users/register`
+ *
+ * @param {RegisterPayload} payload
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<AuthUser>}
+ */
+export function registerUser({ username, email, password }, { signal } = {}) {
+  return request("/api/users/register", {
+    method: "POST",
+    body: { username, email, password },
+    signal,
+  });
+}
+
+/**
+ * 6. Аутентификация и получение токена.
+ * `POST /api/users/login`
+ *
+ * @param {LoginPayload} payload
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<AuthUser>}
+ */
+export function loginUser({ email, password }, { signal } = {}) {
+  return request("/api/users/login", {
+    method: "POST",
+    body: { email, password },
+    signal,
+  });
+}
+
+/**
+ * 7. Получение пользователя по токену авторизации.
  * `GET /api/users/token?token={token}`
  *
  * @param {string} token
@@ -253,7 +307,7 @@ export function getUserByToken(token, { signal } = {}) {
 }
 
 /**
- * 6. Получение пользователя по id.
+ * 8. Получение пользователя по id.
  * `GET /api/users/{userId}`
  *
  * @param {LongId} userId
@@ -265,7 +319,7 @@ export function getUserById(userId, { signal } = {}) {
 }
 
 /**
- * 7. Список всех зарегистрированных пользователей.
+ * 9. Список всех зарегистрированных пользователей.
  * `GET /api/users`
  *
  * @param {{ signal?: AbortSignal }} [options]
@@ -276,7 +330,7 @@ export function getUsers({ signal } = {}) {
 }
 
 /**
- * 8. Обновление целевого балла пользователя по теме.
+ * 10. Обновление целевого балла пользователя по теме.
  * `PUT /api/dashboard/{userId}/topics/{topicId}/target-score`
  *
  * @param {UpdateTargetScorePayload} payload
@@ -305,6 +359,8 @@ export const apiService = {
     finish: finishPractice,
   },
   users: {
+    register: registerUser,
+    login: loginUser,
     getByToken: getUserByToken,
     getById: getUserById,
     getAll: getUsers,

@@ -1,5 +1,5 @@
 import { ApiError } from "./apiService";
-import { subjectsOverview, users } from "./mock/fixtures";
+import { subjectsOverview, users as seedUsers } from "./mock/fixtures";
 
 /* -------------------------------------------------------------------------- */
 /*                                   Utils                                    */
@@ -9,12 +9,21 @@ const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
+/** In-memory «база» пользователей, чтобы register/login были консистентны. */
+const db = {
+  users: clone(seedUsers),
+  nextUserId: seedUsers.length + 1,
+};
+
 /**
  * Хранилище созданных попыток, чтобы finishPractice мог вернуть статистику.
  * @type {Map<string, { questionsCount: number, startedAt: string }>}
  */
 const attempts = new Map();
 let attemptCounter = 0;
+
+/** Публичное представление пользователя (без пароля). */
+const toAuthUser = ({ id, username, email, token }) => ({ id, username, email, token });
 
 /* -------------------------------------------------------------------------- */
 /*                                 Endpoints                                  */
@@ -26,7 +35,33 @@ export async function getSubjectsOverview() {
   return clone(subjectsOverview);
 }
 
-/** `POST /api/practice_page?userId={userId}` */
+/** `POST /api/users/register` */
+export async function registerUser({ username, email, password } = {}) {
+  await delay();
+  if (!username || !email || !password) {
+    throw new ApiError("username, email и password обязательны", { status: 400 });
+  }
+  if (db.users.some((user) => user.email === email)) {
+    throw new ApiError("Пользователь с таким email уже существует", { status: 409 });
+  }
+
+  const id = db.nextUserId++;
+  const user = { id, email, username, password, token: `mock-token-${id}` };
+  db.users.push(user);
+  return toAuthUser(user);
+}
+
+/** `POST /api/users/login` */
+export async function loginUser({ email, password } = {}) {
+  await delay();
+  const user = db.users.find((item) => item.email === email && item.password === password);
+  if (!user) {
+    throw new ApiError("Неверный email или пароль", { status: 401 });
+  }
+  return toAuthUser(user);
+}
+
+/** `POST /api/practice_page/start?userId={userId}` */
 export async function startPractice({ userId, questionsCount = 0 } = {}) {
   await delay();
   if (userId === undefined || userId === null) {
@@ -64,7 +99,7 @@ export async function finishPractice(attemptId) {
 /** `GET /api/users/token?token={token}` */
 export async function getUserByToken(token) {
   await delay();
-  const user = users.find((item) => item.token === token);
+  const user = db.users.find((item) => item.token === token);
   if (!user) {
     throw new ApiError("Пользователь с таким токеном не найден", { status: 404 });
   }
@@ -74,7 +109,7 @@ export async function getUserByToken(token) {
 /** `GET /api/users/{userId}` */
 export async function getUserById(userId) {
   await delay();
-  const user = users.find((item) => String(item.id) === String(userId));
+  const user = db.users.find((item) => String(item.id) === String(userId));
   if (!user) {
     throw new ApiError("Пользователь не найден", { status: 404 });
   }
@@ -84,7 +119,7 @@ export async function getUserById(userId) {
 /** `GET /api/users` */
 export async function getUsers() {
   await delay();
-  return clone(users);
+  return clone(db.users);
 }
 
 /** `PUT /api/dashboard/{userId}/topics/{topicId}/target-score` */
@@ -103,7 +138,13 @@ export async function updateTargetScore({ scoreGoal } = {}) {
 export const apiService = {
   subjects: { getOverview: getSubjectsOverview },
   practice: { start: startPractice, saveAnswer, finish: finishPractice },
-  users: { getByToken: getUserByToken, getById: getUserById, getAll: getUsers },
+  users: {
+    register: registerUser,
+    login: loginUser,
+    getByToken: getUserByToken,
+    getById: getUserById,
+    getAll: getUsers,
+  },
   dashboard: { updateTargetScore },
 };
 
