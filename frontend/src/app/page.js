@@ -1,5 +1,5 @@
-import { PracticePage } from "@/page/practicePage";
+import { LandingPage } from "@/views/landing";
 
 export default function Home() {
-  return <PracticePage />;
+  return <LandingPage />;
 }
