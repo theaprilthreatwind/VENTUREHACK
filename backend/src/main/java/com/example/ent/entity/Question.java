@@ -32,7 +32,7 @@ public class Question {
     private Difficulty difficulty;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List options = new ArrayList<>();
+    private List<Option> options = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "topic_id", nullable = false)

@@ -37,7 +37,7 @@ public class UserTopicStats {
     private Double successRate = 0.0;
 
     @PositiveOrZero
-    @Max(100)
+    @Max(150)
     private Double scoreGoal;
 
     @ManyToOne(fetch = FetchType.LAZY)
