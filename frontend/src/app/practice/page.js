@@ -1,10 +1,10 @@
-import { PracticePage } from "@/page/practicePage";
+﻿import PracticePage from './PracticePage';
 
 export const metadata = {
-  title: "DSATUZ — Создать сессию",
-  description: "Настройте фильтры и соберите персональную тренировочную сессию.",
+  title: 'DSATUZ Practice - Вопрос 1',
+  description: 'Решение заданий DSA на платформе DSATUZ',
 };
 
-export default function PracticeRoute() {
+export default function Page() {
   return <PracticePage />;
 }
