@@ -1,5 +1,6 @@
 package com.example.ent.controller;
 
+import com.example.ent.dto.LoginRequest;
 import com.example.ent.entity.User;
 import com.example.ent.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,9 +25,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid @RequestBody User user, HttpServletRequest request) {
-        log.info("Выполнен запрос по эндпоинту: '{} {}', Строка параметров запроса: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString());
-        return userService.login(user.getEmail(), user.getPassword());
+    public String login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+        log.info("Выполнен запрос по эндпоинту: '{} {}', Строка параметров запроса: '{}'", httpRequest.getMethod(), httpRequest.getRequestURI(), httpRequest.getQueryString());
+        return userService.login(request.email(), request.password());
     }
 
     @GetMapping("/token")
