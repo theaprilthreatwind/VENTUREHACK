@@ -23,6 +23,7 @@ import { STORAGE_KEYS } from "@/shared/config";
  *   submitAnswer: () => Promise<void>,
  *   goNext: () => void,
  *   goPrev: () => void,
+ *   goTo: (index: number) => void,
  *   isFirst: boolean,
  *   isLast: boolean,
  *   selectOption: (id: number|string) => void,
@@ -88,6 +89,15 @@ export function usePracticeSession() {
     setCurrentIndex((index) => Math.max(index - 1, 0));
   }, [resetTransient]);
 
+  const goTo = useCallback(
+    (index) => {
+      if (total === 0) return;
+      resetTransient();
+      setCurrentIndex(Math.min(Math.max(index, 0), total - 1));
+    },
+    [resetTransient, total]
+  );
+
   const selectOption = useCallback(
     (optionId) => {
       if (currentAnswer) return;
@@ -118,6 +128,7 @@ export function usePracticeSession() {
     submitAnswer,
     goNext,
     goPrev,
+    goTo,
     isFirst: currentIndex === 0,
     isLast: total > 0 && currentIndex === total - 1,
     selectOption,

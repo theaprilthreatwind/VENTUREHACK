@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Check, CheckCircle2, Loader2 } from "lucide-reac
 import {
   AnswerOptions,
   QuestionCard,
+  QuestionNavigator,
   VerdictPanel,
   usePracticeSession,
 } from "@/features/practice-session";
@@ -33,6 +34,7 @@ function NotFound() {
 
 export function ActiveSessionPage() {
   const {
+    session,
     currentQuestion,
     currentAnswer,
     currentIndex,
@@ -43,6 +45,7 @@ export function ActiveSessionPage() {
     submitAnswer,
     goNext,
     goPrev,
+    goTo,
     isFirst,
     isLast,
     selectOption,
@@ -58,6 +61,7 @@ export function ActiveSessionPage() {
   const correctOptionId =
     currentQuestion.options?.find((option) => option.correct)?.id ?? null;
   const canAnswer = selectedOptionId != null && !isSubmitting && !currentAnswer;
+  const answeredQuestionIds = new Set(Object.keys(session?.answers ?? {}));
 
   return (
     <div className="mx-auto w-full max-w-3xl">
@@ -101,9 +105,12 @@ export function ActiveSessionPage() {
           Назад
         </button>
 
-        <span className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-900 bg-white px-6 py-2 text-sm font-bold text-slate-900">
-          Вопрос {currentIndex + 1} из {total}
-        </span>
+        <QuestionNavigator
+          currentIndex={currentIndex}
+          questions={session?.questions ?? []}
+          answeredQuestionIds={answeredQuestionIds}
+          onSelect={goTo}
+        />
 
         <div className="flex w-full items-center gap-3 sm:w-auto">
           <button
@@ -122,7 +129,7 @@ export function ActiveSessionPage() {
           <button
             type="button"
             onClick={goNext}
-            disabled={!currentAnswer || isLast}
+            disabled={isLast}
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-slate-900 bg-white px-6 py-2.5 text-sm font-bold text-slate-900 transition-all hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-900 sm:flex-none"
           >
             Далее
