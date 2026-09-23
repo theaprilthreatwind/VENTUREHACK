@@ -1,5 +1,6 @@
 package com.example.ent.entity;
 
+import com.example.ent.enums.Type;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -22,9 +23,8 @@ public class Option {
 
     private boolean isCorrect;
 
-    private String explanation;
-
-    private String photoUrl;
+    @Enumerated(EnumType.STRING)
+    private Type type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)

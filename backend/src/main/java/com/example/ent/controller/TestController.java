@@ -40,4 +40,12 @@ public class TestController {
         log.info("Выполнен запрос по эндпоинту: '{} {}', Строка параметров запроса: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString());
         return testService.finishTest(attemptId);
     }
+
+    @PatchMapping("/{id}/status")
+    public TestAttempt updateTestStatus(
+            @PathVariable Long id,
+            @RequestParam String status) {
+
+        return testService.updateTestStatus(id, status);
+    }
 }

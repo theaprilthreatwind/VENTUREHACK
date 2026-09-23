@@ -2,15 +2,14 @@
 
 import { CheckCircle2, XCircle } from "lucide-react";
 
-import { MathText } from "@/shared/ui";
 import { useLang } from "@/shared/i18n";
 
 /**
- * Вердикт по ответу: верно/неверно и пояснение.
+ * Вердикт по ответу: верно/неверно. Пояснение показывает `ExplanationPanel`.
  *
- * @param {{ correct: boolean, explanation?: string }} props
+ * @param {{ correct: boolean }} props
  */
-export function VerdictPanel({ correct, explanation }) {
+export function VerdictPanel({ correct }) {
   const { t } = useLang();
 
   return (
@@ -34,12 +33,6 @@ export function VerdictPanel({ correct, explanation }) {
         )}
         {correct ? t("session.correct") : t("session.incorrect")}
       </p>
-
-      {explanation && (
-        <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-          <MathText text={explanation} />
-        </p>
-      )}
     </div>
   );
 }

@@ -4529,7 +4529,7 @@ false Zulu
     <table id="298" parent="278" name="questions">
       <DetailsLevel>2</DetailsLevel>
       <ObjectId>17216</ObjectId>
-      <StateNumber>1112</StateNumber>
+      <StateNumber>1176</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
@@ -4666,7 +4666,12 @@ question_id</ColNames>
       <StateNumber>1097</StateNumber>
       <UnderlyingIndexId>17352</UnderlyingIndexId>
     </key>
-    <column id="318" parent="297" name="id">
+    <check id="318" parent="297" name="options_type_check">
+      <ObjectId>17515</ObjectId>
+      <Predicate>(type)::text = ANY ((ARRAY[&apos;MULTICHOICE&apos;::character varying, &apos;SINGLE_CHOICE&apos;::character varying, &apos;MATCHING&apos;::character varying])::text[])</Predicate>
+      <StateNumber>1159</StateNumber>
+    </check>
+    <column id="319" parent="297" name="id">
       <GeneratedKind>identity-by-default</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4675,47 +4680,47 @@ question_id</ColNames>
       <SequenceId>17203</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="319" parent="297" name="explanation">
+    <column id="320" parent="297" name="explanation">
       <Position>2</Position>
       <StateNumber>1069</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="320" parent="297" name="is_correct">
+    <column id="321" parent="297" name="is_correct">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>1069</StateNumber>
       <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
-    <column id="321" parent="297" name="text">
+    <column id="322" parent="297" name="text">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>1069</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="322" parent="297" name="question_id">
+    <column id="323" parent="297" name="question_id">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>1069</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="323" parent="297" name="photo_url">
+    <column id="324" parent="297" name="photo_url">
       <Position>6</Position>
       <StateNumber>1092</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <foreign-key id="324" parent="297" name="fk5bmv46so2y5igt9o9n9w4fh6y">
+    <foreign-key id="325" parent="297" name="fk5bmv46so2y5igt9o9n9w4fh6y">
       <ColNames>question_id</ColNames>
       <ObjectId>17304</ObjectId>
       <StateNumber>1083</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17216</RefTableId>
     </foreign-key>
-    <index id="325" parent="297" name="options_pkey">
+    <index id="326" parent="297" name="options_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17213</ObjectId>
@@ -4724,26 +4729,26 @@ question_id</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="326" parent="297" name="options_pkey">
+    <key id="327" parent="297" name="options_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17214</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1069</StateNumber>
       <UnderlyingIndexId>17213</UnderlyingIndexId>
     </key>
-    <check id="327" parent="298" name="questions_difficulty_check">
+    <check id="328" parent="298" name="questions_difficulty_check">
       <ColNames>difficulty</ColNames>
       <ObjectId>17219</ObjectId>
       <Predicate>(difficulty)::text = ANY ((ARRAY[&apos;EASY&apos;::character varying, &apos;MEDIUM&apos;::character varying, &apos;HARD&apos;::character varying])::text[])</Predicate>
       <StateNumber>1070</StateNumber>
     </check>
-    <check id="328" parent="298" name="questions_type_check">
+    <check id="329" parent="298" name="questions_type_check">
       <ColNames>type</ColNames>
       <ObjectId>17220</ObjectId>
       <Predicate>(type)::text = ANY ((ARRAY[&apos;MULTICHOICE&apos;::character varying, &apos;SINGLE_CHOICE&apos;::character varying])::text[])</Predicate>
       <StateNumber>1070</StateNumber>
     </check>
-    <column id="329" parent="298" name="id">
+    <column id="330" parent="298" name="id">
       <GeneratedKind>identity-by-default</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4752,40 +4757,53 @@ question_id</ColNames>
       <SequenceId>17215</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="330" parent="298" name="difficulty">
+    <column id="331" parent="298" name="difficulty">
       <Position>2</Position>
       <StateNumber>1070</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="331" parent="298" name="title">
+    <column id="332" parent="298" name="title">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>1070</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="332" parent="298" name="type">
+    <column id="333" parent="298" name="type">
       <Position>4</Position>
       <StateNumber>1070</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="333" parent="298" name="topic_id">
+    <column id="334" parent="298" name="topic_id">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>1070</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="334" parent="298" name="fkdb5p6ukb0v76he4pq87cbymhg">
+    <column id="335" parent="298" name="photo_url">
+      <Position>6</Position>
+      <StateNumber>1161</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="336" parent="298" name="explanation">
+      <DefaultExpression>&apos;Нет объяснения&apos;::character varying</DefaultExpression>
+      <Position>7</Position>
+      <StateNumber>1176</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <foreign-key id="337" parent="298" name="fkdb5p6ukb0v76he4pq87cbymhg">
       <ColNames>topic_id</ColNames>
       <ObjectId>17309</ObjectId>
       <StateNumber>1084</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17246</RefTableId>
     </foreign-key>
-    <index id="335" parent="298" name="questions_pkey">
+    <index id="338" parent="298" name="questions_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17226</ObjectId>
@@ -4794,20 +4812,20 @@ question_id</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="336" parent="298" name="questions_pkey">
+    <key id="339" parent="298" name="questions_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17227</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1070</StateNumber>
       <UnderlyingIndexId>17226</UnderlyingIndexId>
     </key>
-    <check id="337" parent="299" name="subjects_category_check">
+    <check id="340" parent="299" name="subjects_category_check">
       <ColNames>category</ColNames>
       <ObjectId>17349</ObjectId>
       <Predicate>(category)::text = ANY ((ARRAY[&apos;COMPULSORY&apos;::character varying, &apos;PROFILE&apos;::character varying])::text[])</Predicate>
       <StateNumber>1094</StateNumber>
     </check>
-    <column id="338" parent="299" name="id">
+    <column id="341" parent="299" name="id">
       <GeneratedKind>identity-by-default</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4816,20 +4834,20 @@ question_id</ColNames>
       <SequenceId>17228</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="339" parent="299" name="title">
+    <column id="342" parent="299" name="title">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>1071</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="340" parent="299" name="category">
+    <column id="343" parent="299" name="category">
       <Position>3</Position>
       <StateNumber>1094</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <index id="341" parent="299" name="subjects_pkey">
+    <index id="344" parent="299" name="subjects_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17234</ObjectId>
@@ -4838,20 +4856,20 @@ question_id</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="342" parent="299" name="subjects_pkey">
+    <key id="345" parent="299" name="subjects_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17235</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1071</StateNumber>
       <UnderlyingIndexId>17234</UnderlyingIndexId>
     </key>
-    <check id="343" parent="300" name="test_attempts_status_check">
+    <check id="346" parent="300" name="test_attempts_status_check">
       <ColNames>status</ColNames>
       <ObjectId>17240</ObjectId>
       <Predicate>(status)::text = ANY ((ARRAY[&apos;NEW&apos;::character varying, &apos;IN_PROGRESS&apos;::character varying, &apos;DONE&apos;::character varying])::text[])</Predicate>
       <StateNumber>1072</StateNumber>
     </check>
-    <column id="344" parent="300" name="id">
+    <column id="347" parent="300" name="id">
       <GeneratedKind>identity-by-default</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4860,45 +4878,45 @@ question_id</ColNames>
       <SequenceId>17236</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="345" parent="300" name="duration">
+    <column id="348" parent="300" name="duration">
       <Position>2</Position>
       <StateNumber>1072</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="346" parent="300" name="finished_at">
+    <column id="349" parent="300" name="finished_at">
       <Position>3</Position>
       <StateNumber>1072</StateNumber>
       <StoredType>timestamp(6)|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="347" parent="300" name="started_at">
+    <column id="350" parent="300" name="started_at">
       <Position>4</Position>
       <StateNumber>1072</StateNumber>
       <StoredType>timestamp(6)|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="348" parent="300" name="status">
+    <column id="351" parent="300" name="status">
       <Position>5</Position>
       <StateNumber>1072</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="349" parent="300" name="user_id">
+    <column id="352" parent="300" name="user_id">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StateNumber>1072</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="350" parent="300" name="fk6q32269iwnavc4q6o46lwyu3u">
+    <foreign-key id="353" parent="300" name="fk6q32269iwnavc4q6o46lwyu3u">
       <ColNames>user_id</ColNames>
       <ObjectId>17314</ObjectId>
       <StateNumber>1085</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17279</RefTableId>
     </foreign-key>
-    <index id="351" parent="300" name="test_attempts_pkey">
+    <index id="354" parent="300" name="test_attempts_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17243</ObjectId>
@@ -4907,14 +4925,14 @@ question_id</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="352" parent="300" name="test_attempts_pkey">
+    <key id="355" parent="300" name="test_attempts_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17244</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1072</StateNumber>
       <UnderlyingIndexId>17243</UnderlyingIndexId>
     </key>
-    <column id="353" parent="301" name="id">
+    <column id="356" parent="301" name="id">
       <GeneratedKind>identity-by-default</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4923,28 +4941,28 @@ question_id</ColNames>
       <SequenceId>17245</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="354" parent="301" name="title">
+    <column id="357" parent="301" name="title">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>1073</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="355" parent="301" name="subject_id">
+    <column id="358" parent="301" name="subject_id">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>1073</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="356" parent="301" name="fk957k7bkcrurt9uen2242medmq">
+    <foreign-key id="359" parent="301" name="fk957k7bkcrurt9uen2242medmq">
       <ColNames>subject_id</ColNames>
       <ObjectId>17319</ObjectId>
       <StateNumber>1086</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17229</RefTableId>
     </foreign-key>
-    <index id="357" parent="301" name="topics_pkey">
+    <index id="360" parent="301" name="topics_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17252</ObjectId>
@@ -4953,14 +4971,14 @@ question_id</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="358" parent="301" name="topics_pkey">
+    <key id="361" parent="301" name="topics_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17253</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1073</StateNumber>
       <UnderlyingIndexId>17252</UnderlyingIndexId>
     </key>
-    <column id="359" parent="302" name="id">
+    <column id="362" parent="302" name="id">
       <GeneratedKind>identity-by-default</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4969,55 +4987,55 @@ question_id</ColNames>
       <SequenceId>17254</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="360" parent="302" name="is_correct">
+    <column id="363" parent="302" name="is_correct">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>1074</StateNumber>
       <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
-    <column id="361" parent="302" name="option_id">
+    <column id="364" parent="302" name="option_id">
       <Position>3</Position>
       <StateNumber>1074</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="362" parent="302" name="question_id">
+    <column id="365" parent="302" name="question_id">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>1074</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="363" parent="302" name="test_attempt_id">
+    <column id="366" parent="302" name="test_attempt_id">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>1074</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="364" parent="302" name="fk6fc8ftk518v5685pios87gu7j">
+    <foreign-key id="367" parent="302" name="fk6fc8ftk518v5685pios87gu7j">
       <ColNames>option_id</ColNames>
       <ObjectId>17324</ObjectId>
       <StateNumber>1087</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17204</RefTableId>
     </foreign-key>
-    <foreign-key id="365" parent="302" name="fkofppyk5goeun7m6qmr24aeuf8">
+    <foreign-key id="368" parent="302" name="fkofppyk5goeun7m6qmr24aeuf8">
       <ColNames>question_id</ColNames>
       <ObjectId>17329</ObjectId>
       <StateNumber>1088</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17216</RefTableId>
     </foreign-key>
-    <foreign-key id="366" parent="302" name="fkn9knthg5l2edlp4y11i7d7v09">
+    <foreign-key id="369" parent="302" name="fkn9knthg5l2edlp4y11i7d7v09">
       <ColNames>test_attempt_id</ColNames>
       <ObjectId>17334</ObjectId>
       <StateNumber>1089</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17237</RefTableId>
     </foreign-key>
-    <index id="367" parent="302" name="user_answer_pkey">
+    <index id="370" parent="302" name="user_answer_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17262</ObjectId>
@@ -5026,26 +5044,26 @@ question_id</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="368" parent="302" name="user_answer_pkey">
+    <key id="371" parent="302" name="user_answer_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17263</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1074</StateNumber>
       <UnderlyingIndexId>17262</UnderlyingIndexId>
     </key>
-    <check id="369" parent="303" name="user_topic_stats_score_goal_check">
+    <check id="372" parent="303" name="user_topic_stats_score_goal_check">
       <ColNames>score_goal</ColNames>
       <ObjectId>17268</ObjectId>
       <Predicate>score_goal &lt;= (100)::double precision</Predicate>
       <StateNumber>1075</StateNumber>
     </check>
-    <check id="370" parent="303" name="user_topic_stats_success_rate_check">
+    <check id="373" parent="303" name="user_topic_stats_success_rate_check">
       <ColNames>success_rate</ColNames>
       <ObjectId>17269</ObjectId>
       <Predicate>success_rate &lt;= (100)::double precision</Predicate>
       <StateNumber>1075</StateNumber>
     </check>
-    <column id="371" parent="303" name="id">
+    <column id="374" parent="303" name="id">
       <GeneratedKind>identity-by-default</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5054,62 +5072,62 @@ question_id</ColNames>
       <SequenceId>17264</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="372" parent="303" name="correct_answers">
+    <column id="375" parent="303" name="correct_answers">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>1075</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="373" parent="303" name="score_goal">
+    <column id="376" parent="303" name="score_goal">
       <Position>3</Position>
       <StateNumber>1075</StateNumber>
       <StoredType>double precision|0s</StoredType>
       <TypeId>701</TypeId>
     </column>
-    <column id="374" parent="303" name="success_rate">
+    <column id="377" parent="303" name="success_rate">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>1075</StateNumber>
       <StoredType>double precision|0s</StoredType>
       <TypeId>701</TypeId>
     </column>
-    <column id="375" parent="303" name="total_solved">
+    <column id="378" parent="303" name="total_solved">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>1075</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="376" parent="303" name="topic_id">
+    <column id="379" parent="303" name="topic_id">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StateNumber>1075</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="377" parent="303" name="user_id">
+    <column id="380" parent="303" name="user_id">
       <NotNull>1</NotNull>
       <Position>7</Position>
       <StateNumber>1075</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <foreign-key id="378" parent="303" name="fkpo1bx1kgbvx84h3usw92vit9f">
+    <foreign-key id="381" parent="303" name="fkpo1bx1kgbvx84h3usw92vit9f">
       <ColNames>topic_id</ColNames>
       <ObjectId>17339</ObjectId>
       <StateNumber>1090</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17246</RefTableId>
     </foreign-key>
-    <foreign-key id="379" parent="303" name="fkddvn2ouq9lgi4iqqsmodckh85">
+    <foreign-key id="382" parent="303" name="fkddvn2ouq9lgi4iqqsmodckh85">
       <ColNames>user_id</ColNames>
       <ObjectId>17344</ObjectId>
       <StateNumber>1091</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>17279</RefTableId>
     </foreign-key>
-    <index id="380" parent="303" name="user_topic_stats_pkey">
+    <index id="383" parent="303" name="user_topic_stats_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17276</ObjectId>
@@ -5118,7 +5136,7 @@ question_id</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="381" parent="303" name="ukea1ld70mpwvuhw0xkexemdaha">
+    <index id="384" parent="303" name="ukea1ld70mpwvuhw0xkexemdaha">
       <ColNames>user_id
 topic_id</ColNames>
       <ObjectId>17292</ObjectId>
@@ -5126,19 +5144,19 @@ topic_id</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="382" parent="303" name="user_topic_stats_pkey">
+    <key id="385" parent="303" name="user_topic_stats_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17277</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1075</StateNumber>
       <UnderlyingIndexId>17276</UnderlyingIndexId>
     </key>
-    <key id="383" parent="303" name="ukea1ld70mpwvuhw0xkexemdaha">
+    <key id="386" parent="303" name="ukea1ld70mpwvuhw0xkexemdaha">
       <ObjectId>17293</ObjectId>
       <StateNumber>1080</StateNumber>
       <UnderlyingIndexId>17292</UnderlyingIndexId>
     </key>
-    <column id="384" parent="304" name="id">
+    <column id="387" parent="304" name="id">
       <GeneratedKind>identity-by-default</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5147,34 +5165,34 @@ topic_id</ColNames>
       <SequenceId>17278</SequenceId>
       <TypeId>20</TypeId>
     </column>
-    <column id="385" parent="304" name="email">
+    <column id="388" parent="304" name="email">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>1076</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="386" parent="304" name="password">
+    <column id="389" parent="304" name="password">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>1076</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="387" parent="304" name="username">
+    <column id="390" parent="304" name="username">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>1076</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="388" parent="304" name="token">
+    <column id="391" parent="304" name="token">
       <Position>5</Position>
       <StateNumber>1093</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <index id="389" parent="304" name="users_pkey">
+    <index id="392" parent="304" name="users_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17288</ObjectId>
@@ -5183,7 +5201,7 @@ topic_id</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="390" parent="304" name="users_pkey">
+    <key id="393" parent="304" name="users_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>17289</ObjectId>
       <Primary>1</Primary>

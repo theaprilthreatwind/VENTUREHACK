@@ -1,19 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
 
 import { useLang } from "@/shared/i18n";
 
 /**
  * Кнопка «Вопрос N из M», открывающая вверх панель с сеткой номеров
- * вопросов для свободного перехода к любому заданию.
+ * вопросов для свободного перехода к любому заданию, и кнопкой завершения.
  *
  * @param {{
  *   currentIndex: number,
  *   questions: Array<{ id: number|string }>,
  *   answeredQuestionIds: Set<string>,
  *   onSelect: (index: number) => void,
+ *   onFinish: () => void,
+ *   isFinishing?: boolean,
  * }} props
  */
 export function QuestionNavigator({
@@ -21,6 +23,8 @@ export function QuestionNavigator({
   questions,
   answeredQuestionIds,
   onSelect,
+  onFinish,
+  isFinishing = false,
 }) {
   const [isOpen, setOpen] = useState(false);
   const total = questions.length;
@@ -29,6 +33,11 @@ export function QuestionNavigator({
   const handleSelect = (index) => {
     onSelect(index);
     setOpen(false);
+  };
+
+  const handleFinish = () => {
+    setOpen(false);
+    onFinish();
   };
 
   return (
@@ -91,6 +100,19 @@ export function QuestionNavigator({
                 );
               })}
             </div>
+            <button
+              type="button"
+              onClick={handleFinish}
+              disabled={isFinishing}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isFinishing ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+              )}
+              {isFinishing ? t("session.finishing") : t("session.finish")}
+            </button>
           </div>
         </>
       )}

@@ -5,6 +5,7 @@ import com.example.ent.dto.TestResultDto;
 import com.example.ent.dto.TestSessionDto;
 import com.example.ent.entity.*;
 import com.example.ent.enums.TestStatus;
+import com.example.ent.exceptions.TestNotFoundException;
 import com.example.ent.exceptions.UserNotFoundException;
 import com.example.ent.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -74,25 +75,22 @@ public class TestService {
         TestAttempt attempt = testAttemptRepository.findById(attemptId)
                 .orElseThrow(() -> new IllegalArgumentException("Сессия не найдена: " + attemptId));
 
-        // Идемпотентность: если тест уже завершён — возвращаем существующий результат
-        if (attempt.getStatus() == TestStatus.DONE) {
+        if (attempt.getStatus() == TestStatus.SUBMITTED) {
             List<UserAnswer> existingAnswers = userAnswerRepository.findByTestAttemptId(attemptId);
             long totalQ = existingAnswers.size();
             long correctA = existingAnswers.stream().filter(UserAnswer::isCorrect).count();
             return new TestResultDto(totalQ, correctA, attempt.getStartedAt(), attempt.getFinishedAt());
         }
 
-        attempt.setStatus(TestStatus.DONE);
+        attempt.setStatus(TestStatus.SUBMITTED);
         attempt.setFinishedAt(LocalDateTime.now());
         testAttemptRepository.save(attempt);
 
-        // findByTestAttemptId теперь делает JOIN FETCH question + topic
         List<UserAnswer> answers = userAnswerRepository.findByTestAttemptId(attemptId);
 
         long totalQuestions = answers.size();
         long correctAnswers = answers.stream().filter(UserAnswer::isCorrect).count();
 
-        // Явно загружаем user через репозиторий — избегаем LazyInitializationException
         User user = userRepository.findById(attempt.getUser().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
 
@@ -141,5 +139,20 @@ public class TestService {
         }
 
         return questionRepository.findQuestionsForSession(topicIds, difficultyStrings, count);
+    }
+
+    @Transactional
+    public TestAttempt updateTestStatus(Long attemptId, String statusStr) {
+        TestAttempt attempt = testAttemptRepository.findById(attemptId)
+                .orElseThrow(() -> new TestNotFoundException("Тестовая попытка с ID " + attemptId + " не найдена"));
+
+        TestStatus newStatus = TestStatus.valueOf(statusStr.toUpperCase());
+        attempt.setStatus(newStatus);
+
+        if (newStatus == TestStatus.SUBMITTED || newStatus == TestStatus.CANCELLED) {
+            attempt.setFinishedAt(LocalDateTime.now());
+        }
+
+        return testAttemptRepository.save(attempt);
     }
 }
