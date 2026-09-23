@@ -6,7 +6,7 @@ import { useCurrentUser } from "@/entities/user";
 import { saveAttempt } from "@/entities/session";
 
 /**
- * Создаёт попытку на backend (`POST /api/practice_page/start`) и переходит
+ * Создаёт попытку на backend (`POST /api/practice-page/start`) и переходит
  * к прохождению. Без авторизованного пользователя отправляет на /auth.
  */
 export function useStartPracticeSession() {
@@ -29,6 +29,6 @@ export function useStartPracticeSession() {
     });
 
     saveAttempt(attemptId);
-    router.push("/pactice/question");
+    router.push("/practice/question");
   };
 }

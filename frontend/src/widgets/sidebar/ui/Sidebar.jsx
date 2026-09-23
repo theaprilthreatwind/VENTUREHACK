@@ -18,7 +18,7 @@ import {
 const menuItems = [
   { label: "Главная", href: "/dashboard", icon: Home },
   { label: "Практика", href: "/practice", icon: BookOpen },
-  { label: "Банк вопросов", href: "/bank", icon: Layers, badge: "Бесплатно" },
+  { label: "Банк вопросов", href: "/question-bank", icon: Layers, badge: "Бесплатно" },
   { label: "План подготовки", href: "/plan", icon: Sparkles, badge: "AI" },
 ];
 
