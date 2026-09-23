@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, Loader2 } from "lucide-react";
 
@@ -33,6 +34,7 @@ function NotFound() {
 }
 
 export function ActiveSessionPage() {
+  const router = useRouter();
   const {
     session,
     currentQuestion,
@@ -41,8 +43,10 @@ export function ActiveSessionPage() {
     total,
     selectedOptionId,
     isSubmitting,
+    isFinishing,
     error,
     submitAnswer,
+    finishAttempt,
     goNext,
     goPrev,
     goTo,
@@ -62,6 +66,15 @@ export function ActiveSessionPage() {
     currentQuestion.options?.find((option) => option.correct)?.id ?? null;
   const canAnswer = selectedOptionId != null && !isSubmitting && !currentAnswer;
   const answeredQuestionIds = new Set(Object.keys(session?.answers ?? {}));
+
+  const runFinish = async () => {
+    const result = await finishAttempt();
+    if (result) router.push("/practice/result");
+  };
+
+  const handleFinishClick = () => {
+    runFinish();
+  };
 
   return (
     <div className="mx-auto w-full max-w-3xl">
@@ -126,15 +139,31 @@ export function ActiveSessionPage() {
             )}
             {isSubmitting ? "Проверяем…" : "Проверить"}
           </button>
-          <button
-            type="button"
-            onClick={goNext}
-            disabled={isLast}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-slate-900 bg-white px-6 py-2.5 text-sm font-bold text-slate-900 transition-all hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-900 sm:flex-none"
-          >
-            Далее
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </button>
+          {isLast ? (
+            <button
+              type="button"
+              onClick={handleFinishClick}
+              disabled={isSubmitting || isFinishing}
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
+            >
+              {isFinishing ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+              )}
+              {isFinishing ? "Завершаем…" : "Завершить"}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={isSubmitting}
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-slate-900 bg-white px-6 py-2.5 text-sm font-bold text-slate-900 transition-all hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-900 sm:flex-none"
+            >
+              Далее
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </button>
+          )}
         </div>
       </div>
     </div>
