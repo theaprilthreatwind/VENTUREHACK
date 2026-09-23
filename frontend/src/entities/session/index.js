@@ -1,1 +1,7 @@
-export { saveAttempt, parseAttempt } from "./model/session";
+export {
+  clearSession,
+  parseSession,
+  readSession,
+  saveSession,
+  saveSessionAnswer,
+} from "./model/session";

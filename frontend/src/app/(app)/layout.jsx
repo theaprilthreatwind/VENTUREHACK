@@ -4,7 +4,7 @@ import { Sidebar } from "@/widgets/sidebar";
 
 export default function AppLayout({ children }) {
   return (
-    <div className="min-h-screen lg:pl-72">
+    <div className="min-h-screen dark:bg-slate-950 lg:pl-72">
       <Sidebar />
       <div className="flex min-h-screen flex-col pl-9 lg:pl-0">
         <Header />

@@ -35,11 +35,11 @@ export default function Header() {
     <header className="px-4 pt-6 sm:px-6 lg:px-12 lg:pt-8">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
             {base.title}
           </h1>
           {subtitle && (
-            <p className="mt-1 text-sm font-medium text-slate-500">{subtitle}</p>
+            <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">{subtitle}</p>
           )}
         </div>
 
@@ -54,11 +54,11 @@ export default function Header() {
           )}
           <button
             type="button"
-            className="relative rounded-full border border-transparent p-2.5 text-slate-500 transition-all hover:border-slate-200 hover:bg-white hover:text-slate-800"
+            className="relative rounded-full border border-transparent p-2.5 text-slate-500 transition-all hover:border-slate-200 hover:bg-white hover:text-slate-800 dark:text-slate-400 dark:hover:border-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
             aria-label="Уведомления"
           >
             <Bell className="h-5 w-5" />
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white" />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white dark:ring-slate-950" />
           </button>
 
           {user && (

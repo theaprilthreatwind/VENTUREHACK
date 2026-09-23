@@ -5,7 +5,7 @@ import { getSubjectsOverview } from "@/shared/api";
 
 /**
  * Каталог предметов с темами (`GET /api/subjects/overview`).
- * В development данные приходят из mockApiService, в production — с backend.
+ * Данные приходят с backend через `@/shared/api`.
  */
 export function useSubjectsOverview() {
   const [subjects, setSubjects] = useState([]);
