@@ -7,4 +7,5 @@ export const STORAGE_KEYS = {
   targetScore: "entuz_target_score",
   prefs: "entuz_prefs",
   lang: "entuz_lang",
+  notifications: "entuz_notifications",
 };

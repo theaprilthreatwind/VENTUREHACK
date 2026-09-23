@@ -2,11 +2,11 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Bell } from "lucide-react";
 import { useCurrentUser } from "@/entities/user";
 import { LanguageSwitcher, useLang } from "@/shared/i18n";
 import { useLocalStorage } from "@/shared/lib";
 import { STORAGE_KEYS } from "@/shared/config";
+import { NotificationsBell } from "./NotificationsBell";
 
 export default function Header() {
   const pathname = usePathname();
@@ -49,14 +49,7 @@ export default function Header() {
             </Link>
           )}
           <LanguageSwitcher />
-          <button
-            type="button"
-            className="relative rounded-full border border-transparent p-2.5 text-slate-500 transition-all hover:border-slate-200 hover:bg-white hover:text-slate-800 dark:text-slate-400 dark:hover:border-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
-            aria-label={t("header.notifications")}
-          >
-            <Bell className="h-5 w-5" />
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white dark:ring-slate-950" />
-          </button>
+          <NotificationsBell />
 
           {user && (
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#131926] text-sm font-bold text-white">

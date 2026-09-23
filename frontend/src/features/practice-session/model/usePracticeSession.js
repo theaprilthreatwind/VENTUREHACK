@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { finishPractice, saveAnswer } from "@/shared/api";
+import { addNotification } from "@/entities/notification";
 import {
   parseSession,
   readLastResult,
@@ -127,6 +128,26 @@ export function usePracticeSession() {
         serverStartedAt: server?.startedAt,
         serverFinishedAt: server?.finishedAt,
       });
+      addNotification({
+        id: `result-${session.attemptId}`,
+        type: "result",
+        titleKey: "notifications.resultTitle",
+        key: "notifications.resultText",
+        vars: {
+          correct: correctAnswers,
+          total,
+          percent: total > 0 ? Math.round((correctAnswers / total) * 100) : 0,
+        },
+      });
+      if (total > 0 && correctAnswers === total) {
+        addNotification({
+          id: `perfect-${session.attemptId}`,
+          type: "achievement",
+          titleKey: "notifications.perfectTitle",
+          key: "notifications.perfectText",
+          vars: { total },
+        });
+      }
       setFinished(true);
       return result;
     } catch (requestError) {
