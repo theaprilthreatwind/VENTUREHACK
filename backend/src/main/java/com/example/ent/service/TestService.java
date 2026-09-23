@@ -46,6 +46,31 @@ public class TestService {
     }
 
     @Transactional
+    public TestSessionDto startSmartAdaptiveTest(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+
+        List<Long> weakTopicIds = statsRepository.findTop3ByUserIdOrderBySuccessRateAsc(userId)
+                .stream()
+                .map(stats -> stats.getTopic().getId())
+                .toList();
+
+        if (weakTopicIds.isEmpty()) {
+            throw new IllegalStateException("Недостаточно данных для умного теста. Решите хотя бы пару обычных тестов");
+        }
+
+        TestAttempt attempt = new TestAttempt();
+        attempt.setUser(user);
+        attempt.setStatus(TestStatus.IN_PROGRESS);
+        attempt.setStartedAt(LocalDateTime.now());
+        attempt = testAttemptRepository.save(attempt);
+
+        List<Question> questions = questionRepository.findRandomByTopicIds(weakTopicIds, 20);
+
+        return new TestSessionDto(attempt.getId(), questions);
+    }
+
+    @Transactional
     public UserAnswer submitAnswer(Long attemptId, Long questionId, Long optionId) {
         TestAttempt attempt = testAttemptRepository.findById(attemptId)
                 .orElseThrow(() -> new IllegalArgumentException("Сессия не найдена"));

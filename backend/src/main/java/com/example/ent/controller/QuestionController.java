@@ -4,6 +4,7 @@ import com.example.ent.dto.QuestionResponseDto;
 import com.example.ent.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,10 +27,19 @@ public class QuestionController {
         List<QuestionResponseDto> response = questionService.getQuestions(
                 subjectId,
                 topicIds,
-                difficulty,
-                PageRequest.of(page, size)
+                difficulty
         );
         return response;
+    }
+
+    @PatchMapping("/{id}/explanation")
+    public QuestionResponseDto explainOption(
+            @PathVariable Long id,
+            @RequestParam Long optionId) {
+
+        String wrongAnswer = questionService.getAnswer(optionId);
+        QuestionResponseDto updatedQuestion = questionService.generateAndSaveExplanation(id, wrongAnswer);
+        return updatedQuestion;
     }
 
     @PatchMapping("/{id}/photo-url")

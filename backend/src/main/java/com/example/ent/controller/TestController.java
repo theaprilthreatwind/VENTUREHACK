@@ -28,6 +28,12 @@ public class TestController {
         return testService.startTest(userId, sessionRequest);
     }
 
+    @PostMapping("/start/adaptive")
+    public TestSessionDto startAdaptiveTest(@RequestParam Long userId, HttpServletRequest request) {
+        log.info("Выполнен запрос по эндпоинту: '{} {}', Строка параметров запроса: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString());
+        return testService.startSmartAdaptiveTest(userId);
+    }
+
     @PostMapping("/{attemptId}/answers")
     public UserAnswer submitAnswer(@PathVariable Long attemptId,
                                    @RequestBody AnswerSubmitDto answerRequest,

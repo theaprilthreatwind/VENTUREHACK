@@ -31,11 +31,15 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query("select q FROM Question q where " +
             "(:subjectId is null or q.topic.subject.id = :subjectId) and " +
             "(:difficulty is null or q.difficulty = :difficulty) and " +
-            "(COALESCE(:topicIds, null) is null or q.topic.id in :topicIds)")
-    Page findFilteredQuestions(
+            "(coalesce(:topicIds, null) is null or q.topic.id in :topicIds)")
+    List<Question> findFilteredQuestions(
             @Param("subjectId") Long subjectId,
             @Param("topicIds") List<Long> topicIds,
-            @Param("difficulty") String difficulty,
-            Pageable pageable
+            @Param("difficulty") String difficulty
     );
+
+    @Query("select q from Question q where q.topic.id in :topicIds order by random() limit :limit")
+    List<Question> findRandomByTopicIds(@Param("topicIds") List topicIds, @Param("limit") int limit);
+
+    Long id(Long id);
 }

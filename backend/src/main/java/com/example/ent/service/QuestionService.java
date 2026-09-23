@@ -3,10 +3,9 @@ package com.example.ent.service;
 import com.example.ent.dto.QuestionResponseDto;
 import com.example.ent.entity.Option;
 import com.example.ent.entity.Question;
+import com.example.ent.repository.OptionRepository;
 import com.example.ent.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,22 +16,14 @@ import java.util.List;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
+    private final AiAdvisorService advisorService;
+    private final OptionRepository optionRepository;
 
     @Transactional(readOnly = true)
-    public List<QuestionResponseDto> getQuestions(Long subjectId, List<Long> topicIds, String difficulty, Pageable pageable) {
-
+    public List<QuestionResponseDto> getQuestions(Long subjectId, List topicIds, String difficulty) {
         List<Long> safeTopicIds = (topicIds != null && topicIds.isEmpty()) ? null : topicIds;
-
-        Page<Question> questionsPage = questionRepository.findFilteredQuestions(
-                subjectId,
-                safeTopicIds,
-                difficulty,
-                pageable
-        );
-
-        return questionsPage.stream()
-                .map(this::mapToResponse)
-                .toList();
+        List<Question> questions = questionRepository.findFilteredQuestions(subjectId, safeTopicIds, difficulty);
+        return questions.stream().map(QuestionService::mapToResponse).toList();
     }
 
     @Transactional
@@ -41,30 +32,31 @@ public class QuestionService {
                 .orElseThrow(() -> new IllegalArgumentException("Вопрос с ID " + questionId + " не найден"));
 
         question.setPhotoUrl(photoUrl);
-        questionRepository.save(question);
-        List<Option> options = question.getOptions();
-
-        List<Long> optionIds = options.stream()
-                .map(Option::getId)
-                .toList();
-        return new QuestionResponseDto(
-                question.getId(),
-                question.getTitle(),
-                question.getExplanation(),
-                String.valueOf(question.getType()),
-                String.valueOf(question.getDifficulty()),
-                question.getPhotoUrl(),
-                optionIds
-        );
+        return mapToResponse(question);
     }
 
-    private QuestionResponseDto mapToResponse(Question question) {
-        List<Option> options = question.getOptions();
+    @Transactional
+    public QuestionResponseDto generateAndSaveExplanation(Long questionId, String userWrongAnswer) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new IllegalArgumentException("Вопрос с ID " + questionId + " не найден"));
 
-        List<Long> optionIds = options.stream()
+        String explanation = advisorService.explainMistake(question, userWrongAnswer);
+        question.setExplanation(explanation);
+
+        return mapToResponse(question);
+    }
+
+    public String getAnswer(Long optionId) {
+        return optionRepository.findById(optionId).get().getText();
+    }
+
+    private static QuestionResponseDto mapToResponse(Question question) {
+        List<Long> optionIds = question.getOptions().stream()
                 .map(Option::getId)
                 .toList();
-        return new QuestionResponseDto(question.getId(),
+
+        return new QuestionResponseDto(
+                question.getId(),
                 question.getTitle(),
                 question.getExplanation(),
                 String.valueOf(question.getType()),

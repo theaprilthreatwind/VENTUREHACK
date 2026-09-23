@@ -43,7 +43,6 @@ INSERT INTO topics (id, title, subject_id) VALUES
   (501, 'Механика',                         5),
   (502, 'Электричество и магнетизм',        5)
 ON CONFLICT (id) DO NOTHING;
-
 -- ---------------------------------------------------------------------------
 -- Вопросы
 -- ---------------------------------------------------------------------------
@@ -323,16 +322,10 @@ INSERT INTO options (id, text, is_correct, explanation, photo_url, question_id) 
   (168, '16 Ом', FALSE, '', NULL, 42)
 ON CONFLICT (id) DO NOTHING;
 
--- ---------------------------------------------------------------------------
--- Демо-пользователь для быстрого входа (email: user@example.com, пароль: password)
--- ---------------------------------------------------------------------------
 INSERT INTO users (id, email, password, username, token) VALUES
   (1, 'user@example.com', 'password', 'Бейбарыс', 'seed-token-1')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO NOTHING;;
 
--- ---------------------------------------------------------------------------
--- Поднимаем последовательности, чтобы новые сущности не конфликтовали с id
--- ---------------------------------------------------------------------------
 SELECT setval('subjects_id_seq',  (SELECT COALESCE(MAX(id), 1) FROM subjects));
 SELECT setval('topics_id_seq',    (SELECT COALESCE(MAX(id), 1) FROM topics));
 SELECT setval('questions_id_seq', (SELECT COALESCE(MAX(id), 1) FROM questions));

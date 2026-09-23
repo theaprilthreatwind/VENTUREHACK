@@ -1,0 +1,14 @@
+Index: backend/src/main/java/com/example/ent/WebConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/com/example/ent/WebConfig.java b/backend/src/main/java/com/example/ent/WebConfig.java
+new file mode 100644
+--- /dev/null	(date 1790148243888)
++++ b/backend/src/main/java/com/example/ent/WebConfig.java	(date 1790148243888)
+@@ -0,0 +1,4 @@
++package com.example.ent;
++
++public class WebConfig {
++}
