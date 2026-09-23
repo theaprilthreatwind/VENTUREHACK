@@ -1,6 +1,9 @@
+"use client";
+
 import { CheckCircle2, XCircle } from "lucide-react";
 
 import { MathText } from "@/shared/ui";
+import { useLang } from "@/shared/i18n";
 
 /**
  * Вердикт по ответу: верно/неверно и пояснение.
@@ -8,6 +11,8 @@ import { MathText } from "@/shared/ui";
  * @param {{ correct: boolean, explanation?: string }} props
  */
 export function VerdictPanel({ correct, explanation }) {
+  const { t } = useLang();
+
   return (
     <div
       role="status"
@@ -27,7 +32,7 @@ export function VerdictPanel({ correct, explanation }) {
         ) : (
           <XCircle className="h-4 w-4" aria-hidden="true" />
         )}
-        {correct ? "Верно" : "Неверно"}
+        {correct ? t("session.correct") : t("session.incorrect")}
       </p>
 
       {explanation && (

@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 
 import { saveAnswer } from "@/shared/api";
 import { parseSession, saveSessionAnswer } from "@/entities/session";
+import { resolveText } from "@/shared/i18n";
 import { useLocalStorage } from "@/shared/lib";
 import { STORAGE_KEYS } from "@/shared/config";
 
@@ -68,7 +69,7 @@ export function usePracticeSession() {
         explanation: result.explanation,
       });
     } catch (requestError) {
-      setError(requestError.message ?? "Не удалось отправить ответ");
+      setError(requestError.message ?? resolveText("errors.submitAnswer"));
     } finally {
       setSubmitting(false);
     }

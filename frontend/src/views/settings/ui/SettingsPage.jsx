@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { useCurrentUser } from "@/entities/user";
+import { useLang } from "@/shared/i18n";
 import { storageGet, storageSet } from "@/shared/lib/storage";
 import { STORAGE_KEYS } from "@/shared/config";
 
@@ -111,6 +112,8 @@ function ToggleRow({ label, description, checked, onChange, id }) {
 
 /** Модальное подтверждение */
 function ConfirmModal({ title, description, confirmLabel, onConfirm, onCancel, danger = false }) {
+  const { t } = useLang();
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div
@@ -123,7 +126,7 @@ function ConfirmModal({ title, description, confirmLabel, onConfirm, onCancel, d
           type="button"
           onClick={onCancel}
           className="absolute right-4 top-4 rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:text-slate-500 dark:hover:bg-slate-800"
-          aria-label="Закрыть"
+          aria-label={t("common.close")}
         >
           <X className="h-4 w-4" />
         </button>
@@ -147,7 +150,7 @@ function ConfirmModal({ title, description, confirmLabel, onConfirm, onCancel, d
             onClick={onCancel}
             className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
           >
-            Отмена
+            {t("common.cancel")}
           </button>
           <button
             type="button"
@@ -176,6 +179,7 @@ const subscribeNever = () => () => {};
 export function SettingsPage() {
   const router = useRouter();
   const { user, logout } = useCurrentUser();
+  const { t } = useLang();
 
   // ── Гидрация ──
   // Стабильный флаг «компонент смонтирован на клиенте» без setState в effect:
@@ -250,9 +254,9 @@ export function SettingsPage() {
       {/* Модалки */}
       {showLogout && (
         <ConfirmModal
-          title="Выйти из аккаунта?"
-          description="Все данные сессии будут очищены. Вы будете перенаправлены на страницу входа."
-          confirmLabel="Выйти"
+          title={t("settings.logoutModalTitle")}
+          description={t("settings.logoutModalDesc")}
+          confirmLabel={t("settings.logoutConfirm")}
           danger
           onConfirm={handleLogout}
           onCancel={() => setShowLogout(false)}
@@ -260,9 +264,9 @@ export function SettingsPage() {
       )}
       {showResetKey && (
         <ConfirmModal
-          title="Сбросить сессию?"
-          description="Текущая активная сессия практики будет удалена. Прогресс незавершённого теста будет потерян."
-          confirmLabel="Сбросить"
+          title={t("settings.resetModalTitle")}
+          description={t("settings.resetModalDesc")}
+          confirmLabel={t("settings.resetConfirm")}
           onConfirm={handleResetKey}
           onCancel={() => setShowResetKey(false)}
         />
@@ -272,10 +276,10 @@ export function SettingsPage() {
         {/* Заголовок */}
         <div className="mb-8">
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Настройки
+            {t("settings.title")}
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Управление профилем, предпочтениями и безопасностью аккаунта.
+            {t("settings.subtitle")}
           </p>
         </div>
 
@@ -284,15 +288,15 @@ export function SettingsPage() {
           <Card>
             <SectionHeader
               icon={User}
-              title="Профиль пользователя"
-              description="Ваши личные данные и идентификатор аккаунта."
+              title={t("settings.profileTitle")}
+              description={t("settings.profileDesc")}
             />
 
             {/* ID с кнопкой копирования */}
             <div className="mb-4 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 dark:bg-slate-800/60">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  ID пользователя
+                  {t("settings.userId")}
                 </p>
                 <p className="mt-0.5 font-mono text-sm font-semibold text-slate-800 dark:text-slate-200">
                   {displayId}
@@ -301,7 +305,7 @@ export function SettingsPage() {
               <button
                 type="button"
                 onClick={copyUserId}
-                aria-label="Скопировать ID"
+                aria-label={t("settings.copyId")}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                   copied
                     ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300"
@@ -311,12 +315,12 @@ export function SettingsPage() {
                 {copied ? (
                   <>
                     <Check className="h-3.5 w-3.5" />
-                    Скопировано
+                    {t("settings.copied")}
                   </>
                 ) : (
                   <>
                     <Copy className="h-3.5 w-3.5" />
-                    Копировать
+                    {t("settings.copy")}
                   </>
                 )}
               </button>
@@ -325,9 +329,9 @@ export function SettingsPage() {
             {/* Поля профиля */}
             <div className="divide-y divide-slate-100 dark:divide-slate-800">
               {[
-                { label: "Email", value: displayEmail },
-                { label: "Имя пользователя", value: displayName },
-                { label: "Роль", value: "Студент" },
+                { label: t("settings.email"), value: displayEmail },
+                { label: t("settings.username"), value: displayName },
+                { label: t("settings.role"), value: t("settings.student") },
               ].map(({ label, value }) => (
                 <div key={label} className="flex items-center justify-between py-3">
                   <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span>
@@ -341,22 +345,22 @@ export function SettingsPage() {
           <Card>
             <SectionHeader
               icon={Bell}
-              title="Уведомления и предпочтения"
-              description="Управление оповещениями и темой оформления."
+              title={t("settings.prefsTitle")}
+              description={t("settings.prefsDesc")}
             />
 
             <div className="divide-y divide-slate-100 dark:divide-slate-800">
               <ToggleRow
                 id="email-alerts"
-                label="Email-уведомления"
-                description="Получать важные обновления на почту"
+                label={t("settings.emailAlerts")}
+                description={t("settings.emailAlertsDesc")}
                 checked={prefs.emailAlerts}
                 onChange={(v) => updatePref("emailAlerts", v)}
               />
               <ToggleRow
                 id="inapp-alerts"
-                label="Уведомления в приложении"
-                description="Push-уведомления внутри платформы"
+                label={t("settings.inAppAlerts")}
+                description={t("settings.inAppAlertsDesc")}
                 checked={prefs.inAppAlerts}
                 onChange={(v) => updatePref("inAppAlerts", v)}
               />
@@ -365,28 +369,28 @@ export function SettingsPage() {
               <div className="flex items-center justify-between gap-4 rounded-xl px-1 py-3">
                 <div>
                   <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
-                    Тема оформления
+                    {t("settings.themeLabel")}
                   </p>
                   <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                    Светлая или тёмная тема
+                    {t("settings.themeDesc")}
                   </p>
                 </div>
                 <div className="flex rounded-xl border border-slate-200 p-1 dark:border-slate-700">
-                  {(["light", "dark"] ).map((t) => {
-                    const Icon = t === "light" ? Sun : Moon;
+                  {(["light", "dark"]).map((theme) => {
+                    const Icon = theme === "light" ? Sun : Moon;
                     return (
                       <button
-                        key={t}
+                        key={theme}
                         type="button"
-                        onClick={() => updatePref("theme", t)}
+                        onClick={() => updatePref("theme", theme)}
                         className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                          prefs.theme === t
+                          prefs.theme === theme
                             ? "bg-[#131926] text-white shadow-sm"
                             : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"
                         }`}
                       >
                         <Icon className="h-3.5 w-3.5" />
-                        {t === "light" ? "Светлая" : "Тёмная"}
+                        {theme === "light" ? t("settings.light") : t("settings.dark")}
                       </button>
                     );
                   })}
@@ -399,14 +403,14 @@ export function SettingsPage() {
           <Card>
             <SectionHeader
               icon={Sliders}
-              title="Параметры обучения"
-              description="Настройка сложности и чувствительности системы."
+              title={t("settings.studyTitle")}
+              description={t("settings.studyDesc")}
             />
 
             <div className="px-1">
               <div className="mb-2 flex items-center justify-between">
                 <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
-                  Порог сложности вопросов
+                  {t("settings.riskLevel")}
                 </p>
                 <span className="rounded-lg bg-slate-100 px-2.5 py-1 text-sm font-bold text-slate-900 dark:bg-slate-800 dark:text-white">
                   {prefs.riskThreshold}%
@@ -420,11 +424,11 @@ export function SettingsPage() {
                 value={prefs.riskThreshold}
                 onChange={(e) => updatePref("riskThreshold", Number(e.target.value))}
                 className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-[#131926] dark:bg-slate-700"
-                aria-label="Порог сложности"
+                aria-label={t("settings.riskAria")}
               />
               <div className="mt-1.5 flex justify-between text-[11px] text-slate-400 dark:text-slate-500">
-                <span>Лёгкие</span>
-                <span>Все</span>
+                <span>{t("settings.easy")}</span>
+                <span>{t("settings.all")}</span>
               </div>
             </div>
           </Card>
@@ -433,8 +437,8 @@ export function SettingsPage() {
           <Card className="border-red-100 dark:border-red-900/50">
             <SectionHeader
               icon={Shield}
-              title="Управление аккаунтом"
-              description="Необратимые действия с аккаунтом и сессией."
+              title={t("settings.accountTitle")}
+              description={t("settings.accountDesc")}
             />
 
             <div className="space-y-3">
@@ -448,10 +452,12 @@ export function SettingsPage() {
                   <KeyRound className="h-5 w-5 text-slate-400 group-hover:text-amber-600 dark:text-slate-500 dark:group-hover:text-amber-400" />
                   <div>
                     <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                      {resetDone ? "Сессия сброшена ✓" : "Сбросить активную сессию"}
+                      {resetDone
+                        ? t("settings.resetSessionDone")
+                        : t("settings.resetSession")}
                     </p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Удалить текущий незавершённый тест
+                      {t("settings.resetSessionDesc")}
                     </p>
                   </div>
                 </div>
@@ -468,10 +474,10 @@ export function SettingsPage() {
                   <LogOut className="h-5 w-5 text-red-400 group-hover:text-red-600 dark:text-red-400 dark:group-hover:text-red-300" />
                   <div>
                     <p className="text-sm font-semibold text-red-700 dark:text-red-400">
-                      Выйти из аккаунта
+                      {t("settings.logoutTitle")}
                     </p>
                     <p className="text-xs text-red-400 dark:text-red-500/80">
-                      Очистить сессию и вернуться на страницу входа
+                      {t("settings.logoutDesc")}
                     </p>
                   </div>
                 </div>

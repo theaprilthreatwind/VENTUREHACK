@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/features/theme";
+import { LanguageProvider } from "@/shared/i18n";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 
@@ -15,17 +16,22 @@ try {
     document.documentElement.classList.add("dark");
     document.documentElement.style.colorScheme = "dark";
   }
+  if (localStorage.getItem("entuz_lang") === "kk") {
+    document.documentElement.lang = "kk";
+  }
 } catch (e) {}
 `;
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ru" className="h-full antialiased">
+    <html lang="ru" className="h-full antialiased" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
       </head>
       <body className="min-h-full">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <LanguageProvider>{children}</LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

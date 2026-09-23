@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
+import { useLang } from "@/shared/i18n";
+
 /**
  * Кнопка «Вопрос N из M», открывающая вверх панель с сеткой номеров
  * вопросов для свободного перехода к любому заданию.
@@ -22,6 +24,7 @@ export function QuestionNavigator({
 }) {
   const [isOpen, setOpen] = useState(false);
   const total = questions.length;
+  const { t } = useLang();
 
   const handleSelect = (index) => {
     onSelect(index);
@@ -37,7 +40,7 @@ export function QuestionNavigator({
         aria-expanded={isOpen}
         className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-900 bg-white px-6 py-2 text-sm font-bold text-slate-900 transition-all hover:bg-slate-50 dark:border-slate-400 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
       >
-        Вопрос {currentIndex + 1} из {total}
+        {t("session.questionOf", { current: currentIndex + 1, total })}
         <ChevronDown
           className={`h-4 w-4 text-slate-800 dark:text-slate-300 transition-transform ${isOpen ? "rotate-180" : ""}`}
           aria-hidden="true"
@@ -48,17 +51,17 @@ export function QuestionNavigator({
         <>
           <button
             type="button"
-            aria-label="Закрыть список вопросов"
+            aria-label={t("session.closeQuestionList")}
             onClick={() => setOpen(false)}
             className="fixed inset-0 z-40 cursor-default"
           />
           <div
             role="dialog"
-            aria-label="Список вопросов"
+            aria-label={t("session.questionList")}
             className="absolute bottom-full left-1/2 z-50 mb-3 w-[min(24rem,90vw)] -translate-x-1/2 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl dark:border-slate-700 dark:bg-slate-900"
           >
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              Перейти к вопросу
+              {t("session.goToQuestion")}
             </p>
             <div className="grid max-h-64 grid-cols-6 gap-2 overflow-y-auto">
               {questions.map((question, index) => {

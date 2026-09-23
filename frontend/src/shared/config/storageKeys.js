@@ -5,4 +5,5 @@ export const STORAGE_KEYS = {
   examDate: "entuz_exam_date",
   targetScore: "entuz_target_score",
   prefs: "entuz_prefs",
+  lang: "entuz_lang",
 };

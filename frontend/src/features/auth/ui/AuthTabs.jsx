@@ -1,9 +1,15 @@
+"use client";
+
+import { useLang } from "@/shared/i18n";
+
 const TABS = [
-  { key: "login", label: "Войти" },
-  { key: "register", label: "Регистрация" },
+  { key: "login", labelKey: "auth.tabLogin" },
+  { key: "register", labelKey: "auth.tabRegister" },
 ];
 
 export function AuthTabs({ mode, onChange }) {
+  const { t } = useLang();
+
   return (
     <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1">
       {TABS.map((tab) => {
@@ -21,7 +27,7 @@ export function AuthTabs({ mode, onChange }) {
                 : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         );
       })}

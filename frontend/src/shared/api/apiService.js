@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "@/shared/config";
+import { resolveText } from "@/shared/i18n";
 
 /* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
@@ -181,7 +182,7 @@ export async function request(path, { method = "GET", body, query, signal } = {}
       signal,
     });
   } catch (cause) {
-    throw new ApiError(`Не удалось выполнить запрос ${method} ${url}`, {
+    throw new ApiError(resolveText("errors.requestFailed", { method, url }), {
       url,
       cause,
     });
@@ -191,7 +192,7 @@ export async function request(path, { method = "GET", body, query, signal } = {}
 
   if (!response.ok) {
     throw new ApiError(
-      `Запрос ${method} ${url} завершился со статусом ${response.status}`,
+      resolveText("errors.requestStatus", { method, url, status: response.status }),
       { status: response.status, data, url }
     );
   }

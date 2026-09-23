@@ -1,14 +1,15 @@
+"use client";
+
 import { Loader2, Play } from "lucide-react";
 
-function pluralizeTopics(count) {
-  const mod10 = count % 10;
-  const mod100 = count % 100;
-  if (mod10 === 1 && mod100 !== 11) return "тема";
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "темы";
-  return "тем";
-}
+import { countWord, useLang } from "@/shared/i18n";
 
 export function SessionActionBar({ topics, questions, canStart, onStart, isPending, error }) {
+  const { t, lang } = useLang();
+
+  const topicsLabel = `${topics} ${countWord(lang, "themes", topics)}`;
+  const questionsLabel = `${questions} ${countWord(lang, "questions", questions)}`;
+
   return (
     <div className="pointer-events-none fixed bottom-6 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2">
       {error && (
@@ -20,7 +21,7 @@ export function SessionActionBar({ topics, questions, canStart, onStart, isPendi
         <div className="flex items-center gap-2 text-xs font-semibold tracking-tight text-slate-800 dark:text-slate-200">
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
           <span>
-            ВЫБРАНО: {topics} {pluralizeTopics(topics)} • {questions} вопр.
+            {t("practice.selectedLabel", { topics: topicsLabel, questions: questionsLabel })}
           </span>
         </div>
         <div className="h-4 w-px bg-slate-200 dark:bg-slate-700" />
@@ -35,7 +36,7 @@ export function SessionActionBar({ topics, questions, canStart, onStart, isPendi
           ) : (
             <Play className="h-3.5 w-3.5 fill-current" />
           )}
-          <span>{isPending ? "Создаём..." : "Начать сессию"}</span>
+          <span>{isPending ? t("practice.pending") : t("practice.startSession")}</span>
         </button>
       </div>
     </div>

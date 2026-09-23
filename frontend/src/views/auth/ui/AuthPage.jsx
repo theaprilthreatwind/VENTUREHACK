@@ -11,6 +11,7 @@ import {
   login,
   register,
 } from "@/features/auth";
+import { LanguageSwitcher, useLang } from "@/shared/i18n";
 
 function ServerError({ message }) {
   if (!message) return null;
@@ -23,6 +24,7 @@ function ServerError({ message }) {
 
 export function AuthPage() {
   const router = useRouter();
+  const { t } = useLang();
 
   const [mode, setMode] = useState("login");
   const [isLoading, setLoading] = useState(false);
@@ -35,7 +37,7 @@ export function AuthPage() {
       await login(values);
       router.push("/dashboard");
     } catch (error) {
-      setServerError(error.message ?? "Не удалось войти");
+      setServerError(error.message ?? t("auth.loginFailed"));
       setLoading(false);
     }
   };
@@ -47,13 +49,17 @@ export function AuthPage() {
       await register(values);
       router.push("/dashboard");
     } catch (error) {
-      setServerError(error.message ?? "Не удалось зарегистрироваться");
+      setServerError(error.message ?? t("auth.signupFailed"));
       setLoading(false);
     }
   };
 
   return (
-    <div className="grid min-h-screen bg-app-bg lg:grid-cols-2">
+    <div className="relative grid min-h-screen bg-app-bg lg:grid-cols-2">
+      <div className="fixed right-4 top-4 z-50">
+        <LanguageSwitcher />
+      </div>
+
       <BrandBanner />
 
       <main className="flex flex-col justify-center px-5 py-10 sm:px-10 lg:px-16">
@@ -78,14 +84,15 @@ export function AuthPage() {
             <ServerError message={serverError} />
 
             <p className="mt-8 text-center text-xs leading-relaxed text-slate-400">
-              Продолжая, вы соглашаетесь с{" "}
+              {t("auth.agreePrefix")}{" "}
               <a href="/terms" className="text-slate-500 underline-offset-2 hover:underline">
-                условиями использования
+                {t("auth.agreeTerms")}
               </a>{" "}
-              и{" "}
+              {t("auth.agreeAnd")}{" "}
               <a href="/privacy" className="text-slate-500 underline-offset-2 hover:underline">
-                политикой конфиденциальности
-              </a>
+                {t("auth.agreePrivacy")}
+              </a>{" "}
+              {t("auth.agreeSuffix")}
             </p>
           </div>
         </div>
