@@ -10,11 +10,11 @@ import { SubjectGroup } from "./SubjectGroup";
 
 export function PracticeBrowser() {
   const browser = usePracticeBrowser();
-  const startPracticeSession = useStartPracticeSession();
+  const { start, isPending, error } = useStartPracticeSession();
 
   const startSession = (topicIds) => {
     const ids = [...topicIds];
-    startPracticeSession({
+    start({
       topicIds: ids,
       questionsCount: browser.countQuestions(ids),
       difficulties: browser.difficulty ? [browser.difficulty] : ["EASY", "MEDIUM", "HARD"],
@@ -59,13 +59,20 @@ export function PracticeBrowser() {
         </div>
 
         {browser.isLoading && (
-          <p className="text-sm text-slate-500">Загрузка предметов…</p>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-16 animate-pulse rounded-2xl border border-slate-200 bg-slate-100"
+              />
+            ))}
+          </div>
         )}
 
         {browser.error && (
-          <p className="text-sm text-red-500">
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-600">
             Не удалось загрузить предметы: {browser.error.message}
-          </p>
+          </div>
         )}
 
         {!browser.isLoading && !browser.error && (
@@ -97,6 +104,8 @@ export function PracticeBrowser() {
         questions={browser.stats.questions}
         canStart={browser.stats.questions > 0}
         onStart={() => startSession(browser.selectedTopics)}
+        isPending={isPending}
+        error={error}
       />
     </>
   );
