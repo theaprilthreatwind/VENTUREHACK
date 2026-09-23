@@ -29,7 +29,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | Icons | `lucide-react` | other icon packs |
 | Validation | Hand-written validators (`features/auth/model/validation.js`); server-side — Jakarta Validation | formik, react-hook-form, zod, yup |
 | UI kit | `@/shared/ui`: `Modal`, `Field`, `TextInput`, `Select` | MUI, Ant, copied shadcn |
-| HTTP | `@/shared/api` (`apiService` / `mockApiService`) | axios, direct `fetch` in components |
+| HTTP | `@/shared/api` (`apiService`) | axios, direct `fetch` in components |
 | Linting | ESLint 9 + `eslint-config-next/core-web-vitals`; `npm run lint` | Prettier (not set up yet) |
 
 ### 1.2 Architecture: Feature-Sliced Design (FSD)
@@ -62,21 +62,20 @@ src/app → src/views → src/widgets → src/features → src/entities → src/
 | Hook with state and logic | `model/` of its slice; shared one — `shared/lib/hooks/` | writing logic directly in JSX |
 | API request | `src/shared/api/apiService.js` + export from `src/shared/api/index.js`; feature-specific — `features/<slice>/api/` | `fetch`/`axios` inside components or hooks |
 | Constants / filter options | `config/` of the slice or `shared/config/` | hardcoding domain data in UI |
-| Mock data | `src/shared/api/mock/fixtures.js` + `mockApiService.js` | fake data baked into components |
+| Domain data (subjects, topics, questions, users) | backend via `@/shared/api` | fake data baked into components |
 
-### 1.4 Data: Mock-First and the Contract
+### 1.4 Data: Backend Contract
 
-- Every request goes through `@/shared/api`; the UI never knows whether it is mock or real backend.
-- A new endpoint = a function in `apiService.js` **and** a matching one in `mockApiService.js` **and** an export from `shared/api/index.js`. Signatures must match exactly.
-- Extend the contract and the mock first, then the UI. The source of truth is `docs/openapi.yaml` (backend); discrepancies are a backend task, not a local workaround.
-- Switch modes via `NEXT_PUBLIC_USE_MOCKS` (see 1.5).
+- Every request goes through `@/shared/api`; the UI never calls `fetch`/`axios` directly.
+- A new endpoint = a function in `apiService.js` **and** an export from `shared/api/index.js`. Signatures must match the backend.
+- The source of truth is `docs/openapi.yaml` (backend); discrepancies are a backend task, not a local workaround.
+- UI code contains no catalog of domain data — it is always loaded from the backend.
 
 ### 1.5 Commands
 
 | Command | Purpose |
 |---|---|
-| `npm run dev:mock` | Development against mocks (default mode for FE) |
-| `npm run dev` | Development against the real backend (forces `NEXT_PUBLIC_USE_MOCKS=false`) |
+| `npm run dev` | Development against the backend |
 | `npm run lint` | ESLint |
 | `npm run build` | Production build (Turbopack) |
 
@@ -166,7 +165,7 @@ These rules override the assistant's training data:
 2. **Installing/updating npm packages** (`npm install`, editing `package.json`, importing an unfamiliar library) without an explicit human request. No library — solve it with React/Tailwind or ask.
 3. **Changing versions of Next.js/React/ESLint/Tailwind or their configs** (`next.config.mjs`, `jsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`) without an explicit request.
 4. **Making HTTP requests directly** (`fetch`, `XMLHttpRequest`, axios) in components or hooks — only via `@/shared/api`.
-5. **Hardcoding domain data** (subjects, topics, questions, users) in the UI — only API or mock fixtures.
+5. **Hardcoding domain data** (subjects, topics, questions, users) in the UI — only via `@/shared/api`.
 6. **Breaking a slice's public API**: removing/renaming `index.js` exports or changing hook signatures/component props without approval.
 7. **Adding TypeScript, CSS modules, styled-components, global state managers, or GraphQL.**
 8. **Introducing new global styles** in `globals.css` without necessity — fine-grained Tailwind utilities are preferred.
@@ -198,7 +197,7 @@ These rules override the assistant's training data:
 - [ ] Loading/error/empty states exist; errors are handled and shown to the user.
 - [ ] Mobile layout is intact; accessibility preserved.
 - [ ] `npm run lint` passes.
-- [ ] Verified against mocks (`npm run dev:mock`); against the real API too, if available.
+- [ ] Verified against the backend API.
 
 ---
 
@@ -406,10 +405,10 @@ export { SessionResultCard } from "./ui/SessionResultCard";
 ### 4.4 Why This Is the Gold Standard
 
 - **FSD:** `model/` owns data and state, `ui/` owns rendering; the public API is a single export from `index.js`.
-- **Data flows only through `@/shared/api`** — the component knows nothing about `fetch` or mocks.
+- **Data flows only through `@/shared/api`** — the component knows nothing about `fetch`.
 - **All four states covered:** loading, error (with retry), empty, success.
 - **Human-readable error handling**: a clear message, `role="alert"` / `role="status"`, and a retry action.
 - **`AbortController`** cancels the request on unmount — no state updates after death.
 - **Project style:** named exports, JSDoc typing, arrow handlers, import order, Tailwind tokens, `aria-*` attributes.
 
-> `getPracticeResult` is an example of a new contract function: while it does not exist in `apiService.js`, add it to `apiService.js` and `mockApiService.js` at the same time (see 1.4), then use it in the UI.
+> `getPracticeResult` is an example of a new contract function: while it does not exist in `apiService.js`, add it to `apiService.js` and export it from `shared/api/index.js` (see 1.4), then use it in the UI.

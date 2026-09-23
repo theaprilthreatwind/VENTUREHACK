@@ -3,13 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NEXT_PUBLIC_USE_MOCKS=false next dev",
-    "build": "cross-env NEXT_PUBLIC_USE_MOCKS=false next build",
-    "start": "cross-env NEXT_PUBLIC_USE_MOCKS=false next start",
-    "mock": "cross-env NEXT_PUBLIC_USE_MOCKS=true next",
-    "dev:mock": "cross-env NEXT_PUBLIC_USE_MOCKS=true next dev",
-    "build:mock": "cross-env NEXT_PUBLIC_USE_MOCKS=true next build",
-    "start:mock": "cross-env NEXT_PUBLIC_USE_MOCKS=true next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "eslint .",
     "test": "node --test"
   },

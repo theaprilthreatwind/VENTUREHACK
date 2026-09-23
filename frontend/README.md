@@ -83,65 +83,16 @@ app → views → widgets → features → entities → shared
 `src/app/(app)/layout.jsx` renders the shared shell from `@/widgets/sidebar` and `@/widgets/header`;
 the root `src/app/layout.jsx` owns `<html>`, `<body>` and `globals.css`.
 
-## Data source — mock в development, backend в production
+## Data source — backend
 
-Все запросы идут через `@/shared/api`. Методы с одинаковой сигнатурой реализованы дважды:
+Все запросы идут через `@/shared/api`:
 
-- `shared/api/apiService.js` — реальный backend (`fetch` по `API_BASE_URL`);
-- `shared/api/mockApiService.js` — mock-ответы той же формы (`shared/api/mock/fixtures.js`).
+- `shared/api/apiService.js` — `fetch` к backend по `API_BASE_URL` (см. `shared/config/api.js`);
+- `shared/api/index.js` — единая точка входа, реэкспортирует `apiService`.
 
-`shared/api/index.js` выбирает реализацию один раз по флагу:
-
-```js
-const impl = IS_MOCK_ENABLED ? mockApiService : realApiService;
-```
-
-Флаг вычисляется в `shared/config/env.js`:
-
-| Условие                     | Источник данных   |
-| --------------------------- | ----------------- |
-| `NEXT_PUBLIC_USE_MOCKS=true`  | mock              |
-| `NEXT_PUBLIC_USE_MOCKS=false` | backend           |
-| не задано, `NODE_ENV=development` | mock        |
-| не задано, `NODE_ENV=production`  | backend     |
-
-### Переключение через npm-скрипты
-
-Флаг `NEXT_PUBLIC_USE_MOCKS` проставляют сами скрипты (через `cross-env`, кросс-платформенно):
-
-| Команда              | Режим Next.js | Источник данных |
-| -------------------- | ------------- | --------------- |
-| `npm run dev`        | dev           | backend         |
-| `npm run mock dev`   | dev           | mock            |
-| `npm run build`      | prod build    | backend         |
-| `npm run mock build` | prod build    | mock            |
-| `npm run start`      | prod server   | backend         |
-| `npm run mock start` | prod server   | mock            |
-
-`mock` — обёртка над `next`: `npm run mock <dev|build|start>` подставляет mock-флаг и передаёт
-команду дальше. Есть и явные алиасы: `npm run dev:mock`, `npm run build:mock`, `npm run start:mock`.
-
-### Дополнительно: `.env.local`
-
-Если запускаешь `next` напрямую (без npm-скриптов) или хочешь зафиксировать настройку локально,
-скопируй `.env.example` в `.env.local`:
-
-```bash
-cp .env.example .env.local
-```
-
-```dotenv
-NEXT_PUBLIC_USE_MOCKS=false
-NEXT_PUBLIC_API_URL=http://localhost:8080
-```
-
-Если флаг не задан нигде, действует дефолт: mock при `NODE_ENV=development`, backend при
-`NODE_ENV=production`.
-
-> **Важно:** `NEXT_PUBLIC_*` инлайнятся на этапе сборки/старта. После смены флага нужно
-> перезапустить `next dev` или пересобрать (`next build`) — «на лету» значение не меняется.
-> Флаг из npm-скрипта имеет приоритет над `.env.local` (Next не перезаписывает уже заданный
-> `process.env`).
+Базовый адрес задаётся переменной `NEXT_PUBLIC_API_URL` (см. `.env`), по умолчанию
+`http://localhost:8080`. Next.js проксирует `/api/*` на этот адрес через rewrites в
+`next.config.mjs`, поэтому браузер ходит на same-origin `/api/*` и CORS не нужен.
 
 Потребители не знают, откуда пришли данные:
 
@@ -152,10 +103,9 @@ const subjects = await getSubjectsOverview();
 const attemptId = await startPractice({ userId, topicIds: [1, 2], questionsCount: 20 });
 ```
 
-> `mockApiService` намеренно **не удаляется** из production-сборки (модуль маленький), но при
-> `IS_MOCK_ENABLED === false` он не вызывается. UI-код не содержит собственного каталога
-> данных: и в development, и в production он читает данные только через `@/shared/api`
-> (`useSubjectsOverview`, `useCurrentUser` и т.д.).
+> Mock-реализация (`mockApiService.js`, `mock/fixtures.js`) удалена — данные всегда приходят с
+> backend. UI-код не содержит собственного каталога данных: он читает данные только через
+> `@/shared/api` (`useSubjectsOverview`, `useCurrentUser` и т.д.).
 
 ## Learn More
 
