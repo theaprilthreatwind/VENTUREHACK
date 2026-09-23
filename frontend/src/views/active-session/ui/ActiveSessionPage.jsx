@@ -48,6 +48,7 @@ export function ActiveSessionPage() {
     selectedOptionId,
     isSubmitting,
     isFinishing,
+    isFinished,
     error,
     submitAnswer,
     finishAttempt,
@@ -137,7 +138,7 @@ export function ActiveSessionPage() {
           answeredQuestionIds={answeredQuestionIds}
           onSelect={goTo}
           onFinish={handleFinishClick}
-          isFinishing={isFinishing}
+          isFinishing={isFinishing || isFinished}
         />
 
         <div className="flex w-full items-center gap-3 sm:w-auto">
@@ -158,7 +159,7 @@ export function ActiveSessionPage() {
             <button
               type="button"
               onClick={handleFinishClick}
-              disabled={isSubmitting || isFinishing}
+              disabled={isSubmitting || isFinishing || isFinished}
               className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
             >
               {isFinishing ? (

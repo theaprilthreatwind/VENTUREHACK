@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { finishPractice, saveAnswer } from "@/shared/api";
 import {
@@ -52,6 +52,8 @@ export function usePracticeSession() {
   const [isFinished, setFinished] = useState(false);
   const [error, setError] = useState("");
   const [flaggedQuestionIds, setFlaggedQuestionIds] = useState(() => new Set());
+  // Синхронная защита от параллельных вызовов finish (быстрый двойной клик).
+  const finishingRef = useRef(false);
 
   const questions = session?.questions ?? [];
   const total = questions.length;
@@ -88,7 +90,7 @@ export function usePracticeSession() {
   }, [session, currentQuestion, currentAnswer, selectedOptionId]);
 
   const finishAttempt = useCallback(async () => {
-    if (!session) return null;
+    if (!session || finishingRef.current) return null;
 
     const existing = readLastResult();
     if (existing && String(existing.attemptId) === String(session.attemptId)) {
@@ -106,6 +108,7 @@ export function usePracticeSession() {
       0
     );
 
+    finishingRef.current = true;
     setError("");
     setFinishing(true);
     try {
@@ -129,6 +132,7 @@ export function usePracticeSession() {
       setError(requestError.message ?? "Не удалось завершить сессию");
       return null;
     } finally {
+      finishingRef.current = false;
       setFinishing(false);
     }
   }, [session, total]);
