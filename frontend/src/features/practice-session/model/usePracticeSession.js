@@ -1,15 +1,21 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
-import { saveAnswer } from "@/shared/api";
-import { parseSession, saveSessionAnswer } from "@/entities/session";
+import { finishPractice, saveAnswer } from "@/shared/api";
+import {
+  parseSession,
+  readLastResult,
+  saveLastResult,
+  saveSessionAnswer,
+} from "@/entities/session";
 import { useLocalStorage } from "@/shared/lib";
 import { STORAGE_KEYS } from "@/shared/config";
 
 /**
  * Логика экрана прохождения сессии: текущий вопрос, выбор варианта,
- * отправка ответа на backend, отметка «на проверку» и навигация N/M.
+ * отправка ответа на backend, отметка «на проверку», навигация N/M
+ * и завершение сессии с локальным расчётом итога.
  *
  * @returns {{
  *   session: import("@/entities/session").StoredSession | null,
@@ -17,10 +23,14 @@ import { STORAGE_KEYS } from "@/shared/config";
  *   currentAnswer: import("@/entities/session").StoredAnswer | null,
  *   currentIndex: number,
  *   total: number,
+ *   answeredCount: number,
  *   selectedOptionId: number|string|null,
  *   isSubmitting: boolean,
+ *   isFinishing: boolean,
+ *   isFinished: boolean,
  *   error: string,
  *   submitAnswer: () => Promise<void>,
+ *   finishAttempt: () => Promise<import("@/entities/session").StoredResult | null>,
  *   goNext: () => void,
  *   goPrev: () => void,
  *   goTo: (index: number) => void,
@@ -38,8 +48,12 @@ export function usePracticeSession() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [isSubmitting, setSubmitting] = useState(false);
+  const [isFinishing, setFinishing] = useState(false);
+  const [isFinished, setFinished] = useState(false);
   const [error, setError] = useState("");
   const [flaggedQuestionIds, setFlaggedQuestionIds] = useState(() => new Set());
+  // Синхронная защита от параллельных вызовов finish (быстрый двойной клик).
+  const finishingRef = useRef(false);
 
   const questions = session?.questions ?? [];
   const total = questions.length;
@@ -47,6 +61,7 @@ export function usePracticeSession() {
   const currentAnswer = currentQuestion
     ? session?.answers?.[String(currentQuestion.id)] ?? null
     : null;
+  const answeredCount = session?.answers ? Object.keys(session.answers).length : 0;
 
   const submitAnswer = useCallback(async () => {
     if (!session || !currentQuestion || currentAnswer || selectedOptionId == null) {
@@ -73,6 +88,54 @@ export function usePracticeSession() {
       setSubmitting(false);
     }
   }, [session, currentQuestion, currentAnswer, selectedOptionId]);
+
+  const finishAttempt = useCallback(async () => {
+    if (!session || finishingRef.current) return null;
+
+    const existing = readLastResult();
+    if (existing && String(existing.attemptId) === String(session.attemptId)) {
+      setFinished(true);
+      return existing;
+    }
+
+    // Снапшот конца берём до запроса finish — длительность без времени сети.
+    const finishedAt = new Date().toISOString();
+    const answers = session.answers ?? {};
+    const answered = Object.keys(answers).length;
+    const correctAnswers = Object.values(answers).filter((answer) => answer.correct).length;
+    const durationMs = Math.max(
+      new Date(finishedAt).getTime() - new Date(session.startedAt).getTime(),
+      0
+    );
+
+    finishingRef.current = true;
+    setError("");
+    setFinishing(true);
+    try {
+      const server = await finishPractice(session.attemptId);
+      const result = saveLastResult({
+        attemptId: session.attemptId,
+        startedAt: session.startedAt,
+        finishedAt,
+        durationMs,
+        totalQuestions: total,
+        answered,
+        correctAnswers,
+        incorrectAnswers: answered - correctAnswers,
+        unanswered: Math.max(total - answered, 0),
+        serverStartedAt: server?.startedAt,
+        serverFinishedAt: server?.finishedAt,
+      });
+      setFinished(true);
+      return result;
+    } catch (requestError) {
+      setError(requestError.message ?? "Не удалось завершить сессию");
+      return null;
+    } finally {
+      finishingRef.current = false;
+      setFinishing(false);
+    }
+  }, [session, total]);
 
   const resetTransient = useCallback(() => {
     setError("");
@@ -122,10 +185,14 @@ export function usePracticeSession() {
     currentAnswer,
     currentIndex,
     total,
+    answeredCount,
     selectedOptionId,
     isSubmitting,
+    isFinishing,
+    isFinished,
     error,
     submitAnswer,
+    finishAttempt,
     goNext,
     goPrev,
     goTo,
