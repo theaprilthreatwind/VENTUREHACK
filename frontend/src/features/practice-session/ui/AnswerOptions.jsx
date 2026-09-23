@@ -1,5 +1,7 @@
 import { Check, X } from "lucide-react";
 
+import { MathText } from "@/shared/ui";
+
 const LETTERS = "ABCDEFGH";
 
 /**
@@ -66,7 +68,9 @@ export function AnswerOptions({
             >
               {LETTERS[index] ?? index + 1}
             </span>
-            <span className="flex-1 text-base font-medium text-slate-900">{option.text}</span>
+            <span className="flex-1 text-base font-medium text-slate-900">
+              <MathText text={option.text} />
+            </span>
             {isCorrect && (
               <Check className="h-5 w-5 shrink-0 text-emerald-600" aria-hidden="true" />
             )}

@@ -1,5 +1,7 @@
 import { CheckCircle2, XCircle } from "lucide-react";
 
+import { MathText } from "@/shared/ui";
+
 /**
  * Вердикт по ответу: верно/неверно и пояснение.
  *
@@ -27,7 +29,9 @@ export function VerdictPanel({ correct, explanation }) {
       </p>
 
       {explanation && (
-        <p className="mt-2 text-sm leading-relaxed text-slate-600">{explanation}</p>
+        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+          <MathText text={explanation} />
+        </p>
       )}
     </div>
   );

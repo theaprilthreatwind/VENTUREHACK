@@ -1,5 +1,7 @@
 import { Bookmark } from "lucide-react";
 
+import { MathText } from "@/shared/ui";
+
 /**
  * Карточка задания: панель с номером вопроса и иконкой «Отметить для проверки»,
  * затем текст вопроса. Стиль повторяет макет DSATUZ — «Решение задания».
@@ -37,8 +39,8 @@ export function QuestionCard({ number, question, isFlagged, onToggleFlag }) {
         </button>
       </div>
 
-      <h2 className="mt-8 whitespace-pre-line text-xl font-normal leading-relaxed text-slate-900 md:text-2xl">
-        {question.title}
+      <h2 className="mt-8 text-xl font-normal leading-relaxed text-slate-900 md:text-2xl">
+        <MathText text={question.title} />
       </h2>
     </div>
   );
