@@ -89,6 +89,45 @@ import { API_BASE_URL } from "@/shared/config";
  * @property {number} scoreGoal
  */
 
+/**
+ * @typedef {Object} QuestionQuery
+ * @property {LongId} [subjectId]
+ * @property {number[]} [topicIds]
+ * @property {Difficulty} [difficulty]
+ * @property {number} [page]
+ * @property {number} [size]
+ */
+
+/**
+ * @typedef {Object} QuestionResponse
+ * @property {number} questionId
+ * @property {string} description
+ * @property {string} explanation
+ * @property {string} type
+ * @property {Difficulty} difficulty
+ * @property {number[]} optionIds
+ */
+
+/**
+ * @typedef {"NEW" | "IN_PROGRESS" | "DONE"} TestAttemptStatus
+ */
+
+/**
+ * @typedef {Object} TestAttempt
+ * @property {number} id
+ * @property {number} [duration]
+ * @property {string} [startedAt]
+ * @property {string} [finishedAt]
+ * @property {TestAttemptStatus} status
+ * @property {User} [user]
+ */
+
+/**
+ * @typedef {Object} UpdateTestStatusPayload
+ * @property {LongId} id
+ * @property {TestAttemptStatus} status
+ */
+
 /* -------------------------------------------------------------------------- */
 /*                                   Errors                                   */
 /* -------------------------------------------------------------------------- */
@@ -239,8 +278,9 @@ export function startPractice(
  * 3. Сохранение ответа на вопрос.
  * `POST /api/practice-page/{attemptId}/answers`
  *
- * Backend может вернуть DTO `{ correct, explanation }` (после D-04) или
- * сущность `UserAnswer` с вложенным `option` — приводим ответ к общему виду.
+ * Backend может вернуть DTO `{ correct, explanation }`, сущность `UserAnswer`
+ * с `question.explanation` (актуальная схема) или с `option.explanation`
+ * (старая схема) — приводим ответ к общему виду.
  *
  * @param {SaveAnswerPayload} payload
  * @param {{ signal?: AbortSignal }} [options]
@@ -255,7 +295,8 @@ export async function saveAnswer({ attemptId, questionId, optionId }, { signal }
 
   return {
     correct: Boolean(answer?.correct),
-    explanation: answer?.explanation ?? answer?.option?.explanation ?? "",
+    explanation:
+      answer?.explanation ?? answer?.question?.explanation ?? answer?.option?.explanation ?? "",
   };
 }
 
@@ -383,6 +424,41 @@ export function updateTargetScore({ userId, topicId, scoreGoal }, { signal } = {
   });
 }
 
+/**
+ * 11. Банк заданий с фильтрами и пагинацией.
+ * `GET /api/questions?subjectId={subjectId}&topicIds={topicIds}&difficulty={difficulty}&page={page}&size={size}`
+ * `topicIds` уходит повторяющимся параметром: `?topicIds=1&topicIds=2`.
+ *
+ * @param {QuestionQuery} [query]
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<QuestionResponse[]>}
+ */
+export function getQuestions(
+  { subjectId, topicIds, difficulty, page, size } = {},
+  { signal } = {}
+) {
+  return request("/api/questions", {
+    query: { subjectId, topicIds, difficulty, page, size },
+    signal,
+  });
+}
+
+/**
+ * 12. Смена статуса попытки прохождения.
+ * `PATCH /api/practice-page/{id}/status?status={status}`
+ *
+ * @param {UpdateTestStatusPayload} payload
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<TestAttempt>}
+ */
+export function updateTestStatus({ id, status }, { signal } = {}) {
+  return request(`/api/practice-page/${id}/status`, {
+    method: "PATCH",
+    query: { status },
+    signal,
+  });
+}
+
 /* -------------------------------------------------------------------------- */
 /*                              Grouped service                               */
 /* -------------------------------------------------------------------------- */
@@ -391,10 +467,14 @@ export const apiService = {
   subjects: {
     getOverview: getSubjectsOverview,
   },
+  questions: {
+    getAll: getQuestions,
+  },
   practice: {
     start: startPractice,
     saveAnswer,
     finish: finishPractice,
+    updateStatus: updateTestStatus,
   },
   users: {
     register: registerUser,
