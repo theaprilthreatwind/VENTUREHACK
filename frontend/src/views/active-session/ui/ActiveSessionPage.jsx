@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Loader2, Play } from "lucide-react";
 import { finishPractice } from "@/shared/api";
-import { parseAttempt } from "@/entities/session";
+import { parseSession } from "@/entities/session";
 import { useLocalStorage } from "@/shared/lib";
 import { STORAGE_KEYS } from "@/shared/config";
 
@@ -31,13 +31,13 @@ function NotFound() {
 
 export function ActiveSessionPage() {
   const raw = useLocalStorage(STORAGE_KEYS.session, "null");
-  const attempt = parseAttempt(raw);
+  const session = parseSession(raw);
 
   const [stats, setStats] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  if (!attempt?.attemptId) {
+  if (!session?.attemptId) {
     return <NotFound />;
   }
 
@@ -45,7 +45,7 @@ export function ActiveSessionPage() {
     setError("");
     setLoading(true);
     try {
-      const result = await finishPractice(attempt.attemptId);
+      const result = await finishPractice(session.attemptId);
       setStats(result);
     } catch (err) {
       setError(err.message ?? "Не удалось завершить тест");
@@ -96,8 +96,8 @@ export function ActiveSessionPage() {
                 Сессия создана
               </h1>
               <p className="mt-1 text-sm text-slate-500">
-                Попытка #{attempt.attemptId} • создана{" "}
-                {new Date(attempt.createdAt).toLocaleString("ru-RU")}
+                Попытка #{session.attemptId} • создана{" "}
+                {new Date(session.startedAt).toLocaleString("ru-RU")}
               </p>
 
               {error && (

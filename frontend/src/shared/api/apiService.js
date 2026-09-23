@@ -217,39 +217,46 @@ export function getSubjectsOverview({ signal } = {}) {
 /**
  * 2. Старт практики.
  * `POST /api/practice-page/start?userId={userId}`
- * Backend возвращает `{ attemptId, questions }` — наружу отдаём attemptId.
+ * Backend возвращает `{ attemptId, questions }`.
  *
  * @param {StartPracticePayload} payload
  * @param {{ signal?: AbortSignal }} [options]
- * @returns {Promise<LongId>} attemptId
+ * @returns {Promise<{ attemptId: LongId, questions: Array<Object> }>}
  */
-export async function startPractice(
+export function startPractice(
   { userId, topicIds, questionsCount, difficulties, answerStatus, isRepetition },
   { signal } = {}
 ) {
-  const session = await request("/api/practice-page/start", {
+  return request("/api/practice-page/start", {
     method: "POST",
     query: { userId },
     body: { topicIds, questionsCount, difficulties, answerStatus, isRepetition },
     signal,
   });
-  return session?.attemptId;
 }
 
 /**
  * 3. Сохранение ответа на вопрос.
  * `POST /api/practice-page/{attemptId}/answers`
  *
+ * Backend может вернуть DTO `{ correct, explanation }` (после D-04) или
+ * сущность `UserAnswer` с вложенным `option` — приводим ответ к общему виду.
+ *
  * @param {SaveAnswerPayload} payload
  * @param {{ signal?: AbortSignal }} [options]
- * @returns {Promise<null>}
+ * @returns {Promise<{ correct: boolean, explanation: string }>}
  */
-export function saveAnswer({ attemptId, questionId, optionId }, { signal } = {}) {
-  return request(`/api/practice-page/${attemptId}/answers`, {
+export async function saveAnswer({ attemptId, questionId, optionId }, { signal } = {}) {
+  const answer = await request(`/api/practice-page/${attemptId}/answers`, {
     method: "POST",
     body: { questionId, optionId },
     signal,
   });
+
+  return {
+    correct: Boolean(answer?.correct),
+    explanation: answer?.explanation ?? answer?.option?.explanation ?? "",
+  };
 }
 
 /**

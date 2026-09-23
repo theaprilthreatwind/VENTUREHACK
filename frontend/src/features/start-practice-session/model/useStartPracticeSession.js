@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { startPractice } from "@/shared/api";
 import { useCurrentUser } from "@/entities/user";
-import { saveAttempt } from "@/entities/session";
+import { saveSession } from "@/entities/session";
 
 /**
  * Создаёт попытку на backend (`POST /api/practice-page/start`) и переходит
@@ -19,7 +19,7 @@ export function useStartPracticeSession() {
       return;
     }
 
-    const attemptId = await startPractice({
+    const { attemptId, questions } = await startPractice({
       userId: user.id,
       topicIds,
       questionsCount,
@@ -28,7 +28,7 @@ export function useStartPracticeSession() {
       isRepetition,
     });
 
-    saveAttempt(attemptId);
+    saveSession({ attemptId, questions });
     router.push("/practice/question");
   };
 }
