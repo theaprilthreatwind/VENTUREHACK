@@ -173,7 +173,10 @@ export async function request(path, { method = "GET", body, query, signal } = {}
   try {
     response = await fetch(url, {
       method,
-      headers: hasBody ? { "Content-Type": "application/json" } : undefined,
+      headers: {
+        "ngrok-skip-browser-warning": "true",
+        ...(hasBody ? { "Content-Type": "application/json" } : {}),
+      },
       body: hasBody ? JSON.stringify(body) : undefined,
       signal,
     });
