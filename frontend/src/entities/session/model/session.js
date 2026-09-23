@@ -93,6 +93,66 @@ export function clearSession() {
 }
 
 /**
+ * Итог завершённой сессии, сохранённый локально. Backend не хранит состав
+ * попытки и не отдаёт разбор, поэтому агрегаты считает и хранит браузер.
+ *
+ * @typedef {Object} StoredResult
+ * @property {number|string} attemptId
+ * @property {string} startedAt
+ * @property {string} finishedAt
+ * @property {number} durationMs
+ * @property {number} totalQuestions
+ * @property {number} answered
+ * @property {number} correctAnswers
+ * @property {number} incorrectAnswers
+ * @property {number} unanswered
+ * @property {string} [serverStartedAt]
+ * @property {string} [serverFinishedAt]
+ */
+
+/**
+ * Безопасно разбирает сырой итог из localStorage.
+ *
+ * @param {string|null} raw
+ * @returns {StoredResult|null}
+ */
+export function parseLastResult(raw) {
+  if (!raw || raw === EMPTY) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Читает итог последней сессии. На сервере localStorage недоступен — null.
+ *
+ * @returns {StoredResult|null}
+ */
+export function readLastResult() {
+  if (typeof window === "undefined") return null;
+  return parseLastResult(window.localStorage.getItem(STORAGE_KEYS.result));
+}
+
+/**
+ * Сохраняет итог завершённой сессии.
+ *
+ * @param {StoredResult} result
+ * @returns {StoredResult}
+ */
+export function saveLastResult(result) {
+  setLocalStorageItem(STORAGE_KEYS.result, JSON.stringify(result));
+  return result;
+}
+
+/** Удаляет сохранённый итог и уведомляет подписчиков `useLocalStorage`. */
+export function clearLastResult() {
+  window.localStorage.removeItem(STORAGE_KEYS.result);
+  window.dispatchEvent(new Event(`${STORAGE_KEYS.result}:change`));
+}
+
+/**
  * @param {StoredSession} session
  */
 function writeSession(session) {
