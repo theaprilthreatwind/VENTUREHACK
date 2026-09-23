@@ -38,6 +38,26 @@ import { API_BASE_URL } from "@/shared/config";
  */
 
 /**
+ * @typedef {Object} AnswerOption
+ * @property {number} id
+ * @property {string} text
+ */
+
+/**
+ * @typedef {Object} Question
+ * @property {number} id
+ * @property {string} text
+ * @property {AnswerOption[]} options
+ * @property {Difficulty} difficulty
+ */
+
+/**
+ * @typedef {Object} PracticeSession
+ * @property {LongId} attemptId
+ * @property {Question[]} questions
+ */
+
+/**
  * @typedef {Object} SaveAnswerPayload
  * @property {LongId} attemptId
  * @property {number} questionId
@@ -217,11 +237,11 @@ export function getSubjectsOverview({ signal } = {}) {
 /**
  * 2. Старт практики.
  * `POST /api/practice-page/start?userId={userId}`
- * Backend возвращает `{ attemptId, questions }` — наружу отдаём attemptId.
+ * Backend возвращает `{ attemptId, questions }` — возвращаем полностью.
  *
  * @param {StartPracticePayload} payload
  * @param {{ signal?: AbortSignal }} [options]
- * @returns {Promise<LongId>} attemptId
+ * @returns {Promise<PracticeSession>} { attemptId, questions }
  */
 export async function startPractice(
   { userId, topicIds, questionsCount, difficulties, answerStatus, isRepetition },
@@ -233,8 +253,13 @@ export async function startPractice(
     body: { topicIds, questionsCount, difficulties, answerStatus, isRepetition },
     signal,
   });
-  return session?.attemptId;
+  // DEBUG: показываем точную структуру ответа бэкенда в консоли браузера
+  // eslint-disable-next-line no-console
+  console.log("[startPractice] raw response:", JSON.stringify(session, null, 2));
+  // Возвращаем полную сессию: { attemptId, questions: [...] }
+  return session;
 }
+
 
 /**
  * 3. Сохранение ответа на вопрос.

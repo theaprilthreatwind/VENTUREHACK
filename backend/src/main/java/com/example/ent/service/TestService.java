@@ -72,26 +72,40 @@ public class TestService {
     @Transactional
     public TestResultDto finishTest(Long attemptId) {
         TestAttempt attempt = testAttemptRepository.findById(attemptId)
-                .orElseThrow(() -> new IllegalArgumentException("Сессия не найдена"));
+                .orElseThrow(() -> new IllegalArgumentException("Сессия не найдена: " + attemptId));
+
+        // Идемпотентность: если тест уже завершён — возвращаем существующий результат
+        if (attempt.getStatus() == TestStatus.DONE) {
+            List<UserAnswer> existingAnswers = userAnswerRepository.findByTestAttemptId(attemptId);
+            long totalQ = existingAnswers.size();
+            long correctA = existingAnswers.stream().filter(UserAnswer::isCorrect).count();
+            return new TestResultDto(totalQ, correctA, attempt.getStartedAt(), attempt.getFinishedAt());
+        }
 
         attempt.setStatus(TestStatus.DONE);
         attempt.setFinishedAt(LocalDateTime.now());
         testAttemptRepository.save(attempt);
 
+        // findByTestAttemptId теперь делает JOIN FETCH question + topic
         List<UserAnswer> answers = userAnswerRepository.findByTestAttemptId(attemptId);
 
         long totalQuestions = answers.size();
         long correctAnswers = answers.stream().filter(UserAnswer::isCorrect).count();
 
+        // Явно загружаем user через репозиторий — избегаем LazyInitializationException
+        User user = userRepository.findById(attempt.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
+
         Map<Topic, List<UserAnswer>> answersByTopic = answers.stream()
                 .collect(Collectors.groupingBy(a -> a.getQuestion().getTopic()));
 
-        for (Map.Entry<Topic, List<UserAnswer>> entry: answersByTopic.entrySet()) {
-            updateUserStats(attempt.getUser(), entry.getKey(), entry.getValue());
+        for (Map.Entry<Topic, List<UserAnswer>> entry : answersByTopic.entrySet()) {
+            updateUserStats(user, entry.getKey(), entry.getValue());
         }
 
         return new TestResultDto(totalQuestions, correctAnswers, attempt.getStartedAt(), attempt.getFinishedAt());
     }
+
 
     private void updateUserStats(User user, Topic topic, List<UserAnswer> topicAnswers) {
         long topicTotal = topicAnswers.size();

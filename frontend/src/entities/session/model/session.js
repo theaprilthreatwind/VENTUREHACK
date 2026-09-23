@@ -1,17 +1,23 @@
+import { storageSet } from "@/shared/lib/storage";
 import { STORAGE_KEYS } from "@/shared/config";
 
 /**
- * Локальная запись о созданной попытке. Сам `attemptId` приходит с backend
- * (`POST /api/practice_page/start`), здесь только сохраняем его для страницы
- * прохождения.
+ * Сохраняет полную сессию (attemptId + вопросы) в localStorage.
+ *
+ * @param {{ attemptId: number|string, questions: import("@/shared/api").Question[] }} session
  */
-export function saveAttempt(attemptId) {
-  window.localStorage.setItem(
-    STORAGE_KEYS.session,
-    JSON.stringify({ attemptId, createdAt: new Date().toISOString() })
-  );
+export function saveAttempt(session) {
+  storageSet(STORAGE_KEYS.session, {
+    attemptId: session.attemptId,
+    questions: session.questions ?? [],
+    createdAt: new Date().toISOString(),
+  });
 }
 
+/**
+ * @param {string | null} raw
+ * @returns {{ attemptId: number|string, questions: any[], createdAt: string } | null}
+ */
 export function parseAttempt(raw) {
   try {
     return JSON.parse(raw);
