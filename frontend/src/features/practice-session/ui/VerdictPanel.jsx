@@ -9,7 +9,7 @@ export function VerdictPanel({ correct, explanation }) {
   return (
     <div
       role="status"
-      className={`mt-5 rounded-2xl border p-4 ${
+      className={`mt-6 rounded-xl border p-4 ${
         correct ? "border-emerald-200 bg-emerald-50" : "border-red-200 bg-red-50"
       }`}
     >

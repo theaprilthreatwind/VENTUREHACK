@@ -9,7 +9,7 @@ import { STORAGE_KEYS } from "@/shared/config";
 
 /**
  * Логика экрана прохождения сессии: текущий вопрос, выбор варианта,
- * отправка ответа на backend и навигация N/M.
+ * отправка ответа на backend, отметка «на проверку» и навигация N/M.
  *
  * @returns {{
  *   session: import("@/entities/session").StoredSession | null,
@@ -18,7 +18,6 @@ import { STORAGE_KEYS } from "@/shared/config";
  *   currentIndex: number,
  *   total: number,
  *   selectedOptionId: number|string|null,
- *   setSelectedOptionId: (id: number|string|null) => void,
  *   isSubmitting: boolean,
  *   error: string,
  *   submitAnswer: () => Promise<void>,
@@ -26,15 +25,20 @@ import { STORAGE_KEYS } from "@/shared/config";
  *   goPrev: () => void,
  *   isFirst: boolean,
  *   isLast: boolean,
+ *   selectOption: (id: number|string) => void,
+ *   isFlagged: boolean,
+ *   toggleFlag: () => void,
  * }}
  */
 export function usePracticeSession() {
   const raw = useLocalStorage(STORAGE_KEYS.session, "null");
   const session = useMemo(() => parseSession(raw), [raw]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [isSubmitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [flaggedQuestionIds, setFlaggedQuestionIds] = useState(() => new Set());
 
   const questions = session?.questions ?? [];
   const total = questions.length;
@@ -69,17 +73,38 @@ export function usePracticeSession() {
     }
   }, [session, currentQuestion, currentAnswer, selectedOptionId]);
 
-  const goNext = useCallback(() => {
+  const resetTransient = useCallback(() => {
     setError("");
     setSelectedOptionId(null);
+  }, []);
+
+  const goNext = useCallback(() => {
+    resetTransient();
     setCurrentIndex((index) => Math.min(index + 1, total - 1));
-  }, [total]);
+  }, [resetTransient, total]);
 
   const goPrev = useCallback(() => {
-    setError("");
-    setSelectedOptionId(null);
+    resetTransient();
     setCurrentIndex((index) => Math.max(index - 1, 0));
-  }, []);
+  }, [resetTransient]);
+
+  const selectOption = useCallback(
+    (optionId) => {
+      if (currentAnswer) return;
+      setSelectedOptionId(optionId);
+    },
+    [currentAnswer]
+  );
+
+  const toggleFlag = useCallback(() => {
+    if (!currentQuestion) return;
+    setFlaggedQuestionIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(currentQuestion.id)) next.delete(currentQuestion.id);
+      else next.add(currentQuestion.id);
+      return next;
+    });
+  }, [currentQuestion]);
 
   return {
     session,
@@ -88,7 +113,6 @@ export function usePracticeSession() {
     currentIndex,
     total,
     selectedOptionId,
-    setSelectedOptionId,
     isSubmitting,
     error,
     submitAnswer,
@@ -96,5 +120,8 @@ export function usePracticeSession() {
     goPrev,
     isFirst: currentIndex === 0,
     isLast: total > 0 && currentIndex === total - 1,
+    selectOption,
+    isFlagged: currentQuestion ? flaggedQuestionIds.has(currentQuestion.id) : false,
+    toggleFlag,
   };
 }

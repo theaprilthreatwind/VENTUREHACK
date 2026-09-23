@@ -1,40 +1,45 @@
-const DIFFICULTY_LABELS = {
-  EASY: "Лёгкий",
-  MEDIUM: "Средний",
-  HARD: "Сложный",
-};
+import { Bookmark } from "lucide-react";
 
 /**
- * Текст вопроса с темой и сложностью.
+ * Карточка задания: панель с номером вопроса и иконкой «Отметить для проверки»,
+ * затем текст вопроса. Стиль повторяет макет DSATUZ — «Решение задания».
  *
- * @param {{ question: { title: string, difficulty?: string, topic?: { title?: string } } | null }} props
+ * @param {{
+ *   number: number,
+ *   question: { title: string } | null,
+ *   isFlagged: boolean,
+ *   onToggleFlag: () => void,
+ * }} props
  */
-export function QuestionCard({ question }) {
+export function QuestionCard({ number, question, isFlagged, onToggleFlag }) {
   if (!question) return null;
 
-  const topicTitle = question.topic?.title;
-  const difficulty = DIFFICULTY_LABELS[question.difficulty] ?? question.difficulty;
-
   return (
-    <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
-      {(topicTitle || difficulty) && (
-        <div className="flex flex-wrap items-center gap-2">
-          {topicTitle && (
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-500">
-              {topicTitle}
-            </span>
-          )}
-          {difficulty && (
-            <span className="rounded-full bg-blue-50 px-3 py-1 text-[11px] font-semibold text-blue-600">
-              {difficulty}
-            </span>
-          )}
+    <div className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all md:p-10">
+      <div className="flex items-center justify-between rounded-xl border border-slate-900 bg-white">
+        <div className="flex min-w-[48px] items-center justify-center bg-black px-4 py-2.5 text-base font-bold text-white">
+          {number}
         </div>
-      )}
+        <button
+          type="button"
+          onClick={onToggleFlag}
+          aria-pressed={isFlagged}
+          aria-label={isFlagged ? "Снять отметку проверки" : "Отметить для проверки"}
+          title="Отметить для проверки"
+          className={`mr-2 flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-slate-100 ${
+            isFlagged ? "text-amber-500" : "text-slate-500"
+          }`}
+        >
+          <Bookmark
+            className={`h-5 w-5 ${isFlagged ? "fill-amber-500" : ""}`}
+            aria-hidden="true"
+          />
+        </button>
+      </div>
 
-      <h2 className="mt-4 text-lg font-bold leading-relaxed text-slate-900">
+      <h2 className="mt-8 whitespace-pre-line text-xl font-normal leading-relaxed text-slate-900 md:text-2xl">
         {question.title}
       </h2>
-    </article>
+    </div>
   );
 }
