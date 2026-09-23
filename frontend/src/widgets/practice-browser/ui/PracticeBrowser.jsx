@@ -74,7 +74,7 @@ export function PracticeBrowser() {
               <SubjectGroup
                 title="Обязательные предметы"
                 badge={`${compulsory.length} предмета`}
-                hint="Сдаются всеми абитуриентами"
+                hint=""
                 subjects={compulsory}
                 {...groupProps}
               />

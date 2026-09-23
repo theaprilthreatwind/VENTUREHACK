@@ -52,9 +52,6 @@ export function FilterPanel({
           <h2 className="text-lg font-bold tracking-tight text-slate-900">
             Общие фильтры
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Настройте фильтры, затем выберите нужные предметы, разделы и навыки.
-          </p>
         </div>
         <button
           type="button"
