@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, Loader2 } from "lucide-react";
 
+import { Modal } from "@/shared/ui";
 import {
   AnswerOptions,
   QuestionCard,
@@ -35,12 +37,14 @@ function NotFound() {
 
 export function ActiveSessionPage() {
   const router = useRouter();
+  const [isConfirmOpen, setConfirmOpen] = useState(false);
   const {
     session,
     currentQuestion,
     currentAnswer,
     currentIndex,
     total,
+    answeredCount,
     selectedOptionId,
     isSubmitting,
     isFinishing,
@@ -73,6 +77,15 @@ export function ActiveSessionPage() {
   };
 
   const handleFinishClick = () => {
+    if (answeredCount < total) {
+      setConfirmOpen(true);
+      return;
+    }
+    runFinish();
+  };
+
+  const handleConfirmFinish = () => {
+    setConfirmOpen(false);
     runFinish();
   };
 
@@ -168,6 +181,40 @@ export function ActiveSessionPage() {
           )}
         </div>
       </div>
+
+      <Modal
+        open={isConfirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Завершить сессию?"
+      >
+        <p className="text-sm leading-relaxed text-slate-600">
+          Осталось неотвеченных вопросов:{" "}
+          <span className="font-bold text-slate-900">{total - answeredCount}</span>. Вы точно
+          хотите закончить?
+        </p>
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={() => setConfirmOpen(false)}
+            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+          >
+            Отмена
+          </button>
+          <button
+            type="button"
+            onClick={handleConfirmFinish}
+            disabled={isFinishing}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isFinishing ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+            )}
+            Да, завершить
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }
