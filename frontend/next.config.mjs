@@ -2,7 +2,7 @@
 
 const BACKEND_URL = (
   process.env.NEXT_PUBLIC_API_URL ??
-  "https://unnegotiated-apocalyptically-paulette.ngrok-free.dev"
+  "http://unnegotiated-apocalyptically-paulette.ngrok-free.dev"
 ).replace(/\/+$/, "");
 
 const nextConfig = {
