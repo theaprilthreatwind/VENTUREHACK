@@ -29,6 +29,6 @@ export function useStartPracticeSession() {
     });
 
     saveAttempt(attemptId);
-    router.push("/test/active");
+    router.push("/pactice/question");
   };
 }
