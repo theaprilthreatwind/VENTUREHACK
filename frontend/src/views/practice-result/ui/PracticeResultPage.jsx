@@ -92,13 +92,6 @@ export function PracticeResultPage() {
           <div className="h-full bg-red-400" style={{ width: `${incorrectPercent}%` }} />
         </div>
 
-        {unanswered > 0 && (
-          <p className="mt-2 flex items-center gap-1.5 text-xs text-slate-400">
-            <MinusCircle className="h-3.5 w-3.5" aria-hidden="true" />
-            Без ответа: {formatNumber(unanswered)} — учтены как неправильные
-          </p>
-        )}
-
         <div className="mt-6 grid grid-cols-3 gap-3 text-center">
           <div className="rounded-xl border border-slate-200 p-3">
             <CheckCircle2 className="mx-auto h-4 w-4 text-emerald-600" aria-hidden="true" />
@@ -121,10 +114,6 @@ export function PracticeResultPage() {
           <Clock className="h-4 w-4 text-slate-500" aria-hidden="true" />
           Время: <span className="font-bold text-slate-900">{formatDuration(result.durationMs)}</span>
         </div>
-        <p className="mt-2 text-center text-xs text-slate-400">
-          {new Date(result.startedAt).toLocaleString("ru-RU")} —{" "}
-          {new Date(result.finishedAt).toLocaleString("ru-RU")}
-        </p>
       </article>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
