@@ -4,19 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8dc9d37d-d501-494d-875b-d3fcb20a87ac" name="Changes" comment="WebConfig updated">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/QuestionController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/dto/QuestionResponseDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/QuestionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/2016e709-7f7c-400f-adc4-56517042f438.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/2016e709-7f7c-400f-adc4-56517042f438.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/WebConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/config/WebConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/entity/Option.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/entity/Option.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/entity/Question.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/entity/Question.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/enums/Type.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/enums/Type.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/repository/QuestionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/repository/QuestionRepository.java" afterDir="false" />
-    </list>
+    <list default="true" id="8dc9d37d-d501-494d-875b-d3fcb20a87ac" name="Changes" comment="Question module updated" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -168,7 +156,8 @@
     <MESSAGE value="MarkedQuestion class fix" />
     <MESSAGE value="WebConfig released" />
     <MESSAGE value="WebConfig updated" />
-    <option name="LAST_COMMIT_MESSAGE" value="WebConfig updated" />
+    <MESSAGE value="Question module updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="Question module updated" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
