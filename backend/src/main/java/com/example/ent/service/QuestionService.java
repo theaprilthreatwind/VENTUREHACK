@@ -35,12 +35,42 @@ public class QuestionService {
                 .toList();
     }
 
+    @Transactional
+    public QuestionResponseDto updateQuestionPhotoUrl(Long questionId, String photoUrl) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new IllegalArgumentException("Вопрос с ID " + questionId + " не найден"));
+
+        question.setPhotoUrl(photoUrl);
+        questionRepository.save(question);
+        List<Option> options = question.getOptions();
+
+        List<Long> optionIds = options.stream()
+                .map(Option::getId)
+                .toList();
+        return new QuestionResponseDto(
+                question.getId(),
+                question.getTitle(),
+                question.getExplanation(),
+                String.valueOf(question.getType()),
+                String.valueOf(question.getDifficulty()),
+                question.getPhotoUrl(),
+                optionIds
+        );
+    }
+
     private QuestionResponseDto mapToResponse(Question question) {
         List<Option> options = question.getOptions();
 
         List<Long> optionIds = options.stream()
                 .map(Option::getId)
                 .toList();
-        return new QuestionResponseDto(question.getId(), question.getTitle(), question.getExplanation(), String.valueOf(question.getType()), String.valueOf(question.getDifficulty()), optionIds);
+        return new QuestionResponseDto(question.getId(),
+                question.getTitle(),
+                question.getExplanation(),
+                String.valueOf(question.getType()),
+                String.valueOf(question.getDifficulty()),
+                question.getPhotoUrl(),
+                optionIds
+        );
     }
 }

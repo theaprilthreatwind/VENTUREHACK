@@ -1,8 +1,11 @@
 package com.example.ent.controller;
 
+import com.example.ent.dto.AnalyticsResponseDto;
 import com.example.ent.dto.TargetScoreDto;
+import com.example.ent.entity.UserStats;
 import com.example.ent.service.DashboardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,5 +19,11 @@ public class DashboardController {
                                @PathVariable Long topicId,
                                @RequestBody TargetScoreDto request) {
         dashboardService.updateTargetScore(userId, topicId, request.scoreGoal());
+    }
+
+    @GetMapping("/{userId}/stats")
+    public UserStats getStats(@PathVariable Long userId) {
+        UserStats stats = dashboardService.getUserStats(userId);
+        return stats;
     }
 }

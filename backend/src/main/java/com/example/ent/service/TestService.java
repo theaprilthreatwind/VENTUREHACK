@@ -27,6 +27,7 @@ public class TestService {
     private final UserAnswerRepository userAnswerRepository;
     private final UserTopicStatsRepository statsRepository;
     private final UserRepository userRepository;
+    private final DashboardService dashboardService;
 
     @Transactional
     public TestSessionDto startTest(Long userId, CreateSessionRequest request) {
@@ -66,7 +67,12 @@ public class TestService {
         answer.setQuestion(question);
         answer.setOption(selectedOption);
         answer.setCorrect(isCorrect);
+        userAnswerRepository.save(answer);
 
+        Long userId = attempt.getUser().getId();
+        Long topicId = question.getTopic().getId();
+
+        dashboardService.incrementStatsAfterAnswer(userId, topicId, isCorrect);
         return userAnswerRepository.save(answer);
     }
 

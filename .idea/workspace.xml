@@ -4,7 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8dc9d37d-d501-494d-875b-d3fcb20a87ac" name="Changes" comment="Question module updated" />
+    <list default="true" id="8dc9d37d-d501-494d-875b-d3fcb20a87ac" name="Changes" comment="Test status module revised">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/dto/AnalyticsResponseDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/entity/UserStats.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/exceptions/ErrorHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/repository/UserStatsRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/DashboardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/QuestionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/QuestionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/TestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/TestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/dto/QuestionResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/dto/QuestionResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/exceptions/ExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/DashboardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/QuestionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/QuestionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/TestService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/TestService.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,11 +32,11 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
-        <option value="Exception" />
         <option value="Enum" />
+        <option value="Exception" />
         <option value="Record" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -157,7 +171,8 @@
     <MESSAGE value="WebConfig released" />
     <MESSAGE value="WebConfig updated" />
     <MESSAGE value="Question module updated" />
-    <option name="LAST_COMMIT_MESSAGE" value="Question module updated" />
+    <MESSAGE value="Test status module revised" />
+    <option name="LAST_COMMIT_MESSAGE" value="Test status module revised" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

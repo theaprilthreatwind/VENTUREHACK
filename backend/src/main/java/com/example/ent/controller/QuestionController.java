@@ -29,7 +29,15 @@ public class QuestionController {
                 difficulty,
                 PageRequest.of(page, size)
         );
-
         return response;
+    }
+
+    @PatchMapping("/{id}/photo-url")
+    public QuestionResponseDto updateQuestionPhotoUrl(
+            @PathVariable Long id,
+            @RequestBody QuestionResponseDto questionResponseDto) {
+
+        String photoUrl = questionResponseDto.photoUrl();
+        return questionService.updateQuestionPhotoUrl(id, photoUrl);
     }
 }

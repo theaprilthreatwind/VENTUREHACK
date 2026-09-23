@@ -5,6 +5,7 @@ import com.example.ent.dto.CreateSessionRequest;
 import com.example.ent.dto.TestResultDto;
 import com.example.ent.dto.TestSessionDto;
 import com.example.ent.entity.*;
+import com.example.ent.service.DashboardService;
 import com.example.ent.service.TestService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class TestController {
     private final TestService testService;
+    private final DashboardService dashboardService;
 
     @PostMapping("/start")
     public TestSessionDto startTest(@RequestParam Long userId,
