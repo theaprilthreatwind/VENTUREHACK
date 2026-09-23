@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, Loader2 } from "lucide-react";
 
 import {
   AnswerOptions,
   QuestionCard,
-  SessionProgress,
   VerdictPanel,
   usePracticeSession,
 } from "@/features/practice-session";
@@ -14,17 +13,17 @@ import {
 function NotFound() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-        <CheckCircle2 className="mx-auto h-10 w-10 text-slate-300" />
+      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <CheckCircle2 className="mx-auto h-10 w-10 text-slate-300" aria-hidden="true" />
         <h1 className="mt-4 text-lg font-semibold text-slate-900">Сессия не найдена</h1>
         <p className="mt-2 text-sm text-slate-500">
           Сначала соберите набор вопросов в банке.
         </p>
         <Link
           href="/practice"
-          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#131926] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
+          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           К банку вопросов
         </Link>
       </div>
@@ -39,7 +38,6 @@ export function ActiveSessionPage() {
     currentIndex,
     total,
     selectedOptionId,
-    setSelectedOptionId,
     isSubmitting,
     error,
     submitAnswer,
@@ -47,6 +45,9 @@ export function ActiveSessionPage() {
     goPrev,
     isFirst,
     isLast,
+    selectOption,
+    isFlagged,
+    toggleFlag,
   } = usePracticeSession();
 
   if (!currentQuestion || total === 0) {
@@ -59,10 +60,13 @@ export function ActiveSessionPage() {
   const canAnswer = selectedOptionId != null && !isSubmitting && !currentAnswer;
 
   return (
-    <div className="mx-auto w-full max-w-2xl">
-      <SessionProgress current={currentIndex} total={total} />
-
-      <QuestionCard question={currentQuestion} />
+    <div className="mx-auto w-full max-w-3xl">
+      <QuestionCard
+        number={currentIndex + 1}
+        question={currentQuestion}
+        isFlagged={isFlagged}
+        onToggleFlag={toggleFlag}
+      />
 
       <AnswerOptions
         options={currentQuestion.options ?? []}
@@ -70,7 +74,7 @@ export function ActiveSessionPage() {
         answeredId={answeredId}
         correctOptionId={correctOptionId}
         isDisabled={Boolean(currentAnswer) || isSubmitting}
-        onSelect={setSelectedOptionId}
+        onSelect={selectOption}
       />
 
       {currentAnswer && (
@@ -86,38 +90,45 @@ export function ActiveSessionPage() {
         </p>
       )}
 
-      <div className="mt-6 flex items-center justify-between gap-3">
+      <div className="mt-6 flex flex-col items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row">
         <button
           type="button"
           onClick={goPrev}
           disabled={isFirst}
-          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:border-slate-400 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Назад
         </button>
 
-        {currentAnswer ? (
-          <button
-            type="button"
-            onClick={goNext}
-            disabled={isLast}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#131926] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Следующий вопрос
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </button>
-        ) : (
+        <span className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-900 bg-white px-6 py-2 text-sm font-bold text-slate-900">
+          Вопрос {currentIndex + 1} из {total}
+        </span>
+
+        <div className="flex w-full items-center gap-3 sm:w-auto">
           <button
             type="button"
             onClick={submitAnswer}
             disabled={!canAnswer}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#131926] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
           >
-            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-            {isSubmitting ? "Отправляем…" : "Ответить"}
+            {isSubmitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Check className="h-4 w-4" aria-hidden="true" />
+            )}
+            {isSubmitting ? "Проверяем…" : "Проверить"}
           </button>
-        )}
+          <button
+            type="button"
+            onClick={goNext}
+            disabled={!currentAnswer || isLast}
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-slate-900 bg-white px-6 py-2.5 text-sm font-bold text-slate-900 transition-all hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-900 sm:flex-none"
+          >
+            Далее
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
       </div>
     </div>
   );
