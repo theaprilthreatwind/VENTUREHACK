@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useSubjectsOverview } from "@/entities/subject";
-
-function toggleInSet(prev, id) {
-  const next = new Set(prev);
-  if (next.has(id)) next.delete(id);
-  else next.add(id);
-  return next;
-}
+import {
+  countQuestions,
+  countSelection,
+  getTopicById,
+  toggleInSet,
+  toggleTopicsForSubject,
+} from "./selection.mjs";
 
 export function usePracticeBrowser() {
   const { subjects, isLoading, error } = useSubjectsOverview();
@@ -19,43 +19,20 @@ export function usePracticeBrowser() {
   const [status, setStatus] = useState(null);
   const [repeat, setRepeat] = useState(null);
 
-  const topicById = useMemo(() => {
-    const map = new Map();
-    subjects.forEach((subject) =>
-      subject.topics.forEach((topic) => map.set(topic.id, topic))
-    );
-    return map;
-  }, [subjects]);
+  const topicById = useMemo(() => getTopicById(subjects), [subjects]);
 
-  const stats = useMemo(() => {
-    let topics = 0;
-    let questions = 0;
-    subjects.forEach((subject) =>
-      subject.topics.forEach((topic) => {
-        if (selectedTopics.has(topic.id)) {
-          topics += 1;
-          questions += topic.questionCount;
-        }
-      })
-    );
-    return { topics, questions };
-  }, [subjects, selectedTopics]);
+  const stats = useMemo(() => countSelection(subjects, selectedTopics), [
+    subjects,
+    selectedTopics,
+  ]);
 
   // Предметы по умолчанию развёрнуты; closedSubjects хранит свёрнутые.
   const isSubjectOpen = (id) => !closedSubjects.has(id);
 
   const toggleTopic = (id) => setSelectedTopics((prev) => toggleInSet(prev, id));
 
-  const toggleSubject = (subject) => {
-    setSelectedTopics((prev) => {
-      const next = new Set(prev);
-      const allSelected = subject.topics.every((topic) => next.has(topic.id));
-      subject.topics.forEach((topic) =>
-        allSelected ? next.delete(topic.id) : next.add(topic.id)
-      );
-      return next;
-    });
-  };
+  const toggleSubject = (subject) =>
+    setSelectedTopics((prev) => toggleTopicsForSubject(prev, subject));
 
   const toggleSubjectOpen = (id) =>
     setClosedSubjects((prev) => toggleInSet(prev, id));
@@ -67,9 +44,6 @@ export function usePracticeBrowser() {
     setRepeat(null);
     setClosedSubjects(new Set());
   };
-
-  const countQuestions = (ids) =>
-    [...ids].reduce((sum, id) => sum + (topicById.get(id)?.questionCount ?? 0), 0);
 
   return {
     subjects,
@@ -88,6 +62,6 @@ export function usePracticeBrowser() {
     toggleSubject,
     toggleSubjectOpen,
     resetFilters,
-    countQuestions,
+    countQuestions: (ids) => countQuestions(subjects, ids),
   };
 }

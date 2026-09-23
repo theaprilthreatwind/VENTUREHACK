@@ -6,6 +6,7 @@ import com.example.ent.entity.Subject;
 import com.example.ent.entity.Topic;
 import com.example.ent.repository.QuestionRepository;
 import com.example.ent.repository.SubjectRepository;
+import com.example.ent.repository.TopicRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import static java.util.Arrays.stream;
 public class SubjectService {
     private final SubjectRepository subjectRepository;
     private final QuestionRepository questionRepository;
+    private final TopicRepository topicRepository;
 
     @Transactional(readOnly = true)
     public List<SubjectOverviewDto> getSubjectsOverview() {
@@ -28,7 +30,7 @@ public class SubjectService {
         return subjects.stream().map(subject -> {
             long totalSubjectQuestions = questionRepository.countByTopicSubjectId(subject.getId());
 
-            List<TopicOverviewDto> topics = subjects.stream()
+            List<TopicOverviewDto> topics = topicRepository.findBySubjectId(subject.getId()).stream()
                     .map(topic -> new TopicOverviewDto(
                             topic.getId(),
                             topic.getTitle(),

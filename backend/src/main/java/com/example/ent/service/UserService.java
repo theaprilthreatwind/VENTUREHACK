@@ -19,6 +19,9 @@ public class UserService {
     @Transactional
     public User registerUser(User user) {
         user.setPassword(user.getPassword());
+        if (user.getToken() == null || user.getToken().isBlank()) {
+            user.setToken(UUID.randomUUID().toString());
+        }
         return userRepository.save(user);
     }
 

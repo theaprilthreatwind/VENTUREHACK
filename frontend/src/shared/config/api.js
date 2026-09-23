@@ -1,7 +1,10 @@
 /**
  * Базовый адрес backend API.
- * Переопределяется через переменную окружения NEXT_PUBLIC_API_URL.
- * Spring Boot по умолчанию слушает порт 8080.
+ *
+ * Используем same-origin: браузер ходит на /api/* того же хоста, что и
+ * фронт, а Next.js проксирует эти запросы на реальный backend через
+ * rewrites в next.config.mjs. Адрес самого backend задаётся переменной
+ * NEXT_PUBLIC_API_URL (см. .env.local). Так обходится CORS, и страницы
+ * работают как с backend, так и без него (через mock-fallback в shared/api).
  */
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+export const API_BASE_URL = "";

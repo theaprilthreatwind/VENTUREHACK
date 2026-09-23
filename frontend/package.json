@@ -10,7 +10,8 @@
     "dev:mock": "cross-env NEXT_PUBLIC_USE_MOCKS=true next dev",
     "build:mock": "cross-env NEXT_PUBLIC_USE_MOCKS=true next build",
     "start:mock": "cross-env NEXT_PUBLIC_USE_MOCKS=true next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "node --test"
   },
   "dependencies": {
     "lucide-react": "^1.47.0",

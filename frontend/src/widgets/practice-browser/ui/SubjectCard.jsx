@@ -1,5 +1,6 @@
 import { BookOpen, ChevronDown, Play } from "lucide-react";
 import { formatNumber } from "@/shared/lib";
+import { getSubjectState } from "../model/selection.mjs";
 import { CheckboxBox } from "./CheckboxBox";
 import { TopicRow } from "./TopicRow";
 
@@ -12,14 +13,7 @@ export function SubjectCard({
   onToggleTopic,
   onQuickStart,
 }) {
-  const total = subject.topics.length;
-  const selected = subject.topics.filter((topic) => selectedTopics.has(topic.id));
-  const state =
-    total > 0 && selected.length === total
-      ? "checked"
-      : selected.length > 0
-        ? "partial"
-        : "none";
+  const state = getSubjectState(subject, selectedTopics);
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm">

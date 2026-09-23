@@ -213,34 +213,36 @@ export function getSubjectsOverview({ signal } = {}) {
 
 /**
  * 2. Старт практики.
- * `POST /api/practice_page/start?userId={userId}`
+ * `POST /api/practice-page/start?userId={userId}`
+ * Backend возвращает `{ attemptId, questions }` — наружу отдаём attemptId.
  *
  * @param {StartPracticePayload} payload
  * @param {{ signal?: AbortSignal }} [options]
- * @returns {Promise<string>} attemptId
+ * @returns {Promise<LongId>} attemptId
  */
-export function startPractice(
+export async function startPractice(
   { userId, topicIds, questionsCount, difficulties, answerStatus, isRepetition },
   { signal } = {}
 ) {
-  return request("/api/practice_page/start", {
+  const session = await request("/api/practice-page/start", {
     method: "POST",
     query: { userId },
     body: { topicIds, questionsCount, difficulties, answerStatus, isRepetition },
     signal,
   });
+  return session?.attemptId;
 }
 
 /**
  * 3. Сохранение ответа на вопрос.
- * `POST /api/practice_page/{attemptId}/answers`
+ * `POST /api/practice-page/{attemptId}/answers`
  *
  * @param {SaveAnswerPayload} payload
  * @param {{ signal?: AbortSignal }} [options]
  * @returns {Promise<null>}
  */
 export function saveAnswer({ attemptId, questionId, optionId }, { signal } = {}) {
-  return request(`/api/practice_page/${attemptId}/answers`, {
+  return request(`/api/practice-page/${attemptId}/answers`, {
     method: "POST",
     body: { questionId, optionId },
     signal,
@@ -249,14 +251,14 @@ export function saveAnswer({ attemptId, questionId, optionId }, { signal } = {})
 
 /**
  * 4. Завершение попытки и получение статистики.
- * `POST /api/practice_page/{attemptId}/finish`
+ * `POST /api/practice-page/{attemptId}/finish`
  *
  * @param {LongId} attemptId
  * @param {{ signal?: AbortSignal }} [options]
  * @returns {Promise<FinishPracticeStats>}
  */
 export function finishPractice(attemptId, { signal } = {}) {
-  return request(`/api/practice_page/${attemptId}/finish`, {
+  return request(`/api/practice-page/${attemptId}/finish`, {
     method: "POST",
     signal,
   });
@@ -266,32 +268,58 @@ export function finishPractice(attemptId, { signal } = {}) {
  * 5. Регистрация нового пользователя.
  * `POST /api/users/register`
  *
+ * Backend регистрирует пользователя, но токен в ответе не приходит.
+ * Чтобы соединение было рабочим, после регистрации выполняем login
+ * и возвращаем пользователя вместе с токеном.
+ *
  * @param {RegisterPayload} payload
  * @param {{ signal?: AbortSignal }} [options]
  * @returns {Promise<AuthUser>}
  */
-export function registerUser({ username, email, password }, { signal } = {}) {
-  return request("/api/users/register", {
+export async function registerUser({ username, email, password }, { signal } = {}) {
+  await request("/api/users/register", {
     method: "POST",
     body: { username, email, password },
     signal,
   });
+
+  const token = await request("/api/users/login", {
+    method: "POST",
+    body: { username, email, password },
+    signal,
+  });
+
+  const user = await getUserByToken(token, { signal });
+  return { ...withoutPassword(user), token };
 }
 
 /**
  * 6. Аутентификация и получение токена.
  * `POST /api/users/login`
  *
+ * Backend отвечает строкой-токеном: получаем пользователя по токену
+ * и возвращаем AuthUser. `username` добавляем в тело, чтобы проходила
+ * валидация на развёрнутом backend (он ожидает полную сущность User).
+ *
  * @param {LoginPayload} payload
  * @param {{ signal?: AbortSignal }} [options]
  * @returns {Promise<AuthUser>}
  */
-export function loginUser({ email, password }, { signal } = {}) {
-  return request("/api/users/login", {
+export async function loginUser({ email, password }, { signal } = {}) {
+  const token = await request("/api/users/login", {
     method: "POST",
-    body: { email, password },
+    body: { username: email, email, password },
     signal,
   });
+
+  const user = await getUserByToken(token, { signal });
+  return { ...withoutPassword(user), token };
+}
+
+/** Убирает пароль из сущности User, оставляя публичные поля. */
+function withoutPassword(user) {
+  const { id, username, email, token } = user ?? {};
+  return { id, username, email, token };
 }
 
 /**
