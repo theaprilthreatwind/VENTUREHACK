@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, Check, CheckCircle2, Loader2 } from "lucide-reac
 import { Modal } from "@/shared/ui";
 import {
   AnswerOptions,
+  ExplanationPanel,
   QuestionCard,
   QuestionNavigator,
   VerdictPanel,
@@ -108,12 +109,13 @@ export function ActiveSessionPage() {
         onSelect={selectOption}
       />
 
-      {currentAnswer && (
-        <VerdictPanel
-          correct={currentAnswer.correct}
-          explanation={currentAnswer.explanation}
-        />
-      )}
+      {currentAnswer && <VerdictPanel correct={currentAnswer.correct} />}
+
+      <ExplanationPanel
+        key={currentQuestion.id}
+        isAnswered={Boolean(currentAnswer)}
+        explanation={currentAnswer?.explanation}
+      />
 
       {error && (
         <p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">

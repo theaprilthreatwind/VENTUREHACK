@@ -1,13 +1,11 @@
 import { CheckCircle2, XCircle } from "lucide-react";
 
-import { MathText } from "@/shared/ui";
-
 /**
- * Вердикт по ответу: верно/неверно и пояснение.
+ * Вердикт по ответу: верно/неверно. Пояснение показывает `ExplanationPanel`.
  *
- * @param {{ correct: boolean, explanation?: string }} props
+ * @param {{ correct: boolean }} props
  */
-export function VerdictPanel({ correct, explanation }) {
+export function VerdictPanel({ correct }) {
   return (
     <div
       role="status"
@@ -29,12 +27,6 @@ export function VerdictPanel({ correct, explanation }) {
         )}
         {correct ? "Верно" : "Неверно"}
       </p>
-
-      {explanation && (
-        <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-          <MathText text={explanation} />
-        </p>
-      )}
     </div>
   );
 }
