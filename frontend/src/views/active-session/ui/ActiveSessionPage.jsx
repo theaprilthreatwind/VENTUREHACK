@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Loader2, Play } from "lucide-react";
-import { finishPractice } from "@/shared/api";
-import { parseSession } from "@/entities/session";
-import { useLocalStorage } from "@/shared/lib";
-import { STORAGE_KEYS } from "@/shared/config";
+import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+
+import {
+  AnswerOptions,
+  QuestionCard,
+  SessionProgress,
+  VerdictPanel,
+  usePracticeSession,
+} from "@/features/practice-session";
 
 function NotFound() {
   return (
@@ -30,104 +33,91 @@ function NotFound() {
 }
 
 export function ActiveSessionPage() {
-  const raw = useLocalStorage(STORAGE_KEYS.session, "null");
-  const session = parseSession(raw);
+  const {
+    currentQuestion,
+    currentAnswer,
+    currentIndex,
+    total,
+    selectedOptionId,
+    setSelectedOptionId,
+    isSubmitting,
+    error,
+    submitAnswer,
+    goNext,
+    goPrev,
+    isFirst,
+    isLast,
+  } = usePracticeSession();
 
-  const [stats, setStats] = useState(null);
-  const [isLoading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  if (!session?.attemptId) {
+  if (!currentQuestion || total === 0) {
     return <NotFound />;
   }
 
-  const finish = async () => {
-    setError("");
-    setLoading(true);
-    try {
-      const result = await finishPractice(session.attemptId);
-      setStats(result);
-    } catch (err) {
-      setError(err.message ?? "Не удалось завершить тест");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const answeredId = currentAnswer?.optionId ?? null;
+  const correctOptionId =
+    currentQuestion.options?.find((option) => option.correct)?.id ?? null;
+  const canAnswer = selectedOptionId != null && !isSubmitting && !currentAnswer;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
-      <div className="w-full max-w-lg">
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-8">
-          <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100">
-            <Play className="h-7 w-7 text-blue-600" />
-          </span>
+    <div className="mx-auto w-full max-w-2xl">
+      <SessionProgress current={currentIndex} total={total} />
 
-          {stats ? (
-            <>
-              <h1 className="mt-4 text-xl font-extrabold tracking-tight text-slate-900">
-                Тест завершён
-              </h1>
-              <div className="mt-6 grid grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-slate-200 bg-[#f8fafc] p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                    Вопросов
-                  </p>
-                  <p className="mt-1 text-3xl font-black text-slate-900">
-                    {stats.totalQuestions}
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-slate-200 bg-[#f8fafc] p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                    Верно
-                  </p>
-                  <p className="mt-1 text-3xl font-black text-emerald-600">
-                    {stats.correctAnswers}
-                  </p>
-                </div>
-              </div>
-              <p className="mt-4 text-xs text-slate-400">
-                {new Date(stats.startedAt).toLocaleString("ru-RU")} —{" "}
-                {new Date(stats.finishedAt).toLocaleString("ru-RU")}
-              </p>
-            </>
-          ) : (
-            <>
-              <h1 className="mt-4 text-xl font-extrabold tracking-tight text-slate-900">
-                Сессия создана
-              </h1>
-              <p className="mt-1 text-sm text-slate-500">
-                Попытка #{session.attemptId} • создана{" "}
-                {new Date(session.startedAt).toLocaleString("ru-RU")}
-              </p>
+      <QuestionCard question={currentQuestion} />
 
-              {error && (
-                <p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-                  {error}
-                </p>
-              )}
+      <AnswerOptions
+        options={currentQuestion.options ?? []}
+        selectedId={selectedOptionId}
+        answeredId={answeredId}
+        correctOptionId={correctOptionId}
+        isDisabled={Boolean(currentAnswer) || isSubmitting}
+        onSelect={setSelectedOptionId}
+      />
 
-              <button
-                type="button"
-                onClick={finish}
-                disabled={isLoading}
-                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#131926] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Play className="h-4 w-4" />
-                )}
-                Завершить тест
-              </button>
-            </>
-          )}
+      {currentAnswer && (
+        <VerdictPanel
+          correct={currentAnswer.correct}
+          explanation={currentAnswer.explanation}
+        />
+      )}
 
-          <div className="mt-4">
-            <Link href="/practice" className="text-sm font-semibold text-blue-700 hover:text-blue-800">
-              ← Изменить выбор
-            </Link>
-          </div>
-        </section>
+      {error && (
+        <p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+          {error}
+        </p>
+      )}
+
+      <div className="mt-6 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={goPrev}
+          disabled={isFirst}
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Назад
+        </button>
+
+        {currentAnswer ? (
+          <button
+            type="button"
+            onClick={goNext}
+            disabled={isLast}
+            className="inline-flex items-center gap-2 rounded-xl bg-[#131926] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Следующий вопрос
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={submitAnswer}
+            disabled={!canAnswer}
+            className="inline-flex items-center gap-2 rounded-xl bg-[#131926] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+            {isSubmitting ? "Отправляем…" : "Ответить"}
+          </button>
+        )}
       </div>
     </div>
   );

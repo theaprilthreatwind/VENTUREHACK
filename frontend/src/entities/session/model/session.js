@@ -40,10 +40,12 @@ export function parseSession(raw) {
 
 /**
  * Читает текущую сессию напрямую из localStorage.
+ * На сервере (во время пререндера) localStorage недоступен — возвращаем null.
  *
  * @returns {StoredSession|null}
  */
 export function readSession() {
+  if (typeof window === "undefined") return null;
   return parseSession(window.localStorage.getItem(STORAGE_KEYS.session));
 }
 
