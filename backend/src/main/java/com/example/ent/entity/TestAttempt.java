@@ -25,7 +25,7 @@ public class TestAttempt {
     @DateTimeFormat(pattern = "YYYY.MM.dd")
     private LocalDateTime startedAt;
 
-    @@DateTimeFormat(pattern = "YYYY.MM.dd")
+    @DateTimeFormat(pattern = "YYYY.MM.dd")
     private LocalDateTime finishedAt;
 
     @Enumerated(value = EnumType.STRING)

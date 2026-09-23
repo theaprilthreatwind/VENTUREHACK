@@ -24,6 +24,8 @@ public class Option {
 
     private String explanation;
 
+    private String photoUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;

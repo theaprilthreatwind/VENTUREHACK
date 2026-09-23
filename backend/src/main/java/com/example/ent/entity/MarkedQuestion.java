@@ -9,15 +9,19 @@ import lombok.Setter;
 @Table(
         name = "marked_questions",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"topic_id", "question_id"})
+                @UniqueConstraint(columnNames = {"user_id", "topic_id", "question_id"})
         })
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class MarkedQuestions {
+public class MarkedQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "topic_id")
