@@ -1,5 +1,8 @@
+"use client";
+
 import { BookOpen, ChevronDown, Play } from "lucide-react";
 import { formatNumber } from "@/shared/lib";
+import { countWord, useLang } from "@/shared/i18n";
 import { getSubjectState } from "../model/selection.mjs";
 import { CheckboxBox } from "./CheckboxBox";
 import { TopicRow } from "./TopicRow";
@@ -14,6 +17,7 @@ export function SubjectCard({
   onQuickStart,
 }) {
   const state = getSubjectState(subject, selectedTopics);
+  const { t, lang } = useLang();
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -29,7 +33,7 @@ export function SubjectCard({
           <div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">{subject.title}</h3>
             <p className="text-xs text-slate-400 dark:text-slate-500">
-              {formatNumber(subject.totalQuestions)} вопросов
+              {formatNumber(subject.totalQuestions)} {countWord(lang, "questions", subject.totalQuestions)}
             </p>
           </div>
         </div>
@@ -39,7 +43,7 @@ export function SubjectCard({
             type="button"
             onClick={onToggleOpen}
             aria-expanded={open}
-            aria-label="Свернуть или развернуть предмет"
+            aria-label={t("practice.collapseExpand")}
             className="p-1.5 text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
           >
             <ChevronDown
@@ -49,7 +53,7 @@ export function SubjectCard({
           <button
             type="button"
             onClick={onToggleSubject}
-            aria-label="Выбрать предмет целиком"
+            aria-label={t("practice.selectWholeSubject")}
             className="flex items-center rounded-lg p-0.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
           >
             <CheckboxBox state={state} />
@@ -57,7 +61,7 @@ export function SubjectCard({
           <button
             type="button"
             onClick={() => onQuickStart(subject.topics.map((topic) => topic.id))}
-            aria-label={`Быстрый запуск: ${subject.title}`}
+            aria-label={t("practice.quickStart", { title: subject.title })}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             <Play className="h-3.5 w-3.5 fill-current" />
@@ -78,7 +82,7 @@ export function SubjectCard({
           ))}
           {subject.topics.length === 0 && (
             <p className="px-6 py-3 text-center text-[11px] text-slate-400 dark:text-slate-500">
-              В предмете пока нет тем
+              {t("practice.noTopics")}
             </p>
           )}
         </div>

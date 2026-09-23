@@ -1,6 +1,9 @@
+"use client";
+
 import { Check, X } from "lucide-react";
 
 import { MathText } from "@/shared/ui";
+import { useLang } from "@/shared/i18n";
 
 const LETTERS = "ABCDEFGH";
 
@@ -26,9 +29,10 @@ export function AnswerOptions({
   onSelect,
 }) {
   const isAnswered = answeredId != null;
+  const { t } = useLang();
 
   return (
-    <div role="radiogroup" aria-label="Варианты ответа" className="mt-8 flex flex-col gap-3">
+    <div role="radiogroup" aria-label={t("session.answerOptions")} className="mt-8 flex flex-col gap-3">
       {options.map((option, index) => {
         const isChosen = isAnswered ? answeredId === option.id : selectedId === option.id;
         const isCorrect = isAnswered && option.id === correctOptionId;

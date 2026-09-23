@@ -1,6 +1,9 @@
+"use client";
+
 import { Bookmark } from "lucide-react";
 
 import { MathText } from "@/shared/ui";
+import { useLang } from "@/shared/i18n";
 
 /**
  * Карточка задания: панель с номером вопроса и иконкой «Отметить для проверки»,
@@ -14,6 +17,8 @@ import { MathText } from "@/shared/ui";
  * }} props
  */
 export function QuestionCard({ number, question, isFlagged, onToggleFlag }) {
+  const { t } = useLang();
+
   if (!question) return null;
 
   return (
@@ -26,8 +31,8 @@ export function QuestionCard({ number, question, isFlagged, onToggleFlag }) {
           type="button"
           onClick={onToggleFlag}
           aria-pressed={isFlagged}
-          aria-label={isFlagged ? "Снять отметку проверки" : "Отметить для проверки"}
-          title="Отметить для проверки"
+          aria-label={isFlagged ? t("session.flagOn") : t("session.flagOff")}
+          title={t("session.flagTitle")}
           className={`mr-2 flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-700 ${
             isFlagged ? "text-amber-500" : "text-slate-500 dark:text-slate-400"
           }`}

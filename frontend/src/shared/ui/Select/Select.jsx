@@ -1,9 +1,15 @@
+"use client";
+
 import { GraduationCap } from "lucide-react";
+
+import { useLang } from "@/shared/i18n";
 
 const inputBase =
   "w-full rounded-xl border bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10";
 
 export function Select({ id, value, onChange, error, options = [] }) {
+  const { t } = useLang();
+
   return (
     <div className="relative">
       <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
@@ -19,7 +25,7 @@ export function Select({ id, value, onChange, error, options = [] }) {
         } ${error ? "border-red-300" : "border-slate-200"}`}
       >
         <option value="" disabled>
-          Выберите класс или статус
+          {t("common.selectPlaceholder")}
         </option>
         {options.map((option) => (
           <option key={option} value={option} className="text-slate-900">

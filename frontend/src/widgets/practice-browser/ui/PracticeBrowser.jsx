@@ -4,6 +4,7 @@ import {
   SessionActionBar,
   useStartPracticeSession,
 } from "@/features/start-practice-session";
+import { countWord, useLang } from "@/shared/i18n";
 import { usePracticeBrowser } from "../model/usePracticeBrowser";
 import { FilterPanel } from "./FilterPanel";
 import { SubjectGroup } from "./SubjectGroup";
@@ -11,10 +12,11 @@ import { SubjectGroup } from "./SubjectGroup";
 export function PracticeBrowser() {
   const browser = usePracticeBrowser();
   const startPracticeSession = useStartPracticeSession();
+  const { t, lang } = useLang();
 
   const startSession = (topicIds) => {
     const ids = [...topicIds];
-    startPracticeSession({
+    startPracticeSession.start({
       topicIds: ids,
       questionsCount: browser.countQuestions(ids),
       difficulties: browser.difficulty ? [browser.difficulty] : ["EASY", "MEDIUM", "HARD"],
@@ -50,21 +52,22 @@ export function PracticeBrowser() {
       <section className="mb-16">
         <div className="mb-6">
           <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-            Обзор по предметам
+            {t("practice.overviewTitle")}
           </h2>
           <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-            Разверните предмет, отметьте нужные темы и нажмите «Начать сессию», либо
-            запустите отдельную тему сразу.
+            {t("practice.overviewHint")}
           </p>
         </div>
 
         {browser.isLoading && (
-          <p className="text-sm text-slate-500 dark:text-slate-400">Загрузка предметов…</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {t("practice.loadingSubjects")}
+          </p>
         )}
 
         {browser.error && (
           <p className="text-sm text-red-500">
-            Не удалось загрузить предметы: {browser.error.message}
+            {t("practice.loadError", { message: browser.error.message })}
           </p>
         )}
 
@@ -72,8 +75,8 @@ export function PracticeBrowser() {
           <div className="space-y-8">
             {compulsory.length > 0 && (
               <SubjectGroup
-                title="Обязательные предметы"
-                badge={`${compulsory.length} предмета`}
+                title={t("practice.compulsoryTitle")}
+                badge={`${compulsory.length} ${countWord(lang, "subjects", compulsory.length)}`}
                 hint=""
                 subjects={compulsory}
                 {...groupProps}
@@ -81,9 +84,9 @@ export function PracticeBrowser() {
             )}
             {profile.length > 0 && (
               <SubjectGroup
-                title="Профильные предметы"
-                badge="Выбор 2 предметов"
-                hint="По выбранному направлению"
+                title={t("practice.profileTitle")}
+                badge={t("practice.profileBadge")}
+                hint={t("practice.profileHint")}
                 subjects={profile}
                 {...groupProps}
               />
@@ -97,6 +100,8 @@ export function PracticeBrowser() {
         questions={browser.stats.questions}
         canStart={browser.stats.questions > 0}
         onStart={() => startSession(browser.selectedTopics)}
+        isPending={startPracticeSession.isPending}
+        error={startPracticeSession.error}
       />
     </>
   );

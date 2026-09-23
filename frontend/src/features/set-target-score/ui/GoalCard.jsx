@@ -4,6 +4,7 @@ import { useState } from "react";
 import { TrendingUp } from "lucide-react";
 import { Modal } from "@/shared/ui";
 import { useLocalStorage, setLocalStorageItem } from "@/shared/lib";
+import { useLang } from "@/shared/i18n";
 import { STORAGE_KEYS } from "@/shared/config";
 
 const TARGET_KEY = STORAGE_KEYS.targetScore;
@@ -12,6 +13,7 @@ const MAX_SCORE = 140;
 
 export default function GoalCard() {
   const rawTarget = useLocalStorage(TARGET_KEY, "");
+  const { t } = useLang();
   const parsed = Number.parseInt(rawTarget, 10);
   const target = Number.isNaN(parsed)
     ? null
@@ -39,16 +41,16 @@ export default function GoalCard() {
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white">
             <TrendingUp className="h-5 w-5" />
           </span>
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">Ваша цель по баллам</h3>
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">{t("dashboard.goalTitle")}</h3>
         </div>
 
         <div className="my-auto py-3 text-center">
-          <p className="mb-1 text-xs font-medium text-slate-500 dark:text-slate-400">Текущая цель</p>
+          <p className="mb-1 text-xs font-medium text-slate-500 dark:text-slate-400">{t("dashboard.currentGoal")}</p>
           <h4 className="text-6xl font-black tracking-tight text-slate-900 dark:text-white">
             {target ?? "—"}
           </h4>
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-            Хранится локально в вашем браузере.
+            {t("dashboard.goalStoredLocally")}
           </p>
         </div>
 
@@ -58,14 +60,14 @@ export default function GoalCard() {
             onClick={openModal}
             className="rounded-xl bg-[#131926] px-7 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-slate-800"
           >
-            Изменить
+            {t("dashboard.change")}
           </button>
         </div>
       </article>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Цель по баллам ЕНТ">
+      <Modal open={open} onClose={() => setOpen(false)} title={t("dashboard.goalModalTitle")}>
         <label htmlFor="target-score" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-          Сколько баллов хотите набрать?
+          {t("dashboard.howManyPoints")}
         </label>
         <input
           id="target-score"
@@ -76,14 +78,14 @@ export default function GoalCard() {
           onChange={(event) => setDraft(event.target.value)}
           className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
         />
-        <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">Максимальный балл ЕНТ — {MAX_SCORE}</p>
+        <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">{t("dashboard.maxScore", { max: MAX_SCORE })}</p>
         <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={() => setOpen(false)}
             className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
           >
-            Отмена
+            {t("common.cancel")}
           </button>
           <button
             type="button"
@@ -91,7 +93,7 @@ export default function GoalCard() {
             disabled={!draft}
             className="rounded-xl bg-[#131926] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Сохранить
+            {t("common.save")}
           </button>
         </div>
       </Modal>

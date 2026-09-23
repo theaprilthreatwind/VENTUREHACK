@@ -1,6 +1,12 @@
+"use client";
+
 import { X } from "lucide-react";
 
+import { useLang } from "@/shared/i18n";
+
 export default function Modal({ open, onClose, title, children }) {
+  const { t } = useLang();
+
   if (!open) return null;
 
   return (
@@ -21,7 +27,7 @@ export default function Modal({ open, onClose, title, children }) {
             type="button"
             onClick={onClose}
             className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-300"
-            aria-label="Закрыть"
+            aria-label={t("common.close")}
           >
             <X className="h-5 w-5" />
           </button>

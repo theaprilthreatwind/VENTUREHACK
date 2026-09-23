@@ -14,18 +14,19 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import { useLang } from "@/shared/i18n";
 
 const menuItems = [
-  { label: "Главная", href: "/dashboard", icon: Home },
-  { label: "Практика", href: "/practice", icon: BookOpen },
-  { label: "Банк вопросов", href: "/question-bank", icon: Layers, badge: "Бесплатно" },
-  { label: "План подготовки", href: "/plan", icon: Sparkles, badge: "AI" },
+  { labelKey: "sidebar.home", href: "/dashboard", icon: Home },
+  { labelKey: "sidebar.practice", href: "/practice", icon: BookOpen },
+  { labelKey: "sidebar.questionBank", href: "/question-bank", icon: Layers, badgeKey: "sidebar.free" },
+  { labelKey: "sidebar.plan", href: "/plan", icon: Sparkles, badge: "AI" },
 ];
 
 const bottomItems = [
-  { label: "Аналитика успеваемости", icon: BarChart3 },
-  { label: "Поддержка", icon: LifeBuoy },
-  { label: "Настройки", icon: Settings, href: "/settings" },
+  { labelKey: "sidebar.analytics", icon: BarChart3 },
+  { labelKey: "sidebar.support", icon: LifeBuoy },
+  { labelKey: "sidebar.settings", icon: Settings, href: "/settings" },
 ];
 
 function Brand() {
@@ -38,6 +39,7 @@ function Brand() {
 
 function SidebarLink({ item, active, onClick }) {
   const Icon = item.icon;
+  const { t } = useLang();
   return (
     <Link
       href={item.href ?? "#"}
@@ -55,10 +57,15 @@ function SidebarLink({ item, active, onClick }) {
             : "text-slate-400 group-hover:text-slate-800 dark:text-slate-500 dark:group-hover:text-slate-200"
         }`}
       />
-      <span className="flex-1">{item.label}</span>
+      <span className="flex-1">{t(item.labelKey)}</span>
       {item.badge && (
         <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">
           {item.badge}
+        </span>
+      )}
+      {item.badgeKey && (
+        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">
+          {t(item.badgeKey)}
         </span>
       )}
     </Link>
@@ -66,6 +73,7 @@ function SidebarLink({ item, active, onClick }) {
 }
 
 function SidebarContent({ pathname, onNavigate }) {
+  const { t } = useLang();
   return (
     <div className="flex h-full flex-col justify-between overflow-y-auto bg-white px-5 py-6 dark:bg-slate-950">
       <div className="space-y-6">
@@ -76,7 +84,7 @@ function SidebarContent({ pathname, onNavigate }) {
           <button
             type="button"
             onClick={onNavigate}
-            aria-label="Свернуть меню"
+            aria-label={t("sidebar.collapse")}
             className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300 lg:hidden"
           >
             <X className="h-5 w-5" />
@@ -85,12 +93,12 @@ function SidebarContent({ pathname, onNavigate }) {
 
         <div>
           <p className="mb-3 px-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-            МЕНЮ
+            {t("sidebar.menu")}
           </p>
           <nav className="space-y-1">
             {menuItems.map((item) => (
               <SidebarLink
-                key={item.label}
+                key={item.labelKey}
                 item={item}
                 active={pathname === item.href}
                 onClick={onNavigate}
@@ -106,7 +114,7 @@ function SidebarContent({ pathname, onNavigate }) {
           if (item.href) {
             return (
               <Link
-                key={item.label}
+                key={item.labelKey}
                 href={item.href}
                 onClick={onNavigate}
                 className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium transition-colors hover:bg-slate-50 hover:text-slate-800 dark:hover:bg-slate-800/60 dark:hover:text-white ${
@@ -120,19 +128,19 @@ function SidebarContent({ pathname, onNavigate }) {
                     pathname === item.href ? "text-white" : "text-slate-400"
                   }`}
                 />
-                <span>{item.label}</span>
+                <span>{t(item.labelKey)}</span>
               </Link>
             );
           }
           return (
             <button
-              key={item.label}
+              key={item.labelKey}
               type="button"
               onClick={onNavigate}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-800 dark:hover:bg-slate-800/60 dark:hover:text-white"
             >
               <Icon className="h-4 w-4 shrink-0 text-slate-400" />
-              <span>{item.label}</span>
+              <span>{t(item.labelKey)}</span>
             </button>
           );
         })}
@@ -144,6 +152,7 @@ function SidebarContent({ pathname, onNavigate }) {
 export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { t } = useLang();
 
   return (
     <>
@@ -155,7 +164,7 @@ export default function Sidebar() {
         type="button"
         onClick={() => setOpen(true)}
         className="fixed left-4 top-4 z-50 rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden dark:text-slate-400 dark:hover:bg-slate-800"
-        aria-label="Открыть меню"
+        aria-label={t("sidebar.open")}
       >
         <Menu className="h-6 w-6" />
       </button>

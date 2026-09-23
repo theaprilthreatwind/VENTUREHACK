@@ -4,9 +4,12 @@ import { useEffect, useState } from "react";
 import { CalendarClock } from "lucide-react";
 import { Modal } from "@/shared/ui";
 import { useLocalStorage, setLocalStorageItem } from "@/shared/lib";
+import { useLang } from "@/shared/i18n";
 import { STORAGE_KEYS } from "@/shared/config";
 
 const EXAM_DATE_KEY = STORAGE_KEYS.examDate;
+
+const UNIT_KEYS = ["dashboard.days", "dashboard.hours", "dashboard.minutes", "dashboard.seconds"];
 
 function getTimeLeft(target) {
   if (!target) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
@@ -28,6 +31,7 @@ function pad(value) {
 
 export default function CountdownCard() {
   const examDate = useLocalStorage(EXAM_DATE_KEY, "");
+  const { t, lang } = useLang();
   const [timeLeft, setTimeLeft] = useState(() => getTimeLeft(examDate));
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
@@ -51,12 +55,12 @@ export default function CountdownCard() {
 
   const blocks = examDate
     ? [
-        { label: "ДНЕЙ", value: String(timeLeft.days) },
-        { label: "ЧАСОВ", value: pad(timeLeft.hours) },
-        { label: "МИНУТ", value: pad(timeLeft.minutes) },
-        { label: "СЕКУНД", value: pad(timeLeft.seconds) },
+        { label: t("dashboard.days"), value: String(timeLeft.days) },
+        { label: t("dashboard.hours"), value: pad(timeLeft.hours) },
+        { label: t("dashboard.minutes"), value: pad(timeLeft.minutes) },
+        { label: t("dashboard.seconds"), value: pad(timeLeft.seconds) },
       ]
-    : ["ДНЕЙ", "ЧАСОВ", "МИНУТ", "СЕКУНД"].map((label) => ({ label, value: "—" }));
+    : UNIT_KEYS.map((key) => ({ label: t(key), value: "—" }));
 
   return (
     <>
@@ -66,7 +70,7 @@ export default function CountdownCard() {
             <CalendarClock className="h-5 w-5" />
           </span>
           <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            Обратный отсчет до экзамена
+            {t("dashboard.countdownTitle")}
           </h3>
         </div>
 
@@ -88,22 +92,24 @@ export default function CountdownCard() {
         <div className="flex flex-col items-center gap-2 pt-2 text-center">
           <p className="text-xs text-slate-400 dark:text-slate-500">
             {examDate
-              ? `Целевая дата: ${new Date(examDate).toLocaleDateString("ru-RU")}`
-              : "Дата экзамена не указана"}
+              ? t("dashboard.targetDate", {
+                  date: new Date(examDate).toLocaleDateString(lang === "kk" ? "kk-KZ" : "ru-RU"),
+                })
+              : t("dashboard.noExamDate")}
           </p>
           <button
             type="button"
             onClick={openModal}
             className="text-xs font-semibold text-slate-500 transition-colors hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"
           >
-            Изменить дату
+            {t("dashboard.changeDate")}
           </button>
         </div>
       </article>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Дата экзамена ЕНТ">
+      <Modal open={open} onClose={() => setOpen(false)} title={t("dashboard.dateModalTitle")}>
         <label htmlFor="exam-date" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-          Когда состоится ЕНТ?
+          {t("dashboard.whenExam")}
         </label>
         <input
           id="exam-date"
@@ -113,7 +119,7 @@ export default function CountdownCard() {
           className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
         />
         <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">
-          Дата хранится локально в вашем браузере
+          {t("dashboard.storedLocally")}
         </p>
         <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
@@ -121,7 +127,7 @@ export default function CountdownCard() {
             onClick={() => setOpen(false)}
             className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
           >
-            Отмена
+            {t("common.cancel")}
           </button>
           <button
             type="button"
@@ -129,7 +135,7 @@ export default function CountdownCard() {
             disabled={!draft}
             className="rounded-xl bg-[#131926] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Сохранить
+            {t("common.save")}
           </button>
         </div>
       </Modal>

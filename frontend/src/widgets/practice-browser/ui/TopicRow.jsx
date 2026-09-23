@@ -1,12 +1,17 @@
+"use client";
+
 import { Play } from "lucide-react";
+import { countWord, useLang } from "@/shared/i18n";
 
 export function TopicRow({ topic, selected, onToggle, onQuickStart }) {
+  const { t, lang } = useLang();
+
   return (
     <div className="flex items-center justify-between px-6 py-2.5 transition-colors hover:bg-white dark:hover:bg-slate-800/70">
       <div className="flex min-w-0 items-center gap-2">
         <span className="truncate font-medium text-slate-700 dark:text-slate-300">{topic.title}</span>
         <span className="shrink-0 text-[10px] text-slate-400 dark:text-slate-500">
-          {topic.questionCount} вопросов
+          {topic.questionCount} {countWord(lang, "questions", topic.questionCount)}
         </span>
       </div>
       <div className="flex shrink-0 items-center gap-3">
@@ -14,13 +19,13 @@ export function TopicRow({ topic, selected, onToggle, onQuickStart }) {
           type="checkbox"
           checked={selected}
           onChange={onToggle}
-          aria-label={`Выбрать тему: ${topic.title}`}
+          aria-label={t("practice.selectTopic", { title: topic.title })}
           className="h-3.5 w-3.5 rounded border-slate-300 text-slate-900 focus:ring-0 dark:border-slate-600 dark:bg-slate-800"
         />
         <button
           type="button"
           onClick={onQuickStart}
-          aria-label={`Быстрый запуск: ${topic.title}`}
+          aria-label={t("practice.quickStart", { title: topic.title })}
           className="p-1 text-slate-400 transition-colors hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300"
         >
           <Play className="h-3 w-3 fill-current" />
