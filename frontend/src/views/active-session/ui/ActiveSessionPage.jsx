@@ -123,6 +123,8 @@ export function ActiveSessionPage() {
           questions={session?.questions ?? []}
           answeredQuestionIds={answeredQuestionIds}
           onSelect={goTo}
+          onFinish={handleFinishClick}
+          isFinishing={isFinishing}
         />
 
         <div className="flex w-full items-center gap-3 sm:w-auto">
