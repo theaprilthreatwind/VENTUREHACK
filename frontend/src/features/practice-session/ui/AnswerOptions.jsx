@@ -34,16 +34,17 @@ export function AnswerOptions({
         const isCorrect = isAnswered && option.id === correctOptionId;
         const isWrongChoice = isAnswered && isChosen && !isCorrect;
 
-        let stateClass = "border-slate-200 bg-white hover:border-slate-400 hover:bg-slate-50";
+        let stateClass =
+          "border-slate-200 bg-white hover:border-slate-400 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-500 dark:hover:bg-slate-800";
         if (isCorrect) {
-          stateClass = "border-emerald-400 bg-emerald-50";
+          stateClass = "border-emerald-400 bg-emerald-50 dark:border-emerald-500 dark:bg-emerald-950/60";
         } else if (isWrongChoice) {
-          stateClass = "border-red-400 bg-red-50";
+          stateClass = "border-red-400 bg-red-50 dark:border-red-500 dark:bg-red-950/60";
         } else if (!isAnswered && isChosen) {
-          stateClass = "border-slate-900 bg-slate-50";
+          stateClass = "border-slate-900 bg-slate-50 dark:border-slate-400 dark:bg-slate-800";
         }
 
-        let badgeClass = "border-slate-900 text-slate-900";
+        let badgeClass = "border-slate-900 text-slate-900 dark:border-slate-300 dark:text-slate-100";
         if (isCorrect) {
           badgeClass = "border-emerald-600 bg-emerald-600 text-white";
         } else if (isWrongChoice) {
@@ -68,7 +69,7 @@ export function AnswerOptions({
             >
               {LETTERS[index] ?? index + 1}
             </span>
-            <span className="flex-1 text-base font-medium text-slate-900">
+            <span className="flex-1 text-base font-medium text-slate-900 dark:text-slate-100">
               <MathText text={option.text} />
             </span>
             {isCorrect && (

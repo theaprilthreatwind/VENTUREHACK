@@ -13,11 +13,11 @@ import {
 
 function NotFound() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-        <CheckCircle2 className="mx-auto h-10 w-10 text-slate-300" aria-hidden="true" />
-        <h1 className="mt-4 text-lg font-semibold text-slate-900">Сессия не найдена</h1>
-        <p className="mt-2 text-sm text-slate-500">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 dark:bg-slate-950">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <CheckCircle2 className="mx-auto h-10 w-10 text-slate-300 dark:text-slate-600" aria-hidden="true" />
+        <h1 className="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Сессия не найдена</h1>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           Сначала соберите набор вопросов в банке.
         </p>
         <Link
@@ -89,17 +89,17 @@ export function ActiveSessionPage() {
       )}
 
       {error && (
-        <p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+        <p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">
           {error}
         </p>
       )}
 
-      <div className="mt-6 flex flex-col items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row">
+      <div className="mt-6 flex flex-col items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row">
         <button
           type="button"
           onClick={goPrev}
           disabled={isFirst}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:border-slate-400 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:border-slate-400 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:bg-slate-800"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Назад
@@ -130,7 +130,7 @@ export function ActiveSessionPage() {
             type="button"
             onClick={goNext}
             disabled={isLast}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-slate-900 bg-white px-6 py-2.5 text-sm font-bold text-slate-900 transition-all hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-900 sm:flex-none"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-slate-900 bg-white px-6 py-2.5 text-sm font-bold text-slate-900 transition-all hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-900 sm:flex-none dark:border-slate-100 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-100 dark:hover:text-slate-900 dark:disabled:hover:bg-slate-900 dark:disabled:hover:text-white"
           >
             Далее
             <ArrowRight className="h-4 w-4" aria-hidden="true" />

@@ -4,4 +4,5 @@ export const STORAGE_KEYS = {
   session: "session",
   examDate: "entuz_exam_date",
   targetScore: "entuz_target_score",
+  prefs: "entuz_prefs",
 };

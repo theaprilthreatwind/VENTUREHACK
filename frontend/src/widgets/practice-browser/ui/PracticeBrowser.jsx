@@ -49,17 +49,17 @@ export function PracticeBrowser() {
 
       <section className="mb-16">
         <div className="mb-6">
-          <h2 className="text-lg font-bold tracking-tight text-slate-900">
+          <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
             Обзор по предметам
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
             Разверните предмет, отметьте нужные темы и нажмите «Начать сессию», либо
             запустите отдельную тему сразу.
           </p>
         </div>
 
         {browser.isLoading && (
-          <p className="text-sm text-slate-500">Загрузка предметов…</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Загрузка предметов…</p>
         )}
 
         {browser.error && (

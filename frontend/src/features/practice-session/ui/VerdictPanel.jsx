@@ -12,12 +12,14 @@ export function VerdictPanel({ correct, explanation }) {
     <div
       role="status"
       className={`mt-6 rounded-xl border p-4 ${
-        correct ? "border-emerald-200 bg-emerald-50" : "border-red-200 bg-red-50"
+        correct
+          ? "border-emerald-200 bg-emerald-50 dark:border-emerald-700/60 dark:bg-emerald-950/50"
+          : "border-red-200 bg-red-50 dark:border-red-700/60 dark:bg-red-950/50"
       }`}
     >
       <p
         className={`flex items-center gap-2 text-sm font-semibold ${
-          correct ? "text-emerald-700" : "text-red-700"
+          correct ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"
         }`}
       >
         {correct ? (
@@ -29,7 +31,7 @@ export function VerdictPanel({ correct, explanation }) {
       </p>
 
       {explanation && (
-        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+        <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
           <MathText text={explanation} />
         </p>
       )}

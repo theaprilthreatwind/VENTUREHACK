@@ -34,20 +34,20 @@ export default function GoalCard() {
 
   return (
     <>
-      <article className="flex min-h-[330px] flex-col justify-between rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+      <article className="flex min-h-[330px] flex-col justify-between rounded-3xl border border-slate-200 bg-white p-7 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white">
             <TrendingUp className="h-5 w-5" />
           </span>
-          <h3 className="text-base font-bold text-slate-900">Ваша цель по баллам</h3>
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">Ваша цель по баллам</h3>
         </div>
 
         <div className="my-auto py-3 text-center">
-          <p className="mb-1 text-xs font-medium text-slate-500">Текущая цель</p>
-          <h4 className="text-6xl font-black tracking-tight text-slate-900">
+          <p className="mb-1 text-xs font-medium text-slate-500 dark:text-slate-400">Текущая цель</p>
+          <h4 className="text-6xl font-black tracking-tight text-slate-900 dark:text-white">
             {target ?? "—"}
           </h4>
-          <p className="mt-2 text-xs text-slate-500">
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
             Хранится локально в вашем браузере.
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function GoalCard() {
       </article>
 
       <Modal open={open} onClose={() => setOpen(false)} title="Цель по баллам ЕНТ">
-        <label htmlFor="target-score" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="target-score" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
           Сколько баллов хотите набрать?
         </label>
         <input
@@ -74,14 +74,14 @@ export default function GoalCard() {
           max={MAX_SCORE}
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
-          className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10"
+          className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
         />
-        <p className="mt-2 text-xs text-slate-400">Максимальный балл ЕНТ — {MAX_SCORE}</p>
+        <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">Максимальный балл ЕНТ — {MAX_SCORE}</p>
         <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             Отмена
           </button>
