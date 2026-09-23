@@ -31,6 +31,11 @@ public class Question {
     @Enumerated(value = EnumType.STRING)
     private Difficulty difficulty;
 
+    @NotBlank
+    private String explanation;
+
+    private String photoUrl;
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Option> options = new ArrayList<>();
 
