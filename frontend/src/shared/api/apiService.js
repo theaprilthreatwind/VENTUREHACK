@@ -111,6 +111,30 @@ import { resolveText } from "@/shared/i18n";
  */
 
 /**
+ * Вариант ответа в детальном представлении вопроса.
+ *
+ * @typedef {Object} QuestionDetailOption
+ * @property {number} id
+ * @property {string} text
+ * @property {boolean} correct
+ */
+
+/**
+ * Детальное представление вопроса для экрана прохождения сессии.
+ * В отличие от `QuestionResponse` содержит тексты вариантов ответа,
+ * без которых UI не сможет отрисовать `AnswerOptions`.
+ *
+ * @typedef {Object} QuestionDetail
+ * @property {number} questionId
+ * @property {string} title
+ * @property {string} explanation
+ * @property {string} type
+ * @property {Difficulty} difficulty
+ * @property {string} photoUrl
+ * @property {QuestionDetailOption[]} options
+ */
+
+/**
  * @typedef {"NEW" | "IN_PROGRESS" | "SUBMITTED" | "CANCELLED"} TestAttemptStatus
  */
 
@@ -283,11 +307,12 @@ export function getSubjectsOverview({ signal } = {}) {
 /**
  * 2. Старт практики.
  * `POST /api/practice-page/start?userId={userId}`
- * Backend возвращает `{ attemptId, questions }`.
+ * Backend возвращает `{ attemptId, questionIds }`; сами вопросы догружаются
+ * по `GET /api/questions/{id}` (см. `getQuestionById`).
  *
  * @param {StartPracticePayload} payload
  * @param {{ signal?: AbortSignal }} [options]
- * @returns {Promise<{ attemptId: LongId, questions: Array<Object> }>}
+ * @returns {Promise<{ attemptId: LongId, questionIds: number[] }>}
  */
 export function startPractice(
   { userId, topicIds, questionsCount, difficulties, answerStatus, isRepetition },
@@ -471,6 +496,30 @@ export function getQuestions(
 }
 
 /**
+ * 11.1. Один вопрос с вариантами ответа.
+ * `GET /api/questions/{id}?questionId={id}`
+ *
+ * Используется после `startPractice`, который возвращает только `questionIds`.
+ * Ответ должен содержать тексты вариантов ответа (`options`), иначе UI
+ * не сможет отрисовать список ответов.
+ *
+ * `questionId` дублируется в query намеренно: backend объявляет его как
+ * обязательный query-параметр (см. Swagger), при этом путь содержит `{id}`.
+ * Отправка обоих вариантов делает запрос совместимым и с `@PathVariable`,
+ * и с `@RequestParam`-реализацией эндпоинта.
+ *
+ * @param {LongId} id
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<QuestionDetail>}
+ */
+export function getQuestionById(id, { signal } = {}) {
+  return request(`/api/questions/${id}`, {
+    query: { questionId: id },
+    signal,
+  });
+}
+
+/**
  * 12. Смена статуса попытки прохождения.
  * `PATCH /api/practice-page/{id}/status?status={status}`
  *
@@ -504,7 +553,7 @@ export function getDashboardStats(userId, { signal } = {}) {
  *
  * @param {LongId} userId
  * @param {{ signal?: AbortSignal }} [options]
- * @returns {Promise<{ attemptId: LongId, questions: Array<Object> }>}
+ * @returns {Promise<{ attemptId: LongId, questionIds: number[] }>}
  */
 export function startAdaptivePractice(userId, { signal } = {}) {
   return request("/api/practice-page/start/adaptive", {
@@ -556,6 +605,7 @@ export const apiService = {
   },
   questions: {
     getAll: getQuestions,
+    getById: getQuestionById,
     generateExplanation: generateQuestionExplanation,
     updatePhotoUrl: updateQuestionPhotoUrl,
   },

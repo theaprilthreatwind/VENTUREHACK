@@ -52,8 +52,11 @@ export function ActiveSessionPage() {
     isSubmitting,
     isFinishing,
     isFinished,
+    isExplaining,
+    explainError,
     error,
     submitAnswer,
+    explainMistake,
     finishAttempt,
     goNext,
     goPrev,
@@ -118,6 +121,10 @@ export function ActiveSessionPage() {
         key={currentQuestion.id}
         isAnswered={Boolean(currentAnswer)}
         explanation={currentAnswer?.explanation}
+        canGenerate={Boolean(currentAnswer) && currentAnswer.correct === false}
+        isLoading={isExplaining}
+        error={explainError}
+        onExplain={explainMistake}
       />
 
       {error && (

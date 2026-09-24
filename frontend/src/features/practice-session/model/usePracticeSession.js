@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import { finishPractice, saveAnswer } from "@/shared/api";
+import { finishPractice, generateQuestionExplanation, saveAnswer } from "@/shared/api";
 import { addNotification } from "@/entities/notification";
 import {
   parseSession,
@@ -30,8 +30,11 @@ import { STORAGE_KEYS } from "@/shared/config";
  *   isSubmitting: boolean,
  *   isFinishing: boolean,
  *   isFinished: boolean,
+ *   isExplaining: boolean,
+ *   explainError: string,
  *   error: string,
  *   submitAnswer: () => Promise<void>,
+ *   explainMistake: () => Promise<void>,
  *   finishAttempt: () => Promise<import("@/entities/session").StoredResult | null>,
  *   goNext: () => void,
  *   goPrev: () => void,
@@ -52,6 +55,8 @@ export function usePracticeSession() {
   const [isSubmitting, setSubmitting] = useState(false);
   const [isFinishing, setFinishing] = useState(false);
   const [isFinished, setFinished] = useState(false);
+  const [isExplaining, setExplaining] = useState(false);
+  const [explainError, setExplainError] = useState("");
   const [error, setError] = useState("");
   const [flaggedQuestionIds, setFlaggedQuestionIds] = useState(() => new Set());
   // Синхронная защита от параллельных вызовов finish (быстрый двойной клик).
@@ -90,6 +95,29 @@ export function usePracticeSession() {
       setSubmitting(false);
     }
   }, [session, currentQuestion, currentAnswer, selectedOptionId]);
+
+  const explainMistake = useCallback(async () => {
+    if (!session || !currentQuestion || !currentAnswer || isExplaining) return;
+
+    setExplainError("");
+    setExplaining(true);
+    try {
+      const question = await generateQuestionExplanation({
+        questionId: currentQuestion.id,
+        optionId: currentAnswer.optionId,
+      });
+      const explanation = question?.explanation?.trim();
+      if (!explanation) {
+        throw new Error(resolveText("errors.explainEmpty"));
+      }
+
+      saveSessionAnswer(currentQuestion.id, { ...currentAnswer, explanation });
+    } catch (requestError) {
+      setExplainError(requestError.message ?? resolveText("errors.explainFailed"));
+    } finally {
+      setExplaining(false);
+    }
+  }, [session, currentQuestion, currentAnswer, isExplaining]);
 
   const finishAttempt = useCallback(async () => {
     if (!session || finishingRef.current) return null;
@@ -212,8 +240,11 @@ export function usePracticeSession() {
     isSubmitting,
     isFinishing,
     isFinished,
+    isExplaining,
+    explainError,
     error,
     submitAnswer,
+    explainMistake,
     finishAttempt,
     goNext,
     goPrev,
