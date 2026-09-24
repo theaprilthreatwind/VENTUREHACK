@@ -1,1 +1,7 @@
-.idea 
+# IDE
+.idea/
+*.iml
+
+# build artifacts
+target/
+ 

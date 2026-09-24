@@ -2,6 +2,8 @@
 
 Веб-платформа для подготовки к ЕНТ (Единое национальное тестирование, Казахстан): практика по реальным темам, мгновенная проверка ответов, AI-разбор ошибок и аналитика прогресса.
 
+**🔗 Демо:** [venturehack-chi.vercel.app/question-bank](https://venturehack-chi.vercel.app/question-bank) — можно посмотреть без установки и регистрации.
+
 ---
 
 ## Описание
@@ -26,8 +28,7 @@
 - **AI-разбор ошибки.** По неверному варианту бэкенд генерирует понятное объяснение через Google Gemini (`PATCH /api/questions/{id}/explanation`).
 - **Адаптивная практика.** Режим `start/adaptive` сам собирает сессию по самым слабым темам пользователя.
 - **Аналитика, а не только счёт.** Отдельная страница считает KPI, покрытие банка заданий и итог последней сессии.
-- **Данные, а не заглушки.** Банк заданий — сотни вопросов с вариантами, сложностью и пояснениями (`databases/*.json`).
-- **Один UI — два бэкенда.** Фронтенд одинаково работает с Spring Boot и с Express-моком: меняется только `NEXT_PUBLIC_API_URL`.
+- **Данные, а не заглушки.** Банк заданий — сотни вопросов с вариантами, сложностью и пояснениями (`backend/src/main/resources/data.sql`).
 - **Без CORS-болей.** Браузер ходит на same-origin `/api/*`, а Next.js-прокси перекладывает запросы на backend.
 
 ### Что уже умеет MVP
@@ -51,7 +52,7 @@
 | БД | PostgreSQL, Hibernate (`ddl-auto=update`), сид `data.sql` |
 | AI | Spring AI → Google GenAI (`gemini-1.5-flash`) |
 | Документация API | Springdoc OpenAPI 3.1 (Swagger UI) |
-| Мок-бэкенд | Node.js + Express (`mockserver/`) |
+| Деплой | Frontend — Vercel (`venturehack-chi.vercel.app`) |
 | Качество | ESLint (frontend), `node --test`, smoke-тест Spring Boot |
 
 ---
@@ -115,24 +116,21 @@ npm run dev
 
 Приложение откроется на `http://localhost:3000`.
 
-### 5. Вариант без Java: мок-сервер
+### 5. Хотите просто посмотреть?
 
-Если нет PostgreSQL или нужно быстро показать UI:
-
-```bash
-cd mockserver
-npm install
-npm start                       # http://localhost:8080
-```
-
-Затем в `frontend/.env.local` укажите `NEXT_PUBLIC_API_URL=http://localhost:8080` — фронтенд
-не заметит подмены, потому что все запросы идут через `@/shared/api`.
+Поднимать окружение не обязательно — готовое демо работает здесь:
+**[venturehack-chi.vercel.app/question-bank](https://venturehack-chi.vercel.app/question-bank)**.
 
 ---
 
 ## Использование
 
 ### Быстрый старт (сценарий демо)
+
+**Самый быстрый путь:** откройте [демо на Vercel](https://venturehack-chi.vercel.app/question-bank) —
+установка не нужна.
+
+**Локально:**
 
 1. Поднимите backend и frontend (см. выше).
 2. `/auth` — войдите заранее созданным пользователем или зарегистрируйтесь.
@@ -152,9 +150,8 @@ npm start                       # http://localhost:8080
 | `frontend/` | `npm test` | Юнит-тесты (`node --test`) |
 | `backend/` | `./mvnw spring-boot:run` | Backend на :8080 |
 | `backend/` | `./mvnw test` | Тесты Spring Boot |
-| `mockserver/` | `npm start` / `npm run dev` | Мок backend на :8080 |
 
-Порты по умолчанию: frontend — `3000`, backend/мок — `8080`, PostgreSQL — `5432`.
+Порты по умолчанию: frontend — `3000`, backend — `8080`, PostgreSQL — `5432`.
 
 ---
 
@@ -163,13 +160,12 @@ npm start                       # http://localhost:8080
 ### Структура репозитория
 
 ```
-UNTBase/
-├── frontend/      # Next.js + FSD (app → views → widgets → features → entities → shared)
-├── backend/       # Spring Boot: контроллеры, сервисы, JPA-сущности, data.sql
-├── mockserver/    # Express-мок того же API (для быстрого UI-прототипирования)
-├── databases/     # JSON-выгрузки банка заданий (предметы, темы, вопросы, варианты)
-├── docs/          # Lean SRS и план спринта
-└── prompts/       # Промпты AI-наставника (формат ответа, критерии разбора)
+VENTUREHACK/
+├── frontend/                                  # Next.js + FSD
+│   └── src/                                   # app → views → widgets → features → entities → shared
+├── backend/                                   # Spring Boot
+│   └── src/main/resources/data.sql            # сид: предметы, темы, вопросы, варианты
+└── README.md
 ```
 
 ### Архитектура фронтенда
@@ -190,10 +186,10 @@ app → views → widgets → features → entities → shared
 
 ### Документация
 
-- `docs/LEAN_SRS.md` — требования, матрица фич и технический долг;
-- `docs/SPRINT_PLAN.md` — план хакатон-спринта и критерии демо;
-- `prompts/ai-directions.md` — контракт AI-наставника (входные данные и формат ответа);
-- Swagger UI — живой контракт backend (`/swagger-ui/index.html`).
+- **Swagger UI** — живой контракт backend (`http://localhost:8080/swagger-ui/index.html`);
+- `backend/README.md` — сущности БД, запуск и настройка Spring Boot;
+- `frontend/AGENTS.md` — правила кода и архитектуры фронтенда;
+- `backend/src/main/resources/data.sql` — состав банка заданий.
 
 ### Как внести вклад
 
@@ -215,7 +211,7 @@ app → views → widgets → features → entities → shared
 - состав сессии хранится в localStorage браузера, истории попыток на бэкенде нет;
 - аналитика по темам использует агрегаты, которые пишутся при завершении попытки.
 
-Бэклог и приоритеты — в `docs/LEAN_SRS.md` (раздел «Технический долг»).
+Планы развития и известные баги — в Issues репозитория.
 
 ---
 
