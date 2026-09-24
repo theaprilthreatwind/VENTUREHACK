@@ -1,29 +1,33 @@
 package com.example.ent.controller;
 
-import com.example.ent.dto.AnalyticsResponseDto;
 import com.example.ent.dto.TargetScoreDto;
-import com.example.ent.entity.UserStats;
+import com.example.ent.dto.UserStatsDto;
 import com.example.ent.service.DashboardService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
+@Slf4j
 public class DashboardController {
     private final DashboardService dashboardService;
 
     @PutMapping("/{userId}/topics/{topicId}/target-score")
     public void setTargetScore(@PathVariable Long userId,
                                @PathVariable Long topicId,
-                               @RequestBody TargetScoreDto request) {
-        dashboardService.updateTargetScore(userId, topicId, request.scoreGoal());
+                               @RequestBody TargetScoreDto targetScore,
+                               HttpServletRequest request) {
+        log.info("Выполнен запрос по эндпоинту: '{} {}', Строка параметров запроса: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString());
+        dashboardService.updateTargetScore(userId, topicId, targetScore.scoreGoal());
     }
 
     @GetMapping("/{userId}/stats")
-    public UserStats getStats(@PathVariable Long userId) {
-        UserStats stats = dashboardService.getUserStats(userId);
-        return stats;
+    public UserStatsDto getStats(@PathVariable Long userId,
+                                 HttpServletRequest request) {
+        log.info("Выполнен запрос по эндпоинту: '{} {}', Строка параметров запроса: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString());
+        return dashboardService.getUserStats(userId);
     }
 }

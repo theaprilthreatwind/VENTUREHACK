@@ -7,7 +7,6 @@ import com.example.ent.entity.UserStats;
 import com.example.ent.repository.TopicRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

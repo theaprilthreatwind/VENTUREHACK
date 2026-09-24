@@ -1,6 +1,7 @@
 package com.example.ent.service;
 
 import com.example.ent.dto.AnalyticsResponseDto;
+import com.example.ent.dto.UserStatsDto;
 import com.example.ent.entity.Topic;
 import com.example.ent.entity.User;
 import com.example.ent.entity.UserStats;
@@ -46,17 +47,25 @@ public class DashboardService {
     }
 
     @Transactional(readOnly = true)
-    public UserStats getUserStats(Long userId) {
+    public UserStatsDto getUserStats(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException("Пользователь с ID " + userId + " не найден");
         }
 
-        return userStatsRepository.findByUserId(userId)
+        UserStats userStats = userStatsRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     UserStats stats = new UserStats();
                     stats.setUser(userRepository.getReferenceById(userId));
                     return stats;
                 });
+        return new UserStatsDto(
+                userStats.getId(),
+                userStats.getUser().getId(),
+                userStats.getTotalTestsSolved(),
+                userStats.getTotalQuestionsSolved(),
+                userStats.getCorrectAnswers(),
+                userStats.getOverallSuccessRate()
+        );
     }
 
     @Transactional

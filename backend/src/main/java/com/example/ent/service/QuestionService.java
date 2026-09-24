@@ -1,5 +1,6 @@
 package com.example.ent.service;
 
+import com.example.ent.dto.OptionResponseDto;
 import com.example.ent.dto.QuestionResponseDto;
 import com.example.ent.entity.Option;
 import com.example.ent.entity.Question;
@@ -45,6 +46,43 @@ public class QuestionService {
 
         return mapToResponse(question);
     }
+    @Transactional
+    public QuestionResponseDto getQuestion(Long questionId) {
+        Question question = questionRepository.getById(questionId);
+        List<Long> optionIds = question.getOptions().stream()
+                .map(Option::getId)
+                .toList();
+        return new QuestionResponseDto(question.getId(),
+                question.getTitle(),
+                question.getExplanation(),
+                String.valueOf(question.getType()),
+                String.valueOf(question.getDifficulty()),
+                question.getPhotoUrl(),
+                optionIds);
+
+    }
+
+    @Transactional
+    public OptionResponseDto getOption(Long questionId, Long optionId) {
+        Option option = optionRepository.findById(optionId).get();
+        return new OptionResponseDto(
+                option.getId(),
+                option.getText(),
+                option.isCorrect(),
+                String.valueOf(option.getType()),
+                option.getQuestion().getId()
+        );
+    }
+
+    @Transactional
+    public List<OptionResponseDto> getOptions(Long questionId) {
+        List<Option> options = optionRepository.findOptionsByQuestionId(questionId);
+        List<OptionResponseDto> optionDtos = options.stream()
+                .map(this::mapOptionToResponse)
+                .toList();
+
+        return optionDtos;
+    }
 
     public String getAnswer(Long optionId) {
         return optionRepository.findById(optionId).get().getText();
@@ -63,6 +101,16 @@ public class QuestionService {
                 String.valueOf(question.getDifficulty()),
                 question.getPhotoUrl(),
                 optionIds
+        );
+    }
+
+    private OptionResponseDto mapOptionToResponse(Option option) {
+        return new OptionResponseDto(
+                option.getId(),
+                option.getText(),
+                option.isCorrect(),
+                String.valueOf(option.getType()),
+                option.getQuestion().getId()
         );
     }
 }

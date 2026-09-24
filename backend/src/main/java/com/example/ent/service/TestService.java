@@ -1,6 +1,7 @@
 package com.example.ent.service;
 
 import com.example.ent.dto.CreateSessionRequest;
+import com.example.ent.dto.QuestionResponseDto;
 import com.example.ent.dto.TestResultDto;
 import com.example.ent.dto.TestSessionDto;
 import com.example.ent.entity.*;
@@ -41,8 +42,11 @@ public class TestService {
         attempt = testAttemptRepository.save(attempt);
 
         List<Question> questions = generateQuestionsForSession(userId, request);
+        List<Long> questionIds = questions.stream()
+                .map(Question::getId)
+                .toList();
 
-        return new TestSessionDto(attempt.getId(), questions);
+        return new TestSessionDto(attempt.getId(), questionIds);
     }
 
     @Transactional
@@ -66,8 +70,11 @@ public class TestService {
         attempt = testAttemptRepository.save(attempt);
 
         List<Question> questions = questionRepository.findRandomByTopicIds(weakTopicIds, 20);
+        List<Long> questionIds = questions.stream()
+                .map(Question::getId)
+                .toList();
 
-        return new TestSessionDto(attempt.getId(), questions);
+        return new TestSessionDto(attempt.getId(), questionIds);
     }
 
     @Transactional

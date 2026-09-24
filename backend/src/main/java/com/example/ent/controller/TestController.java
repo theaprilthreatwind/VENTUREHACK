@@ -23,13 +23,15 @@ public class TestController {
 
     @PostMapping("/start")
     public TestSessionDto startTest(@RequestParam Long userId,
-                                    @RequestBody CreateSessionRequest sessionRequest, HttpServletRequest request) {
+                                    @RequestBody CreateSessionRequest sessionRequest,
+                                    HttpServletRequest request) {
         log.info("Выполнен запрос по эндпоинту: '{} {}', Строка параметров запроса: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString());
         return testService.startTest(userId, sessionRequest);
     }
 
     @PostMapping("/start/adaptive")
-    public TestSessionDto startAdaptiveTest(@RequestParam Long userId, HttpServletRequest request) {
+    public TestSessionDto startAdaptiveTest(@RequestParam Long userId,
+                                            HttpServletRequest request) {
         log.info("Выполнен запрос по эндпоинту: '{} {}', Строка параметров запроса: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString());
         return testService.startSmartAdaptiveTest(userId);
     }
