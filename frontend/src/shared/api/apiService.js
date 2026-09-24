@@ -106,11 +106,12 @@ import { resolveText } from "@/shared/i18n";
  * @property {string} explanation
  * @property {string} type
  * @property {Difficulty} difficulty
+ * @property {string} photoUrl
  * @property {number[]} optionIds
  */
 
 /**
- * @typedef {"NEW" | "IN_PROGRESS" | "DONE"} TestAttemptStatus
+ * @typedef {"NEW" | "IN_PROGRESS" | "SUBMITTED" | "CANCELLED"} TestAttemptStatus
  */
 
 /**
@@ -127,6 +128,31 @@ import { resolveText } from "@/shared/i18n";
  * @typedef {Object} UpdateTestStatusPayload
  * @property {LongId} id
  * @property {TestAttemptStatus} status
+ */
+
+/**
+ * Глобальная статистика пользователя (дашборд).
+ * `GET /api/dashboard/{userId}/stats`
+ *
+ * @typedef {Object} UserStats
+ * @property {number} id
+ * @property {User} [user]
+ * @property {number} totalTestsSolved
+ * @property {number} totalQuestionsSolved
+ * @property {number} correctAnswers
+ * @property {number} overallSuccessRate
+ */
+
+/**
+ * @typedef {Object} GenerateExplanationPayload
+ * @property {LongId} questionId
+ * @property {LongId} optionId
+ */
+
+/**
+ * @typedef {Object} UpdateQuestionPhotoUrlPayload
+ * @property {LongId} questionId
+ * @property {string} photoUrl
  */
 
 /* -------------------------------------------------------------------------- */
@@ -460,6 +486,66 @@ export function updateTestStatus({ id, status }, { signal } = {}) {
   });
 }
 
+/**
+ * 13. Статистика пользователя для дашборда.
+ * `GET /api/dashboard/{userId}/stats`
+ *
+ * @param {LongId} userId
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<UserStats>}
+ */
+export function getDashboardStats(userId, { signal } = {}) {
+  return request(`/api/dashboard/${userId}/stats`, { signal });
+}
+
+/**
+ * 14. Адаптивный старт: сессия по слабым темам пользователя.
+ * `POST /api/practice-page/start/adaptive?userId={userId}`
+ *
+ * @param {LongId} userId
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<{ attemptId: LongId, questions: Array<Object> }>}
+ */
+export function startAdaptivePractice(userId, { signal } = {}) {
+  return request("/api/practice-page/start/adaptive", {
+    method: "POST",
+    query: { userId },
+    signal,
+  });
+}
+
+/**
+ * 15. AI-пояснение к заданию по ошибочному варианту.
+ * `PATCH /api/questions/{id}/explanation?optionId={optionId}`
+ *
+ * @param {GenerateExplanationPayload} payload
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<QuestionResponse>}
+ */
+export function generateQuestionExplanation({ questionId, optionId }, { signal } = {}) {
+  return request(`/api/questions/${questionId}/explanation`, {
+    method: "PATCH",
+    query: { optionId },
+    signal,
+  });
+}
+
+/**
+ * 16. Обновление картинки задания.
+ * `PATCH /api/questions/{id}/photo-url`
+ *
+ * @param {UpdateQuestionPhotoUrlPayload} payload
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<QuestionResponse>}
+ */
+export function updateQuestionPhotoUrl({ questionId, photoUrl }, { signal } = {}) {
+  return request(`/api/questions/${questionId}/photo-url`, {
+    method: "PATCH",
+    body: { photoUrl },
+    signal,
+  });
+}
+
 /* -------------------------------------------------------------------------- */
 /*                              Grouped service                               */
 /* -------------------------------------------------------------------------- */
@@ -470,9 +556,12 @@ export const apiService = {
   },
   questions: {
     getAll: getQuestions,
+    generateExplanation: generateQuestionExplanation,
+    updatePhotoUrl: updateQuestionPhotoUrl,
   },
   practice: {
     start: startPractice,
+    startAdaptive: startAdaptivePractice,
     saveAnswer,
     finish: finishPractice,
     updateStatus: updateTestStatus,
@@ -486,6 +575,7 @@ export const apiService = {
   },
   dashboard: {
     updateTargetScore,
+    getStats: getDashboardStats,
   },
 };
 
