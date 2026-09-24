@@ -111,18 +111,8 @@ import { resolveText } from "@/shared/i18n";
  */
 
 /**
- * Вариант ответа в детальном представлении вопроса.
- *
- * @typedef {Object} QuestionDetailOption
- * @property {number} id
- * @property {string} text
- * @property {boolean} correct
- */
-
-/**
- * Детальное представление вопроса для экрана прохождения сессии.
- * В отличие от `QuestionResponse` содержит тексты вариантов ответа,
- * без которых UI не сможет отрисовать `AnswerOptions`.
+ * Вопрос без текстов вариантов: `GET /api/questions/{id}` отдаёт только
+ * идентификаторы ответов (`option`), которые догружаются отдельно.
  *
  * @typedef {Object} QuestionDetail
  * @property {number} questionId
@@ -131,7 +121,16 @@ import { resolveText } from "@/shared/i18n";
  * @property {string} type
  * @property {Difficulty} difficulty
  * @property {string} photoUrl
- * @property {QuestionDetailOption[]} options
+ * @property {number[]} option
+ */
+
+/**
+ * Вариант ответа: `GET /api/questions/{id}/{optionId}`.
+ *
+ * @typedef {Object} OptionDetail
+ * @property {number} id
+ * @property {string} text
+ * @property {boolean} correct
  */
 
 /**
@@ -496,27 +495,32 @@ export function getQuestions(
 }
 
 /**
- * 11.1. Один вопрос с вариантами ответа.
- * `GET /api/questions/{id}?questionId={id}`
+ * 11.1. Один вопрос (без текстов вариантов).
+ * `GET /api/questions/{id}`
  *
  * Используется после `startPractice`, который возвращает только `questionIds`.
- * Ответ должен содержать тексты вариантов ответа (`options`), иначе UI
- * не сможет отрисовать список ответов.
- *
- * `questionId` дублируется в query намеренно: backend объявляет его как
- * обязательный query-параметр (см. Swagger), при этом путь содержит `{id}`.
- * Отправка обоих вариантов делает запрос совместимым и с `@PathVariable`,
- * и с `@RequestParam`-реализацией эндпоинта.
+ * В ответе приходит список id вариантов (`option`), сами варианты догружаются
+ * через `getQuestionOption`.
  *
  * @param {LongId} id
  * @param {{ signal?: AbortSignal }} [options]
  * @returns {Promise<QuestionDetail>}
  */
 export function getQuestionById(id, { signal } = {}) {
-  return request(`/api/questions/${id}`, {
-    query: { questionId: id },
-    signal,
-  });
+  return request(`/api/questions/${id}`, { signal });
+}
+
+/**
+ * 11.2. Один вариант ответа с текстом и признаком правильности.
+ * `GET /api/questions/{id}/{optionId}`
+ *
+ * @param {LongId} id — идентификатор вопроса
+ * @param {LongId} optionId — идентификатор варианта ответа
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<OptionDetail>}
+ */
+export function getQuestionOption(id, optionId, { signal } = {}) {
+  return request(`/api/questions/${id}/${optionId}`, { signal });
 }
 
 /**
@@ -606,6 +610,7 @@ export const apiService = {
   questions: {
     getAll: getQuestions,
     getById: getQuestionById,
+    getOption: getQuestionOption,
     generateExplanation: generateQuestionExplanation,
     updatePhotoUrl: updateQuestionPhotoUrl,
   },
