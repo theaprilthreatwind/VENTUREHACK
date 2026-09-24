@@ -15,13 +15,34 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DashboardService {
+    private final AiAdvisorService aiAdvisorService;
     private final UserTopicStatsRepository statsRepository;
     private final UserRepository userRepository;
     private final TopicRepository topicRepository;
     private final UserStatsRepository userStatsRepository;
+    private final UserTopicStatsRepository userTopicStatsRepository;
+
+    @Transactional(readOnly = true)
+    public String getStudyPlanForUser(Long userId, Long daysUntilExam) {
+        UserStats stats = userStatsRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Статистика для пользователя " + userId + " не найдена"));
+
+        List<Long> weakTopicIds = userTopicStatsRepository.findTop3ByUserIdOrderBySuccessRateAsc(userId)
+                .stream()
+                .map(topicStats -> topicStats.getTopic().getId())
+                .toList();
+
+        if (weakTopicIds.isEmpty()) {
+            return "Недостаточно данных для анализа. Решите хотя бы пару тестов!";
+        }
+
+        return aiAdvisorService.generateStudyPlan(stats, daysUntilExam, weakTopicIds);
+    }
 
     @Transactional
     public void updateTargetScore(Long userId, Long topicId, Double newScoreGoal) {

@@ -30,4 +30,14 @@ public class DashboardController {
         log.info("Выполнен запрос по эндпоинту: '{} {}', Строка параметров запроса: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString());
         return dashboardService.getUserStats(userId);
     }
+
+    @GetMapping("/study-plan")
+    public String generatePlan(
+            @RequestParam Long userId,
+            @RequestParam(required = false) Long daysUntilExam) {
+
+        String aiResponse = dashboardService.getStudyPlanForUser(userId, daysUntilExam);
+
+        return aiResponse;
+    }
 }

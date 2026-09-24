@@ -331,3 +331,4 @@ SELECT setval('topics_id_seq',    (SELECT COALESCE(MAX(id), 1) FROM topics));
 SELECT setval('questions_id_seq', (SELECT COALESCE(MAX(id), 1) FROM questions));
 SELECT setval('options_id_seq',   (SELECT COALESCE(MAX(id), 1) FROM options));
 SELECT setval('users_id_seq',     (SELECT COALESCE(MAX(id), 1) FROM users));
+select * from test_attempts;
