@@ -16,6 +16,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import { clearLastResult, clearSession } from "@/entities/session";
 import { useCurrentUser } from "@/entities/user";
 import { useLang } from "@/shared/i18n";
 import { storageGet, storageSet } from "@/shared/lib/storage";
@@ -229,8 +230,11 @@ export function SettingsPage() {
   /** Сброс API-ключа / сессии */
   function handleResetKey() {
     setShowResetKey(false);
-    // Очищаем сессию практики
-    localStorage.removeItem(STORAGE_KEYS.session);
+    // Через хелперы, чтобы подписчики useLocalStorage получили событие
+    // `:change` и UI сразу увидел сброс. Чистим и незавершённую сессию,
+    // и её последний результат.
+    clearSession();
+    clearLastResult();
     setResetDone(true);
     setTimeout(() => setResetDone(false), 3000);
   }

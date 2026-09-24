@@ -31,7 +31,7 @@ export function PracticeResultPage() {
             {t("result.unavailableDesc")}
           </p>
           <Link
-            href="/practice"
+            href="/question-bank"
             className="mt-6 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
           >
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
@@ -120,7 +120,7 @@ export function PracticeResultPage() {
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
         <Link
-          href="/practice"
+          href="/question-bank"
           className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-slate-900 bg-white px-5 py-2.5 text-sm font-bold text-slate-900 transition-all hover:bg-slate-900 hover:text-white"
         >
           <RotateCcw className="h-4 w-4" aria-hidden="true" />

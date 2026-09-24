@@ -27,7 +27,7 @@ function NotFound() {
           {t("session.notFoundDesc")}
         </p>
         <Link
-          href="/practice"
+          href="/question-bank"
           className="mt-6 inline-flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -52,8 +52,11 @@ export function ActiveSessionPage() {
     isSubmitting,
     isFinishing,
     isFinished,
+    isExplaining,
+    explainError,
     error,
     submitAnswer,
+    explainMistake,
     finishAttempt,
     goNext,
     goPrev,
@@ -118,6 +121,10 @@ export function ActiveSessionPage() {
         key={currentQuestion.id}
         isAnswered={Boolean(currentAnswer)}
         explanation={currentAnswer?.explanation}
+        canGenerate={Boolean(currentAnswer) && currentAnswer.correct === false}
+        isLoading={isExplaining}
+        error={explainError}
+        onExplain={explainMistake}
       />
 
       {error && (

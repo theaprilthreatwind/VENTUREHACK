@@ -90,9 +90,10 @@ the root `src/app/layout.jsx` owns `<html>`, `<body>` and `globals.css`.
 - `shared/api/apiService.js` — `fetch` к backend по `API_BASE_URL` (см. `shared/config/api.js`);
 - `shared/api/index.js` — единая точка входа, реэкспортирует `apiService`.
 
-Базовый адрес задаётся переменной `NEXT_PUBLIC_API_URL` (см. `.env`), по умолчанию
-`http://localhost:8080`. Next.js проксирует `/api/*` на этот адрес через rewrites в
-`next.config.mjs`, поэтому браузер ходит на same-origin `/api/*` и CORS не нужен.
+Базовый адрес задаётся переменной `NEXT_PUBLIC_API_URL` (см. `.env.local`, шаблон —
+`.env.example`). Next.js проксирует `/api/*` на этот адрес через `src/proxy.js`
+(в Next 16 middleware называется proxy), поэтому браузер ходит на same-origin `/api/*`,
+CORS не нужен, а токен уходит на backend заголовком `Authorization: Bearer`.
 
 Потребители не знают, откуда пришли данные:
 
