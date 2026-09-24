@@ -4,20 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8dc9d37d-d501-494d-875b-d3fcb20a87ac" name="Changes" comment="AI mentor and smart-tests implemented">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/dto/OptionResponseDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/dto/UserStatsDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/DashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/QuestionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/QuestionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/SubjectController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/SubjectController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/TestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/TestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/dto/TestSessionDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/dto/TestSessionDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/AiAdvisorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/AiAdvisorService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/DashboardService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/QuestionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/QuestionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/TestService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/TestService.java" afterDir="false" />
-    </list>
+    <list default="true" id="8dc9d37d-d501-494d-875b-d3fcb20a87ac" name="Changes" comment="Fixed N+1 problem, added some option/question logic" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -176,7 +163,8 @@
     <MESSAGE value="Test status module revised" />
     <MESSAGE value="Dashboard upgraded, question bank rework" />
     <MESSAGE value="AI mentor and smart-tests implemented" />
-    <option name="LAST_COMMIT_MESSAGE" value="AI mentor and smart-tests implemented" />
+    <MESSAGE value="Fixed N+1 problem, added some option/question logic" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed N+1 problem, added some option/question logic" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

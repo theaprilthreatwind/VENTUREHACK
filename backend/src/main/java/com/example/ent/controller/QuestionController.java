@@ -48,17 +48,17 @@ public class QuestionController {
     }
 
     @GetMapping("/{id}")
-    public QuestionResponseDto getQuestion(@PathVariable Long questionId,
+    public QuestionResponseDto getQuestion(@PathVariable Long id,
                                            HttpServletRequest request) {
         log.info("Выполнен запрос по эндпоинту: '{} {}', Строка параметров запроса: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString());
-        return questionService.getQuestion(questionId);
+        return questionService.getQuestion(id);
     }
 
     @GetMapping("/{id}/")
-    public List<OptionResponseDto> getOptions(@PathVariable Long questionId,
+    public List<OptionResponseDto> getOptions(@PathVariable Long id,
                                               HttpServletRequest request) {
         log.info("Выполнен запрос по эндпоинту: '{} {}', Строка параметров запроса: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString());
-        return questionService.getOptions(questionId);
+        return questionService.getOptions(id);
     }
 
     @GetMapping("/{id}/{optionId}")
