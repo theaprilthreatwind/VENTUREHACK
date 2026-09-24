@@ -17,7 +17,7 @@ import { buildCoverage } from "./analytics.mjs";
  * - localStorage — итог последней сессии.
  *
  * @returns {{
- *   user: { id: number, username: string, email: string, token: string } | null,
+ *   user: { id: number, username: string, email: string } | null,
  *   stats: import("@/shared/api").UserStats | null,
  *   lastResult: import("@/entities/session").StoredResult | null,
  *   coverage: { solved: number, total: number, percent: number },

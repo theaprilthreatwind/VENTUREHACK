@@ -1,16 +1,29 @@
 /** @type {import('next').NextConfig} */
 
-const BACKEND_URL = (
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://unnegotiated-apocalyptically-paulette.ngrok-free.dev"
-).replace(/\/+$/, "");
+/**
+ * Базовые security-заголовки для всех ответов Next.js.
+ *
+ * CSP ограничена директивами, которые не ломают inline-скрипты гидрации
+ * и стили Tailwind/KaTeX: запрещаем встраивание в iframe, <base> и <object>.
+ */
+const securityHeaders = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  {
+    key: "Content-Security-Policy",
+    value: "frame-ancestors 'none'; base-uri 'self'; object-src 'none'",
+  },
+];
 
 const nextConfig = {
-  async rewrites() {
+  async headers() {
     return [
       {
-        source: "/api/:path*",
-        destination: `${BACKEND_URL}/api/:path*`,
+        source: "/:path*",
+        headers: securityHeaders,
       },
     ];
   },

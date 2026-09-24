@@ -56,7 +56,9 @@ export function useUserStats(userId) {
 
   return {
     stats: isEnabled ? stats : null,
-    isLoading: isEnabled ? isLoading : false,
+    // `!stats && !error` — ещё ни разу не загрузились (в т.ч. пока userId
+    // восстанавливается из localStorage после гидрации): не мигаем нулями.
+    isLoading: isEnabled ? isLoading || (!stats && !error) : false,
     error: isEnabled ? error : "",
     reload,
   };

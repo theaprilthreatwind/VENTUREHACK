@@ -59,7 +59,7 @@ export default function Header() {
 
           {user && (
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#131926] text-sm font-bold text-white">
-              {user.username.slice(0, 1).toUpperCase()}
+              {(user.username?.[0] ?? "?").toUpperCase()}
             </div>
           )}
         </div>

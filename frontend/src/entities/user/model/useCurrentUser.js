@@ -7,12 +7,20 @@ import { storageRemove, storageSet } from "@/shared/lib/storage";
 import { STORAGE_KEYS } from "@/shared/config";
 
 /**
+ * Публичные поля пользователя в кеше. Токен хранится отдельным ключом
+ * и в объект НЕ дублируется (см. `features/auth/api/authApi.js`).
+ *
  * @typedef {Object} AuthUser
  * @property {number} id
  * @property {string} username
  * @property {string} email
- * @property {string} token
  */
+
+/** Оставляет в кеше только публичные поля — токен хранится отдельно. */
+function toCachedUser(user) {
+  const { id, username, email } = user ?? {};
+  return { id, username, email };
+}
 
 /** Подписка на изменения кеша пользователя и токена в localStorage. */
 function subscribeUser(onStoreChange) {
@@ -99,7 +107,7 @@ export function useCurrentUser() {
     getUserByToken(token, { signal: controller.signal })
       .then((freshUser) => {
         if (controller.signal.aborted) return;
-        storageSet(STORAGE_KEYS.user, freshUser);
+        storageSet(STORAGE_KEYS.user, toCachedUser(freshUser));
         setError(null);
       })
       .catch((err) => {

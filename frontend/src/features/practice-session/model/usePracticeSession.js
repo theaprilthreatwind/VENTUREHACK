@@ -59,8 +59,9 @@ export function usePracticeSession() {
   const [explainError, setExplainError] = useState("");
   const [error, setError] = useState("");
   const [flaggedQuestionIds, setFlaggedQuestionIds] = useState(() => new Set());
-  // Синхронная защита от параллельных вызовов finish (быстрый двойной клик).
+  // Синхронная защита от параллельных вызовов finish/submit (двойной клик).
   const finishingRef = useRef(false);
+  const submittingRef = useRef(false);
 
   const questions = session?.questions ?? [];
   const total = questions.length;
@@ -74,7 +75,9 @@ export function usePracticeSession() {
     if (!session || !currentQuestion || currentAnswer || selectedOptionId == null) {
       return;
     }
+    if (submittingRef.current) return;
 
+    submittingRef.current = true;
     setError("");
     setSubmitting(true);
     try {
@@ -92,6 +95,7 @@ export function usePracticeSession() {
     } catch (requestError) {
       setError(requestError.message ?? resolveText("errors.submitAnswer"));
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   }, [session, currentQuestion, currentAnswer, selectedOptionId]);

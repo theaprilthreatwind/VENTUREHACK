@@ -1,5 +1,6 @@
-import { API_BASE_URL } from "@/shared/config";
+import { API_BASE_URL, STORAGE_KEYS } from "@/shared/config";
 import { resolveText } from "@/shared/i18n";
+import { storageRemove } from "@/shared/lib/storage";
 
 /* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
@@ -224,6 +225,32 @@ function buildUrl(path, query) {
   return `${base}${path}${search ? `?${search}` : ""}`;
 }
 
+/** Таймаут запроса: защищает UI от «зависшего» backend. */
+const REQUEST_TIMEOUT_MS = 20000;
+
+/** Читает токен авторизации напрямую (plain string в localStorage). */
+function getStoredToken() {
+  if (typeof window === "undefined") return "";
+  try {
+    return window.localStorage.getItem(STORAGE_KEYS.token) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Сбрасывает авторизацию при 401/403. Удаление ключа токена запускает
+ * событие `entuz_token:change`, на которое подписан `useCurrentUser`,
+ * поэтому UI сам выходит из протухшей сессии.
+ */
+function clearAuthAfterUnauthorized() {
+  storageRemove(STORAGE_KEYS.token);
+  storageRemove(STORAGE_KEYS.user);
+  if (typeof document !== "undefined") {
+    document.cookie = `${STORAGE_KEYS.token}=; path=/; max-age=0`;
+  }
+}
+
 /**
  * @param {Response} response
  * @returns {Promise<unknown>}
@@ -237,7 +264,9 @@ async function parseBody(response) {
   try {
     return JSON.parse(text);
   } catch {
-    return text;
+    // Не-JSON на успешном ответе — валидный кейс (например, токен строкой).
+    // Не-JSON на ошибке (HTML-страница шлюза) в UI не тащим.
+    return response.ok ? text : null;
   }
 }
 
@@ -257,6 +286,17 @@ async function parseBody(response) {
 export async function request(path, { method = "GET", body, query, signal } = {}) {
   const url = buildUrl(path, query);
   const hasBody = body !== undefined;
+  const token = getStoredToken();
+
+  // Таймаут не заменяет пользовательский AbortSignal, а комбинируется с ним.
+  const timeoutSignal =
+    typeof AbortSignal?.timeout === "function"
+      ? AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+      : null;
+  const requestSignal =
+    signal && timeoutSignal && typeof AbortSignal?.any === "function"
+      ? AbortSignal.any([signal, timeoutSignal])
+      : (signal ?? timeoutSignal ?? undefined);
 
   let response;
   try {
@@ -265,9 +305,10 @@ export async function request(path, { method = "GET", body, query, signal } = {}
       headers: {
         "ngrok-skip-browser-warning": "true",
         ...(hasBody ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: hasBody ? JSON.stringify(body) : undefined,
-      signal,
+      signal: requestSignal,
     });
   } catch (cause) {
     throw new ApiError(resolveText("errors.requestFailed", { method, url }), {
@@ -279,6 +320,9 @@ export async function request(path, { method = "GET", body, query, signal } = {}
   const data = await parseBody(response);
 
   if (!response.ok) {
+    if ((response.status === 401 || response.status === 403) && token) {
+      clearAuthAfterUnauthorized();
+    }
     throw new ApiError(
       resolveText("errors.requestStatus", { method, url, status: response.status }),
       { status: response.status, data, url }
@@ -434,29 +478,6 @@ function withoutPassword(user) {
  */
 export function getUserByToken(token, { signal } = {}) {
   return request("/api/users/token", { query: { token }, signal });
-}
-
-/**
- * 8. Получение пользователя по id.
- * `GET /api/users/{userId}`
- *
- * @param {LongId} userId
- * @param {{ signal?: AbortSignal }} [options]
- * @returns {Promise<User>}
- */
-export function getUserById(userId, { signal } = {}) {
-  return request(`/api/users/${userId}`, { signal });
-}
-
-/**
- * 9. Список всех зарегистрированных пользователей.
- * `GET /api/users`
- *
- * @param {{ signal?: AbortSignal }} [options]
- * @returns {Promise<User[]>}
- */
-export function getUsers({ signal } = {}) {
-  return request("/api/users", { signal });
 }
 
 /**
@@ -625,8 +646,6 @@ export const apiService = {
     register: registerUser,
     login: loginUser,
     getByToken: getUserByToken,
-    getById: getUserById,
-    getAll: getUsers,
   },
   dashboard: {
     updateTargetScore,

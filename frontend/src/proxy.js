@@ -1,18 +1,38 @@
 import { NextResponse } from "next/server";
 
-const BACKEND_URL = (
-  process.env.NEXT_PUBLIC_API_URL ??
-  "https://unnegotiated-apocalyptically-paulette.ngrok-free.dev"
-).replace(/\/+$/, "");
-
 /**
- * Проксирует /api/* на backend: бесплатные ngrok-туннели без заголовка
- * ngrok-skip-browser-warning отдают interstitial вместо ответа API.
+ * Проксирует /api/* на backend.
+ *
+ * Два зачем:
+ * 1. Бесплатные ngrok-туннели без заголовка `ngrok-skip-browser-warning`
+ *    отдают interstitial вместо ответа API.
+ * 2. Same-origin: браузер не уходит на сторонний домен, CORS не нужен.
+ *
+ * Адрес backend задаётся ТОЛЬКО через `NEXT_PUBLIC_API_URL` — молчаливого
+ * fallback на dev-туннель нет, иначе прод-сборка без env утечёт данные
+ * на чужой сервер. Если переменная не задана, возвращаем понятную 500.
  */
+function getBackendUrl() {
+  const value = process.env.NEXT_PUBLIC_API_URL;
+  return value ? value.replace(/\/+$/, "") : "";
+}
+
 export async function proxy(request) {
+  const backendUrl = getBackendUrl();
+  if (!backendUrl) {
+    return NextResponse.json(
+      {
+        error: "Backend не настроен",
+        description:
+          "Не задана переменная окружения NEXT_PUBLIC_API_URL. Укажите адрес backend в .env.local.",
+      },
+      { status: 500 }
+    );
+  }
+
   const target = new URL(
     request.nextUrl.pathname + request.nextUrl.search,
-    BACKEND_URL
+    backendUrl
   );
 
   const headers = new Headers();
@@ -39,9 +59,26 @@ export async function proxy(request) {
     init.body = await request.text();
   }
 
-  const upstream = await fetch(target, init);
+  let upstream;
+  try {
+    upstream = await fetch(target, init);
+  } catch {
+    return NextResponse.json(
+      {
+        error: "Backend недоступен",
+        description: `Не удалось выполнить запрос ${request.method} ${request.nextUrl.pathname}.`,
+      },
+      { status: 502 }
+    );
+  }
+
   const responseHeaders = new Headers();
-  responseHeaders.set("content-type", upstream.headers.get("content-type"));
+  responseHeaders.set(
+    "content-type",
+    upstream.headers.get("content-type") ?? "application/json"
+  );
+  // Ответы API не кэшируем: там персональные данные пользователя.
+  responseHeaders.set("Cache-Control", "no-store");
 
   return new NextResponse(upstream.body, {
     status: upstream.status,
