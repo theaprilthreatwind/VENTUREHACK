@@ -1,4 +1,4 @@
-# 🧠 ENT (Backend)
+# ENT (Backend)
 
 Бэкенд-сервис для платформы подготовки к ЕНТ (Единому национальному тестированию в Казахстане). Проект представляет собой полноценную обучающую систему с генерацией тестов, управлением предметами и темами, отслеживанием прогресса и умной аналитикой успешности учеников.
 
@@ -73,7 +73,7 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 
 spring.ai.google.genai.api-key=ВАШ_API_КЛЮЧ
-spring.ai.google.genai.chat.options.model=gemini-1.5-flash
+spring.ai.google.genai.chat.model=gemini-3.5-flash
 
 ```
 
