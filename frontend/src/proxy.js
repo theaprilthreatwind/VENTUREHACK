@@ -35,13 +35,16 @@ export async function proxy(request) {
     backendUrl
   );
 
+  // `origin` намеренно НЕ пробрасываем: прокси ходит на backend server-to-server,
+  // а присланный браузером Origin заставляет Spring применять CORS и отклонять
+  // запросы (например, PATCH) как `Invalid CORS request`. Без Origin backend
+  // считает запрос same-origin и проверку CORS не выполняет.
   const headers = new Headers();
   for (const name of [
     "content-type",
     "accept",
     "accept-language",
     "authorization",
-    "origin",
     "content-encoding",
   ]) {
     const value = request.headers.get(name);

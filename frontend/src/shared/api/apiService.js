@@ -228,6 +228,9 @@ function buildUrl(path, query) {
 /** Таймаут запроса: защищает UI от «зависшего» backend. */
 const REQUEST_TIMEOUT_MS = 20000;
 
+/** AI-эндпоинты ходят к внешней модели — им нужен запас по времени. */
+const AI_REQUEST_TIMEOUT_MS = 90000;
+
 /** Читает токен авторизации напрямую (plain string в localStorage). */
 function getStoredToken() {
   if (typeof window === "undefined") return "";
@@ -280,18 +283,22 @@ async function parseBody(response) {
  *   body?: unknown,
  *   query?: Record<string, unknown>,
  *   signal?: AbortSignal,
+ *   timeoutMs?: number,
  * }} [options]
  * @returns {Promise<T>}
  */
-export async function request(path, { method = "GET", body, query, signal } = {}) {
+export async function request(
+  path,
+  { method = "GET", body, query, signal, timeoutMs = REQUEST_TIMEOUT_MS } = {}
+) {
   const url = buildUrl(path, query);
   const hasBody = body !== undefined;
   const token = getStoredToken();
 
   // Таймаут не заменяет пользовательский AbortSignal, а комбинируется с ним.
   const timeoutSignal =
-    typeof AbortSignal?.timeout === "function"
-      ? AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+    typeof AbortSignal?.timeout === "function" && timeoutMs > 0
+      ? AbortSignal.timeout(timeoutMs)
       : null;
   const requestSignal =
     signal && timeoutSignal && typeof AbortSignal?.any === "function"
@@ -311,10 +318,15 @@ export async function request(path, { method = "GET", body, query, signal } = {}
       signal: requestSignal,
     });
   } catch (cause) {
-    throw new ApiError(resolveText("errors.requestFailed", { method, url }), {
-      url,
-      cause,
-    });
+    // Превышение таймаута показываем отдельно: «повторить» здесь осмысленно.
+    const isTimeout = cause?.name === "TimeoutError";
+    throw new ApiError(
+      resolveText(isTimeout ? "errors.requestTimeout" : "errors.requestFailed", {
+        method,
+        url,
+      }),
+      { url, cause }
+    );
   }
 
   const data = await parseBody(response);
@@ -596,11 +608,15 @@ export function startAdaptivePractice(userId, { signal } = {}) {
  * @param {{ signal?: AbortSignal }} [options]
  * @returns {Promise<QuestionResponse>}
  */
-export function generateQuestionExplanation({ questionId, optionId }, { signal } = {}) {
+export function generateQuestionExplanation(
+  { questionId, optionId },
+  { signal, timeoutMs = AI_REQUEST_TIMEOUT_MS } = {}
+) {
   return request(`/api/questions/${questionId}/explanation`, {
     method: "PATCH",
     query: { optionId },
     signal,
+    timeoutMs,
   });
 }
 
