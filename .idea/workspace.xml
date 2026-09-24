@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8dc9d37d-d501-494d-875b-d3fcb20a87ac" name="Changes" comment="Fixed variables in URL">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/controller/DashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/ent/service/DashboardService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/data.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/data.sql" afterDir="false" />
-    </list>
+    <list default="true" id="8dc9d37d-d501-494d-875b-d3fcb20a87ac" name="Changes" comment="LAST COMMIT (i think)" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -171,7 +166,9 @@
     <MESSAGE value="Fixed N+1 problem, added some option/question logic" />
     <MESSAGE value="Fixed URL" />
     <MESSAGE value="Fixed variables in URL" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed variables in URL" />
+    <MESSAGE value="LAST COMMIT (i hope)" />
+    <MESSAGE value="LAST COMMIT (i think)" />
+    <option name="LAST_COMMIT_MESSAGE" value="LAST COMMIT (i think)" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
