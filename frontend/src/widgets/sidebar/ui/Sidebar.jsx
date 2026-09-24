@@ -22,7 +22,7 @@ const menuItems = [
 ];
 
 const bottomItems = [
-  { labelKey: "sidebar.analytics", icon: BarChart3 },
+  { labelKey: "sidebar.analytics", href: "/analytics", icon: BarChart3 },
   { labelKey: "sidebar.support", icon: LifeBuoy },
   { labelKey: "sidebar.settings", icon: Settings, href: "/settings" },
 ];

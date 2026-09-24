@@ -25,6 +25,9 @@ export default function Header() {
   ) {
     title = t("header.createSession");
     subtitle = t("header.createSessionSub");
+  } else if (pathname.startsWith("/analytics")) {
+    title = t("analytics.title");
+    subtitle = t("analytics.subtitle");
   } else {
     title = t("header.defaultTitle");
     subtitle = t("header.defaultSubtitle");
