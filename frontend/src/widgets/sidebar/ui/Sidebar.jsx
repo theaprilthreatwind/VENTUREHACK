@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   BarChart3,
-  BookOpen,
   Home,
   Layers,
   LifeBuoy,
@@ -18,13 +17,12 @@ import { useLang } from "@/shared/i18n";
 
 const menuItems = [
   { labelKey: "sidebar.home", href: "/dashboard", icon: Home },
-  { labelKey: "sidebar.practice", href: "/practice", icon: BookOpen },
   { labelKey: "sidebar.questionBank", href: "/question-bank", icon: Layers, badgeKey: "sidebar.free" },
   { labelKey: "sidebar.plan", href: "/plan", icon: Sparkles, badge: "AI" },
 ];
 
 const bottomItems = [
-  { labelKey: "sidebar.analytics", icon: BarChart3 },
+  { labelKey: "sidebar.analytics", href: "/analytics", icon: BarChart3 },
   { labelKey: "sidebar.support", icon: LifeBuoy },
   { labelKey: "sidebar.settings", icon: Settings, href: "/settings" },
 ];

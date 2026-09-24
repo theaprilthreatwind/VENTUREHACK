@@ -6,6 +6,7 @@ import { getSubjectsOverview } from "@/shared/api";
 /**
  * Каталог предметов с темами (`GET /api/subjects/overview`).
  * Данные приходят с backend через `@/shared/api`.
+ * Запрос отменяется при размонтировании (`AbortController`).
  */
 export function useSubjectsOverview() {
   const [subjects, setSubjects] = useState([]);
@@ -13,25 +14,23 @@ export function useSubjectsOverview() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isActive = true;
+    const controller = new AbortController();
 
-    getSubjectsOverview()
+    getSubjectsOverview({ signal: controller.signal })
       .then((data) => {
-        if (isActive) {
-          setSubjects(data ?? []);
-          setError(null);
-        }
+        if (controller.signal.aborted) return;
+        setSubjects(data ?? []);
+        setError(null);
       })
       .catch((err) => {
-        if (isActive) setError(err);
+        if (controller.signal.aborted) return;
+        setError(err);
       })
       .finally(() => {
-        if (isActive) setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       });
 
-    return () => {
-      isActive = false;
-    };
+    return () => controller.abort();
   }, []);
 
   return { subjects, isLoading, error };

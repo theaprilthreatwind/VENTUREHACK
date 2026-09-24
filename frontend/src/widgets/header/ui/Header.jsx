@@ -19,12 +19,15 @@ export default function Header() {
   if (pathname.startsWith("/dashboard")) {
     title = t("header.dashboard");
     subtitle = user ? t("header.welcomeBack", { username: user.username }) : "";
-  } else if (pathname.startsWith("/practice")) {
+  } else if (
+    pathname.startsWith("/practice") ||
+    pathname.startsWith("/question-bank")
+  ) {
     title = t("header.createSession");
     subtitle = t("header.createSessionSub");
-  } else if (pathname.startsWith("/plan")) {
-    title = t("header.plan");
-    subtitle = t("header.planSub");
+  } else if (pathname.startsWith("/analytics")) {
+    title = t("analytics.title");
+    subtitle = t("analytics.subtitle");
   } else {
     title = t("header.defaultTitle");
     subtitle = t("header.defaultSubtitle");
@@ -56,7 +59,7 @@ export default function Header() {
 
           {user && (
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#131926] text-sm font-bold text-white">
-              {user.username.slice(0, 1).toUpperCase()}
+              {(user.username?.[0] ?? "?").toUpperCase()}
             </div>
           )}
         </div>

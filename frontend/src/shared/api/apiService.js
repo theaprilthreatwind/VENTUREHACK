@@ -1,5 +1,6 @@
-import { API_BASE_URL } from "@/shared/config";
+import { API_BASE_URL, STORAGE_KEYS } from "@/shared/config";
 import { resolveText } from "@/shared/i18n";
+import { storageRemove } from "@/shared/lib/storage";
 
 /* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
@@ -106,11 +107,35 @@ import { resolveText } from "@/shared/i18n";
  * @property {string} explanation
  * @property {string} type
  * @property {Difficulty} difficulty
+ * @property {string} photoUrl
  * @property {number[]} optionIds
  */
 
 /**
- * @typedef {"NEW" | "IN_PROGRESS" | "DONE"} TestAttemptStatus
+ * Вопрос без текстов вариантов: `GET /api/questions/{id}` отдаёт только
+ * идентификаторы ответов (`option`), которые догружаются отдельно.
+ *
+ * @typedef {Object} QuestionDetail
+ * @property {number} questionId
+ * @property {string} title
+ * @property {string} explanation
+ * @property {string} type
+ * @property {Difficulty} difficulty
+ * @property {string} photoUrl
+ * @property {number[]} option
+ */
+
+/**
+ * Вариант ответа: `GET /api/questions/{id}/{optionId}`.
+ *
+ * @typedef {Object} OptionDetail
+ * @property {number} id
+ * @property {string} text
+ * @property {boolean} correct
+ */
+
+/**
+ * @typedef {"NEW" | "IN_PROGRESS" | "SUBMITTED" | "CANCELLED"} TestAttemptStatus
  */
 
 /**
@@ -127,6 +152,31 @@ import { resolveText } from "@/shared/i18n";
  * @typedef {Object} UpdateTestStatusPayload
  * @property {LongId} id
  * @property {TestAttemptStatus} status
+ */
+
+/**
+ * Глобальная статистика пользователя (дашборд).
+ * `GET /api/dashboard/{userId}/stats`
+ *
+ * @typedef {Object} UserStats
+ * @property {number} id
+ * @property {User} [user]
+ * @property {number} totalTestsSolved
+ * @property {number} totalQuestionsSolved
+ * @property {number} correctAnswers
+ * @property {number} overallSuccessRate
+ */
+
+/**
+ * @typedef {Object} GenerateExplanationPayload
+ * @property {LongId} questionId
+ * @property {LongId} optionId
+ */
+
+/**
+ * @typedef {Object} UpdateQuestionPhotoUrlPayload
+ * @property {LongId} questionId
+ * @property {string} photoUrl
  */
 
 /* -------------------------------------------------------------------------- */
@@ -175,6 +225,35 @@ function buildUrl(path, query) {
   return `${base}${path}${search ? `?${search}` : ""}`;
 }
 
+/** Таймаут запроса: защищает UI от «зависшего» backend. */
+const REQUEST_TIMEOUT_MS = 20000;
+
+/** AI-эндпоинты ходят к внешней модели — им нужен запас по времени. */
+const AI_REQUEST_TIMEOUT_MS = 90000;
+
+/** Читает токен авторизации напрямую (plain string в localStorage). */
+function getStoredToken() {
+  if (typeof window === "undefined") return "";
+  try {
+    return window.localStorage.getItem(STORAGE_KEYS.token) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Сбрасывает авторизацию при 401/403. Удаление ключа токена запускает
+ * событие `entuz_token:change`, на которое подписан `useCurrentUser`,
+ * поэтому UI сам выходит из протухшей сессии.
+ */
+function clearAuthAfterUnauthorized() {
+  storageRemove(STORAGE_KEYS.token);
+  storageRemove(STORAGE_KEYS.user);
+  if (typeof document !== "undefined") {
+    document.cookie = `${STORAGE_KEYS.token}=; path=/; max-age=0`;
+  }
+}
+
 /**
  * @param {Response} response
  * @returns {Promise<unknown>}
@@ -188,7 +267,9 @@ async function parseBody(response) {
   try {
     return JSON.parse(text);
   } catch {
-    return text;
+    // Не-JSON на успешном ответе — валидный кейс (например, токен строкой).
+    // Не-JSON на ошибке (HTML-страница шлюза) в UI не тащим.
+    return response.ok ? text : null;
   }
 }
 
@@ -202,12 +283,27 @@ async function parseBody(response) {
  *   body?: unknown,
  *   query?: Record<string, unknown>,
  *   signal?: AbortSignal,
+ *   timeoutMs?: number,
  * }} [options]
  * @returns {Promise<T>}
  */
-export async function request(path, { method = "GET", body, query, signal } = {}) {
+export async function request(
+  path,
+  { method = "GET", body, query, signal, timeoutMs = REQUEST_TIMEOUT_MS } = {}
+) {
   const url = buildUrl(path, query);
   const hasBody = body !== undefined;
+  const token = getStoredToken();
+
+  // Таймаут не заменяет пользовательский AbortSignal, а комбинируется с ним.
+  const timeoutSignal =
+    typeof AbortSignal?.timeout === "function" && timeoutMs > 0
+      ? AbortSignal.timeout(timeoutMs)
+      : null;
+  const requestSignal =
+    signal && timeoutSignal && typeof AbortSignal?.any === "function"
+      ? AbortSignal.any([signal, timeoutSignal])
+      : (signal ?? timeoutSignal ?? undefined);
 
   let response;
   try {
@@ -216,20 +312,29 @@ export async function request(path, { method = "GET", body, query, signal } = {}
       headers: {
         "ngrok-skip-browser-warning": "true",
         ...(hasBody ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: hasBody ? JSON.stringify(body) : undefined,
-      signal,
+      signal: requestSignal,
     });
   } catch (cause) {
-    throw new ApiError(resolveText("errors.requestFailed", { method, url }), {
-      url,
-      cause,
-    });
+    // Превышение таймаута показываем отдельно: «повторить» здесь осмысленно.
+    const isTimeout = cause?.name === "TimeoutError";
+    throw new ApiError(
+      resolveText(isTimeout ? "errors.requestTimeout" : "errors.requestFailed", {
+        method,
+        url,
+      }),
+      { url, cause }
+    );
   }
 
   const data = await parseBody(response);
 
   if (!response.ok) {
+    if ((response.status === 401 || response.status === 403) && token) {
+      clearAuthAfterUnauthorized();
+    }
     throw new ApiError(
       resolveText("errors.requestStatus", { method, url, status: response.status }),
       { status: response.status, data, url }
@@ -257,11 +362,12 @@ export function getSubjectsOverview({ signal } = {}) {
 /**
  * 2. Старт практики.
  * `POST /api/practice-page/start?userId={userId}`
- * Backend возвращает `{ attemptId, questions }`.
+ * Backend возвращает `{ attemptId, questionIds }`; сами вопросы догружаются
+ * по `GET /api/questions/{id}` (см. `getQuestionById`).
  *
  * @param {StartPracticePayload} payload
  * @param {{ signal?: AbortSignal }} [options]
- * @returns {Promise<{ attemptId: LongId, questions: Array<Object> }>}
+ * @returns {Promise<{ attemptId: LongId, questionIds: number[] }>}
  */
 export function startPractice(
   { userId, topicIds, questionsCount, difficulties, answerStatus, isRepetition },
@@ -387,29 +493,6 @@ export function getUserByToken(token, { signal } = {}) {
 }
 
 /**
- * 8. Получение пользователя по id.
- * `GET /api/users/{userId}`
- *
- * @param {LongId} userId
- * @param {{ signal?: AbortSignal }} [options]
- * @returns {Promise<User>}
- */
-export function getUserById(userId, { signal } = {}) {
-  return request(`/api/users/${userId}`, { signal });
-}
-
-/**
- * 9. Список всех зарегистрированных пользователей.
- * `GET /api/users`
- *
- * @param {{ signal?: AbortSignal }} [options]
- * @returns {Promise<User[]>}
- */
-export function getUsers({ signal } = {}) {
-  return request("/api/users", { signal });
-}
-
-/**
  * 10. Обновление целевого балла пользователя по теме.
  * `PUT /api/dashboard/{userId}/topics/{topicId}/target-score`
  *
@@ -445,6 +528,35 @@ export function getQuestions(
 }
 
 /**
+ * 11.1. Один вопрос (без текстов вариантов).
+ * `GET /api/questions/{id}`
+ *
+ * Используется после `startPractice`, который возвращает только `questionIds`.
+ * В ответе приходит список id вариантов (`option`), сами варианты догружаются
+ * через `getQuestionOption`.
+ *
+ * @param {LongId} id
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<QuestionDetail>}
+ */
+export function getQuestionById(id, { signal } = {}) {
+  return request(`/api/questions/${id}`, { signal });
+}
+
+/**
+ * 11.2. Один вариант ответа с текстом и признаком правильности.
+ * `GET /api/questions/{id}/{optionId}`
+ *
+ * @param {LongId} id — идентификатор вопроса
+ * @param {LongId} optionId — идентификатор варианта ответа
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<OptionDetail>}
+ */
+export function getQuestionOption(id, optionId, { signal } = {}) {
+  return request(`/api/questions/${id}/${optionId}`, { signal });
+}
+
+/**
  * 12. Смена статуса попытки прохождения.
  * `PATCH /api/practice-page/{id}/status?status={status}`
  *
@@ -460,6 +572,70 @@ export function updateTestStatus({ id, status }, { signal } = {}) {
   });
 }
 
+/**
+ * 13. Статистика пользователя для дашборда.
+ * `GET /api/dashboard/{userId}/stats`
+ *
+ * @param {LongId} userId
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<UserStats>}
+ */
+export function getDashboardStats(userId, { signal } = {}) {
+  return request(`/api/dashboard/${userId}/stats`, { signal });
+}
+
+/**
+ * 14. Адаптивный старт: сессия по слабым темам пользователя.
+ * `POST /api/practice-page/start/adaptive?userId={userId}`
+ *
+ * @param {LongId} userId
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<{ attemptId: LongId, questionIds: number[] }>}
+ */
+export function startAdaptivePractice(userId, { signal } = {}) {
+  return request("/api/practice-page/start/adaptive", {
+    method: "POST",
+    query: { userId },
+    signal,
+  });
+}
+
+/**
+ * 15. AI-пояснение к заданию по ошибочному варианту.
+ * `PATCH /api/questions/{id}/explanation?optionId={optionId}`
+ *
+ * @param {GenerateExplanationPayload} payload
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<QuestionResponse>}
+ */
+export function generateQuestionExplanation(
+  { questionId, optionId },
+  { signal, timeoutMs = AI_REQUEST_TIMEOUT_MS } = {}
+) {
+  return request(`/api/questions/${questionId}/explanation`, {
+    method: "PATCH",
+    query: { optionId },
+    signal,
+    timeoutMs,
+  });
+}
+
+/**
+ * 16. Обновление картинки задания.
+ * `PATCH /api/questions/{id}/photo-url`
+ *
+ * @param {UpdateQuestionPhotoUrlPayload} payload
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<QuestionResponse>}
+ */
+export function updateQuestionPhotoUrl({ questionId, photoUrl }, { signal } = {}) {
+  return request(`/api/questions/${questionId}/photo-url`, {
+    method: "PATCH",
+    body: { photoUrl },
+    signal,
+  });
+}
+
 /* -------------------------------------------------------------------------- */
 /*                              Grouped service                               */
 /* -------------------------------------------------------------------------- */
@@ -470,9 +646,14 @@ export const apiService = {
   },
   questions: {
     getAll: getQuestions,
+    getById: getQuestionById,
+    getOption: getQuestionOption,
+    generateExplanation: generateQuestionExplanation,
+    updatePhotoUrl: updateQuestionPhotoUrl,
   },
   practice: {
     start: startPractice,
+    startAdaptive: startAdaptivePractice,
     saveAnswer,
     finish: finishPractice,
     updateStatus: updateTestStatus,
@@ -481,11 +662,10 @@ export const apiService = {
     register: registerUser,
     login: loginUser,
     getByToken: getUserByToken,
-    getById: getUserById,
-    getAll: getUsers,
   },
   dashboard: {
     updateTargetScore,
+    getStats: getDashboardStats,
   },
 };
 
