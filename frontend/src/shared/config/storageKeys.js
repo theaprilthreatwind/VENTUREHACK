@@ -8,4 +8,7 @@ export const STORAGE_KEYS = {
   prefs: "entuz_prefs",
   lang: "entuz_lang",
   notifications: "entuz_notifications",
+  aiDailyPlanPrefix: "entuz_ai_daily_plan_",
+  aiCompletedTopics: "entuz_ai_completed_topics",
+  aiFailedTopics: "entuz_ai_failed_topics",
 };

@@ -22,6 +22,9 @@ export default function Header() {
   } else if (pathname.startsWith("/practice")) {
     title = t("header.createSession");
     subtitle = t("header.createSessionSub");
+  } else if (pathname.startsWith("/plan")) {
+    title = t("header.plan");
+    subtitle = t("header.planSub");
   } else {
     title = t("header.defaultTitle");
     subtitle = t("header.defaultSubtitle");
