@@ -27,7 +27,7 @@ function NotFound() {
           {t("session.notFoundDesc")}
         </p>
         <Link
-          href="/practice"
+          href="/question-bank"
           className="mt-6 inline-flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />

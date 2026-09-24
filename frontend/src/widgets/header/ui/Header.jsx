@@ -19,7 +19,10 @@ export default function Header() {
   if (pathname.startsWith("/dashboard")) {
     title = t("header.dashboard");
     subtitle = user ? t("header.welcomeBack", { username: user.username }) : "";
-  } else if (pathname.startsWith("/practice")) {
+  } else if (
+    pathname.startsWith("/practice") ||
+    pathname.startsWith("/question-bank")
+  ) {
     title = t("header.createSession");
     subtitle = t("header.createSessionSub");
   } else {

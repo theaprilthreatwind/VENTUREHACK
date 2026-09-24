@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   BarChart3,
-  BookOpen,
   Home,
   Layers,
   LifeBuoy,
@@ -18,7 +17,6 @@ import { useLang } from "@/shared/i18n";
 
 const menuItems = [
   { labelKey: "sidebar.home", href: "/dashboard", icon: Home },
-  { labelKey: "sidebar.practice", href: "/practice", icon: BookOpen },
   { labelKey: "sidebar.questionBank", href: "/question-bank", icon: Layers, badgeKey: "sidebar.free" },
   { labelKey: "sidebar.plan", href: "/plan", icon: Sparkles, badge: "AI" },
 ];
