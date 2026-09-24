@@ -50,6 +50,8 @@ export const dictionaries = {
       welcomeBack: "С возвращением, {username}",
       startFree: "Старт бесплатно",
       notifications: "Уведомления",
+      plan: "План подготовки",
+      planSub: "Персональный план от AI-тьютора ЕНТ.",
     },
     practice: {
       filtersTitle: "Общие фильтры",
@@ -304,6 +306,8 @@ export const dictionaries = {
       welcomeBack: "Қайта келдіңіз, {username}",
       startFree: "Тегін бастау",
       notifications: "Хабарландырулар",
+      plan: "Дайындық жоспары",
+      planSub: "ЕНТ AI-тәлімгерінің жеке жоспары.",
     },
     practice: {
       filtersTitle: "Жалпы сүзгілер",
