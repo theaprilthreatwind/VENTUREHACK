@@ -48,9 +48,9 @@
 | Слой | Технологии |
 |---|---|
 | Frontend | Next.js 16.3 (App Router), React 19.2, Tailwind CSS 4, lucide-react, JavaScript + JSDoc, Feature-Sliced Design |
-| Backend | Java 25 (по `pom.xml`), Spring Boot 4.1, Spring Data JPA, Jakarta Validation, Lombok, Maven |
+| Backend | Java 21, Spring Boot 4.1, Spring Data JPA, Jakarta Validation, Lombok, Maven |
 | БД | PostgreSQL, Hibernate (`ddl-auto=update`), сид `data.sql` |
-| AI | Spring AI → Google GenAI (`gemini-1.5-flash`) |
+| AI | Spring AI → Google GenAI (`gemini-3.5-flash`) |
 | Документация API | Springdoc OpenAPI 3.1 (Swagger UI) |
 | Деплой | Frontend — Vercel (`venturehack-chi.vercel.app`) |
 | Качество | ESLint (frontend), `node --test`, smoke-тест Spring Boot |
@@ -62,7 +62,7 @@
 ### Требования
 
 - **Node.js ≥ 20.9** и npm;
-- **JDK 25** (сборка через Maven Wrapper, отдельная установка Maven не нужна);
+- **JDK 21** (сборка через Maven Wrapper, отдельная установка Maven не нужна);
 - **PostgreSQL 14+**, база `ent`;
 - Git.
 
@@ -97,6 +97,7 @@ export SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/ent"
 export SPRING_DATASOURCE_USERNAME="postgres"
 export SPRING_DATASOURCE_PASSWORD="<ваш пароль>"
 export SPRING_AI_GOOGLE_GENAI_API_KEY="<ваш ключ Gemini>"
+export SPRING_AI_GOOGLE_GENAI_CHAT_MODEL="gemini-3.5-flash"
 
 cd backend
 ./mvnw spring-boot:run          # Windows: mvnw.cmd spring-boot:run
