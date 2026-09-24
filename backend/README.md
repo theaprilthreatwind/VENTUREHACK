@@ -61,14 +61,19 @@
 
 ```properties
 spring.application.name=ent
+spring.sql.init.mode=always
+spring.jpa.defer-datasource-initialization=true
 spring.datasource.url=jdbc:postgresql://localhost:5432/ent
 spring.datasource.username=postgres
-spring.datasource.password=your_password
+spring.datasource.password=12345
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
+
+spring.ai.google.genai.api-key=ВАШ_API_КЛЮЧ
+spring.ai.google.genai.chat.options.model=gemini-1.5-flash
 
 ```
 
